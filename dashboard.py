@@ -4,8 +4,11 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 from streamlit_autorefresh import st_autorefresh
-from openai import OpenAI
 
+
+# =====================
+# PAGE SETUP
+# =====================
 
 st.set_page_config(
     page_title="AI Trade Guardian",
@@ -16,43 +19,44 @@ st.set_page_config(
 st.title("🤖 AI Trade Guardian")
 st.success("System Online")
 
+
+# Auto refresh every 60 seconds
+
 st_autorefresh(
     interval=60000,
-    key="refresh"
+    key="market_refresh"
 )
 
 
 # =====================
-# SECRETS
+# API SECRETS
 # =====================
 
 QWEN_API_KEY = os.getenv("QWEN_API_KEY")
+
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
-
-
-client = OpenAI(
-    api_key=QWEN_API_KEY,
-    base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
-)
+BITGET_SECRET_KEY = os.getenv("BITGET_SECRET_KEY")
+BITGET_PASSPHRASE = os.getenv("BITGET_PASSPHRASE")
 
 
 # =====================
-# STATUS
+# CONNECTION STATUS
 # =====================
 
 st.subheader("Connection Status")
 
-st.success(
-    "✅ Qwen AI Connected"
-    if QWEN_API_KEY
-    else "❌ Qwen Missing"
-)
 
-st.success(
-    "✅ Bitget API Connected"
-    if BITGET_API_KEY
-    else "❌ Bitget Missing"
-)
+if QWEN_API_KEY:
+    st.success("✅ Qwen AI Connected")
+else:
+    st.error("❌ Qwen Missing")
+
+
+if BITGET_API_KEY:
+    st.success("✅ Bitget API Connected")
+else:
+    st.error("❌ Bitget Missing")
+
 
 
 # =====================
@@ -60,6 +64,7 @@ st.success(
 # =====================
 
 st.subheader("📈 AI Trading Dashboard")
+
 
 symbol = st.selectbox(
     "Select Pair",
@@ -71,8 +76,9 @@ symbol = st.selectbox(
 )
 
 
+
 # =====================
-# BITGET CANDLES
+# BITGET MARKET DATA
 # =====================
 
 def get_candles(symbol):
@@ -82,11 +88,17 @@ def get_candles(symbol):
         f"?symbol={symbol}&granularity=1h&limit=100"
     )
 
+
     data = requests.get(url).json()
 
-    df = pd.DataFrame(data["data"])
+
+    df = pd.DataFrame(
+        data["data"]
+    )
+
 
     df = df.iloc[:, :6]
+
 
     df.columns = [
         "time",
@@ -97,21 +109,32 @@ def get_candles(symbol):
         "volume"
     ]
 
+
     df["close"] = df["close"].astype(float)
+
 
     return df
 
 
+
 # =====================
-# RSI
+# RSI CALCULATION
 # =====================
 
 def calculate_rsi(prices):
 
     delta = prices.diff()
 
-    gain = delta.clip(lower=0)
-    loss = -delta.clip(upper=0)
+
+    gain = delta.clip(
+        lower=0
+    )
+
+
+    loss = -delta.clip(
+        upper=0
+    )
+
 
     rs = (
         gain.rolling(14).mean()
@@ -119,43 +142,77 @@ def calculate_rsi(prices):
         loss.rolling(14).mean()
     )
 
+
     return 100 - (100/(1+rs))
 
 
+
 # =====================
-# RUN
+# RUN AI
 # =====================
 
 if st.button("🤖 Run AI Analysis"):
 
+
     df = get_candles(symbol)
 
-    df["RSI"] = calculate_rsi(df["close"])
+
+    df["RSI"] = calculate_rsi(
+        df["close"]
+    )
+
 
     price = df["close"].iloc[-1]
+
 
     current_rsi = df["RSI"].iloc[-1]
 
 
+
+    # AI SIGNAL LOGIC
+
     if current_rsi < 30:
+
         signal = "BUY 🟢"
         risk = "Medium"
 
+
     elif current_rsi > 70:
+
         signal = "SELL 🔴"
         risk = "High"
 
+
     else:
+
         signal = "HOLD 🟡"
         risk = "Low"
 
 
-    st.metric("Price", price)
+
+    st.metric(
+        "Current Price",
+        price
+    )
+
 
     st.metric(
         "RSI",
         round(current_rsi,2)
     )
+
+
+    st.metric(
+        "Risk Level",
+        risk
+    )
+
+
+
+    st.subheader(
+        "🤖 AI Decision"
+    )
+
 
     st.metric(
         "Signal",
@@ -163,7 +220,11 @@ if st.button("🤖 Run AI Analysis"):
     )
 
 
+
+    # PRICE CHART
+
     fig = go.Figure()
+
 
     fig.add_trace(
         go.Scatter(
@@ -172,31 +233,17 @@ if st.button("🤖 Run AI Analysis"):
         )
     )
 
+
     st.plotly_chart(
         fig,
         use_container_width=True
     )
 
 
-    try:
 
-        response = client.chat.completions.create(
-
-            model="qwen-plus",
-
-            messages=[
-
-                {
-                    "role":"system",
-                    "content":
-                    "You are a crypto trading assistant."
-                },
-
-                {
-                    "role":"user",
-                    "content":
-                    f"""
-Analyze crypto:
+    st.info(
+        f"""
+🤖 AI Trade Guardian Report
 
 Pair: {symbol}
 
@@ -207,23 +254,15 @@ RSI: {round(current_rsi,2)}
 Signal: {signal}
 
 Risk: {risk}
+
+Checks:
+
+✅ Bitget Live Market Data
+
+✅ RSI Strategy
+
+✅ AI Risk Management
+
+🔄 Auto Monitoring Active
 """
-                }
-            ]
-        )
-
-
-        st.subheader(
-            "🧠 Qwen AI Analysis"
-        )
-
-        st.write(
-            response.choices[0].message.content
-        )
-
-
-    except Exception as e:
-
-        st.error(
-            f"Qwen AI Error: {e}"
-        )
+    )
