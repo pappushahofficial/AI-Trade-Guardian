@@ -24,6 +24,7 @@ st.caption(
 
 
 # Sidebar
+
 st.sidebar.title("⚙️ Agent Control")
 
 capital = st.sidebar.number_input(
@@ -47,13 +48,34 @@ coins = [
 def analyze(symbol):
 
     url = (
-        f"https://api.binance.com/api/v3/klines?"
-        f"symbol={symbol}&interval=1h&limit=100"
+        "https://api.binance.com/api/v3/klines"
+        f"?symbol={symbol}&interval=1h&limit=100"
     )
 
-    data = requests.get(url).json()
 
-    prices = [float(c[4]) for c in data]
+    try:
+
+        data = requests.get(
+            url,
+            timeout=10
+        ).json()
+
+
+        if not data or "code" in data:
+            return None
+
+
+        prices = [
+            float(c[4])
+            for c in data
+        ]
+
+
+    except:
+
+        return None
+
+
 
     df = pd.DataFrame(
         prices,
@@ -66,10 +88,12 @@ def analyze(symbol):
 
     delta = df["price"].diff()
 
+
     gain = delta.where(
         delta > 0,
         0
     ).rolling(14).mean()
+
 
     loss = -delta.where(
         delta < 0,
@@ -81,6 +105,7 @@ def analyze(symbol):
         100 / (1 + gain / loss)
     )
 
+
     rsi = rsi.iloc[-1]
 
 
@@ -90,17 +115,20 @@ def analyze(symbol):
         risk = "MEDIUM"
         score = 90
 
+
     elif rsi > 70:
 
         action = "AVOID BUY 🔴"
         risk = "HIGH"
         score = 20
 
+
     else:
 
         action = "WAIT 🟡"
         risk = "LOW"
         score = 50
+
 
 
     return {
@@ -114,12 +142,29 @@ def analyze(symbol):
     }
 
 
+
 results = []
 
+
 for coin in coins:
-    results.append(
-        analyze(coin)
+
+    result = analyze(coin)
+
+    if result:
+        results.append(
+            result
+        )
+
+
+
+if len(results) == 0:
+
+    st.error(
+        "Market API unavailable. Try again later."
     )
+
+    st.stop()
+
 
 
 results.sort(
@@ -128,33 +173,40 @@ results.sort(
 )
 
 
+
 st.header("🏆 Best Opportunities")
 
 
 for r in results:
 
+
     st.subheader(
         r["coin"]
     )
+
 
     st.metric(
         "Price",
         r["price"]
     )
 
+
     st.metric(
         "Score",
         str(r["score"]) + "%"
     )
+
 
     st.write(
         "RSI:",
         r["rsi"]
     )
 
+
     st.success(
         r["action"]
     )
+
 
     st.write(
         "Risk:",
@@ -170,9 +222,11 @@ for r in results:
             encoding="utf-8"
         ) as file:
 
+
             file.write(
                 f"{datetime.now()} | {r['coin']} | PAPER BUY\n"
             )
+
 
         st.info(
             "Paper Trade Executed ✅"
@@ -183,13 +237,13 @@ for r in results:
         r["chart"]
     )
 
+
     st.divider()
 
 
 
-# Agent Memory
-
 st.header("📜 Agent Memory")
+
 
 try:
 
@@ -198,9 +252,11 @@ try:
         encoding="utf-8"
     ).read()
 
+
     st.text(
         history
     )
+
 
 except:
 
@@ -210,9 +266,9 @@ except:
 
 
 
-# Agent Activity
 
 st.header("🤖 Agent Activity Monitor")
+
 
 activities = [
     "📡 Fetching market data",
@@ -233,7 +289,6 @@ for a in activities:
 
 
 
-# AI Report
 
 best = results[0]
 
@@ -266,9 +321,7 @@ Risk:
 """
 
 
-st.text(
-    report
-)
+st.text(report)
 
 
 st.download_button(
@@ -279,7 +332,6 @@ st.download_button(
 
 
 
-# Risk Engine
 
 st.header("🛡️ Risk Management")
 
@@ -303,6 +355,7 @@ st.metric(
     "Take Profit",
     round(best["price"] * 1.05,2)
 )
+
 
 
 st.success(
