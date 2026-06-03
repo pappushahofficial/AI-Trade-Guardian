@@ -14,7 +14,7 @@ st.set_page_config(
 
 
 st.title("🤖 AI Trade Guardian")
-st.success("System Online")
+st.success("System Online 🚀")
 
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
@@ -132,8 +132,8 @@ if st.button("🤖 Run AI Analysis"):
             direction = "LONG 📈"
             risk = "Medium"
 
-            stop_loss = price * 0.98
-            take_profit = price * 1.04
+            stop_loss = round(price * 0.98,2)
+            take_profit = round(price * 1.04,2)
 
 
 
@@ -143,19 +143,19 @@ if st.button("🤖 Run AI Analysis"):
             direction = "SHORT 📉"
             risk = "High"
 
-            stop_loss = price * 1.02
-            take_profit = price * 0.96
+            stop_loss = round(price * 1.02,2)
+            take_profit = round(price * 0.96,2)
 
 
 
         else:
 
             signal = "HOLD 🟡"
-            direction = "WAIT ⏳"
+            direction = "NO TRADE ⏳"
             risk = "Low"
 
-            stop_loss = price * 0.98
-            take_profit = price * 1.02
+            stop_loss = "Waiting"
+            take_profit = "Waiting"
 
 
 
@@ -169,7 +169,7 @@ if st.button("🤖 Run AI Analysis"):
                 {
                     "role":"system",
                     "content":
-                    "You are an expert crypto trading AI agent."
+                    "You are a professional crypto trading AI agent."
                 },
 
 
@@ -179,7 +179,7 @@ if st.button("🤖 Run AI Analysis"):
                     "content":
 
                     f"""
-Create professional trading analysis.
+Analyze crypto market.
 
 Pair:
 {symbol}
@@ -193,30 +193,30 @@ RSI:
 Signal:
 {signal}
 
-Trade Direction:
+Direction:
 {direction}
 
 Risk:
 {risk}
 
 Stop Loss:
-{round(stop_loss,2)}
+{stop_loss}
 
 Take Profit:
-{round(take_profit,2)}
+{take_profit}
 
 
 Give:
 
-📊 Technical Analysis
+📊 Technical Breakdown
 
-📈 Long/Short Reason
+📈 LONG / SHORT Decision
 
-🎯 Entry Plan
+🎯 Entry Strategy
 
-🛑 Risk Management
+🛡 Risk Management
 
-📋 Final Trading Decision
+📋 Final Trade Plan
 """
                 }
 
@@ -269,13 +269,13 @@ Give:
 
     col6.metric(
         "🛑 Stop Loss",
-        round(stop_loss,2)
+        stop_loss
     )
 
 
     col7.metric(
         "🎯 Take Profit",
-        round(take_profit,2)
+        take_profit
     )
 
 
@@ -286,11 +286,8 @@ Give:
     fig.add_trace(
 
         go.Scatter(
-
             y=df["close"],
-
             name="Price"
-
         )
 
     )
@@ -303,9 +300,7 @@ Give:
 
 
 
-    st.subheader(
-        "🧠 Qwen AI Analysis"
-    )
+    st.subheader("🧠 Qwen AI Analysis")
 
 
     st.write(
