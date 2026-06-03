@@ -7,10 +7,6 @@ from streamlit_autorefresh import st_autorefresh
 from openai import OpenAI
 
 
-# =====================
-# PAGE
-# =====================
-
 st.set_page_config(
     page_title="AI Trade Guardian",
     page_icon="🤖",
@@ -19,7 +15,6 @@ st.set_page_config(
 
 st.title("🤖 AI Trade Guardian")
 st.success("System Online")
-
 
 st_autorefresh(
     interval=60000,
@@ -32,10 +27,7 @@ st_autorefresh(
 # =====================
 
 QWEN_API_KEY = os.getenv("QWEN_API_KEY")
-
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
-BITGET_SECRET_KEY = os.getenv("BITGET_SECRET_KEY")
-BITGET_PASSPHRASE = os.getenv("BITGET_PASSPHRASE")
 
 
 client = OpenAI(
@@ -50,17 +42,17 @@ client = OpenAI(
 
 st.subheader("Connection Status")
 
+st.success(
+    "✅ Qwen AI Connected"
+    if QWEN_API_KEY
+    else "❌ Qwen Missing"
+)
 
-if QWEN_API_KEY:
-    st.success("✅ Qwen AI Connected")
-else:
-    st.error("❌ Qwen Missing")
-
-
-if BITGET_API_KEY:
-    st.success("✅ Bitget API Connected")
-else:
-    st.error("❌ Bitget Missing")
+st.success(
+    "✅ Bitget API Connected"
+    if BITGET_API_KEY
+    else "❌ Bitget Missing"
+)
 
 
 # =====================
@@ -68,7 +60,6 @@ else:
 # =====================
 
 st.subheader("📈 AI Trading Dashboard")
-
 
 symbol = st.selectbox(
     "Select Pair",
@@ -81,7 +72,7 @@ symbol = st.selectbox(
 
 
 # =====================
-# BITGET DATA
+# BITGET CANDLES
 # =====================
 
 def get_candles(symbol):
@@ -93,9 +84,7 @@ def get_candles(symbol):
 
     data = requests.get(url).json()
 
-    df = pd.DataFrame(
-        data["data"]
-    )
+    df = pd.DataFrame(data["data"])
 
     df = df.iloc[:, :6]
 
@@ -113,7 +102,6 @@ def get_candles(symbol):
     return df
 
 
-
 # =====================
 # RSI
 # =====================
@@ -123,7 +111,6 @@ def calculate_rsi(prices):
     delta = prices.diff()
 
     gain = delta.clip(lower=0)
-
     loss = -delta.clip(upper=0)
 
     rs = (
@@ -135,72 +122,46 @@ def calculate_rsi(prices):
     return 100 - (100/(1+rs))
 
 
-
 # =====================
-# RUN AI
+# RUN
 # =====================
 
 if st.button("🤖 Run AI Analysis"):
 
-
     df = get_candles(symbol)
 
-
-    df["RSI"] = calculate_rsi(
-        df["close"]
-    )
-
+    df["RSI"] = calculate_rsi(df["close"])
 
     price = df["close"].iloc[-1]
 
     current_rsi = df["RSI"].iloc[-1]
 
 
-
     if current_rsi < 30:
-
         signal = "BUY 🟢"
         risk = "Medium"
 
-
     elif current_rsi > 70:
-
         signal = "SELL 🔴"
         risk = "High"
 
-
     else:
-
         signal = "HOLD 🟡"
         risk = "Low"
 
 
-
-    st.metric(
-        "Price",
-        price
-    )
-
+    st.metric("Price", price)
 
     st.metric(
         "RSI",
         round(current_rsi,2)
     )
 
-
-    st.metric(
-        "Risk",
-        risk
-    )
-
-
     st.metric(
         "Signal",
         signal
     )
 
-
-    # CHART
 
     fig = go.Figure()
 
@@ -217,22 +178,25 @@ if st.button("🤖 Run AI Analysis"):
     )
 
 
-    # QWEN AI
-
     try:
 
         response = client.chat.completions.create(
+
             model="qwen-plus",
+
             messages=[
+
                 {
                     "role":"system",
-                    "content":"You are a professional crypto trading AI."
+                    "content":
+                    "You are a crypto trading assistant."
                 },
 
                 {
                     "role":"user",
-                    "content":f"""
-Analyze:
+                    "content":
+                    f"""
+Analyze crypto:
 
 Pair: {symbol}
 
@@ -243,8 +207,6 @@ RSI: {round(current_rsi,2)}
 Signal: {signal}
 
 Risk: {risk}
-
-Give short trading advice.
 """
                 }
             ]
@@ -255,7 +217,6 @@ Give short trading advice.
             "🧠 Qwen AI Analysis"
         )
 
-
         st.write(
             response.choices[0].message.content
         )
@@ -264,5 +225,5 @@ Give short trading advice.
     except Exception as e:
 
         st.error(
-            "Qwen AI Error"
+            f"Qwen AI Error: {e}"
         )
