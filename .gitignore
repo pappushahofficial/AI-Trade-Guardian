@@ -1,3 +1,13 @@
+# Secrets
+.env
+*.env
+
+# Python
 __pycache__/
 *.pyc
-.env
+
+# Streamlit
+.streamlit/secrets.toml
+
+# System
+.DS_Store
