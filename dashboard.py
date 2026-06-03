@@ -1,8 +1,7 @@
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
-import pandas as pd
 import requests
-import random
+import pandas as pd
 from datetime import datetime
 
 
@@ -12,79 +11,73 @@ st.set_page_config(
     layout="wide"
 )
 
-
 st_autorefresh(
     interval=60000,
     key="agent_loop"
 )
 
 
-st.title("🤖 AI Trade Guardian")
+st.title("🤖 AI Trade Guardian - Bitget Agent")
 
 st.caption(
-    "Autonomous Crypto Agent | Perception → Decision → Execution → Risk"
+    "Bitget AI Trading Agent | Observe → Think → Risk → Execute"
 )
 
 
-# CONTROL PANEL
+# ---------------- CONTROL ----------------
 
 st.sidebar.header("⚙️ Agent Control")
 
 capital = st.sidebar.number_input(
-    "Virtual Capital ($)",
+    "Paper Capital ($)",
     value=10000
 )
 
 st.sidebar.success(
-    "Agent Running 🟢"
+    "Connected to Bitget 🟢"
 )
 
 
-# MARKET DATA
+# ---------------- BITGET MARKET API ----------------
 
-coins = {
-    "Bitcoin": "bitcoin",
-    "Ethereum": "ethereum",
-    "Solana": "solana",
-    "BNB": "binancecoin"
-}
-
-
-backup = {
-    "Bitcoin": 67000,
-    "Ethereum": 3500,
-    "Solana": 150,
-    "BNB": 600
-}
+symbols = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "BNBUSDT"
+]
 
 
-def scan(name, coin):
+def get_bitget(symbol):
 
-    try:
-
-        url = (
-            "https://api.coingecko.com/api/v3/coins/"
-            + coin +
-            "/market_chart?vs_currency=usd&days=7"
-        )
-
-        data = requests.get(
-            url,
-            timeout=5
-        ).json()
-
-        prices = [
-            x[1]
-            for x in data["prices"]
-        ]
+    url = (
+        "https://api.bitget.com/api/v2/spot/market/candles"
+    )
 
 
-    except:
+    params = {
 
-        prices = [
-            backup[name] + random.randint(-100,100)
-            for i in range(100)
-        ]
+        "symbol": symbol,
+        "granularity": "1h",
+        "limit": "100"
+
+    }
+
+
+    data = requests.get(
+        url,
+        params=params,
+        timeout=10
+    ).json()
+
+
+    candles = data["data"]
+
+
+    prices = [
+        float(c[4])
+        for c in candles
+    ]
 
 
     df = pd.DataFrame(
@@ -94,10 +87,11 @@ def scan(name, coin):
 
 
     change = (
-        (df.price.iloc[-1] - df.price.iloc[0])
+        (prices[-1] - prices[0])
         /
-        df.price.iloc[0]
+        prices[0]
     ) * 100
+
 
 
     if change > 3:
@@ -109,7 +103,7 @@ def scan(name, coin):
 
     elif change < -3:
 
-        decision = "PROTECT / WAIT 🔴"
+        decision = "WAIT / PROTECT 🔴"
         risk = "HIGH"
         confidence = 40
 
@@ -121,10 +115,11 @@ def scan(name, coin):
         confidence = 65
 
 
+
     return {
 
-        "coin": name,
-        "price": round(df.price.iloc[-1],2),
+        "symbol": symbol,
+        "price": prices[-1],
         "change": round(change,2),
         "decision": decision,
         "risk": risk,
@@ -135,15 +130,24 @@ def scan(name, coin):
 
 
 
-# AGENT LOOP
+# ---------------- AGENT LOOP ----------------
+
 
 results = []
 
-for name, coin in coins.items():
 
-    results.append(
-        scan(name,coin)
-    )
+for s in symbols:
+
+    try:
+
+        results.append(
+            get_bitget(s)
+        )
+
+    except:
+
+        pass
+
 
 
 results.sort(
@@ -155,8 +159,8 @@ results.sort(
 best = results[0]
 
 
+# ---------------- OUTPUT ----------------
 
-# DECISION
 
 st.header("🧠 AI Agent Decision")
 
@@ -165,14 +169,16 @@ a,b,c = st.columns(3)
 
 
 a.metric(
-    "Selected Asset",
-    best["coin"]
+    "Asset",
+    best["symbol"]
 )
+
 
 b.metric(
     "Confidence",
     str(best["confidence"])+"%"
 )
+
 
 c.metric(
     "Risk",
@@ -180,31 +186,32 @@ c.metric(
 )
 
 
-
-st.info(
+st.success(
     best["decision"]
 )
 
 
 
-# SCANNER
-
-st.header("📊 Market Scanner")
+st.header("📊 Bitget Market Scanner")
 
 
 for item in results:
 
-    with st.expander(item["coin"]):
+    with st.expander(
+        item["symbol"]
+    ):
 
         st.metric(
             "Price",
-            "$"+str(item["price"])
+            item["price"]
         )
 
+
         st.metric(
-            "7D Change",
+            "Change",
             str(item["change"])+"%"
         )
+
 
         st.line_chart(
             item["chart"]
@@ -212,30 +219,35 @@ for item in results:
 
 
 
-# MEMORY
+# ---------------- MEMORY ----------------
+
 
 st.header("💾 Agent Memory")
 
 
 st.code(
 f"""
-TIME:
+Time:
 {datetime.now()}
 
-LAST DECISION:
+Exchange:
+Bitget
+
+Decision:
 {best['decision']}
 
-ASSET:
-{best['coin']}
+Asset:
+{best['symbol']}
 
-RISK:
+Risk:
 {best['risk']}
 """
 )
 
 
 
-# EXECUTION
+# ---------------- EXECUTION ----------------
+
 
 st.header("⚙️ Execution Simulation")
 
@@ -247,18 +259,11 @@ st.metric(
 
 
 st.metric(
-    "Stop Loss",
-    "$"+str(round(best["price"]*0.97,2))
+    "Mode",
+    "Paper Trading"
 )
-
-
-st.metric(
-    "Take Profit",
-    "$"+str(round(best["price"]*1.05,2))
-)
-
 
 
 st.success(
-    "🚀 Ready for Bitget AI Trading Agent Hackathon"
+    "🚀 Built for Bitget AI Trading Agent Hackathon"
 )
