@@ -13,8 +13,21 @@ st.set_page_config(
 )
 
 
-st.title("🤖 AI Trade Guardian")
-st.success("System Online 🚀")
+st.title("🤖 AI Trade Guardian v2")
+st.success("Trading Agent Online 🚀")
+
+
+st.markdown(
+"""
+### 🏆 Bitget AI Hackathon
+
+🤖 Qwen AI  
+📈 Bitget Market Data  
+📊 RSI + EMA  
+⚡ Multi-Timeframe Scanner  
+🎯 AI Risk Engine
+"""
+)
 
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
@@ -27,28 +40,24 @@ client = OpenAI(
 )
 
 
-st.subheader("🔗 Connection Status")
-
+st.subheader("🔗 Status")
 
 st.success(
-    "✅ Qwen AI Connected"
+    "✅ Qwen Connected"
     if QWEN_API_KEY
     else "❌ Qwen Missing"
 )
 
-
 st.success(
-    "✅ Bitget API Connected"
+    "✅ Bitget Connected"
     if BITGET_API_KEY
     else "❌ Bitget Missing"
 )
 
 
-st.subheader("📈 Trading Dashboard")
-
 
 symbol = st.selectbox(
-    "Select Trading Pair",
+    "Select Pair",
     [
         "BTCUSDT",
         "ETHUSDT",
@@ -58,16 +67,18 @@ symbol = st.selectbox(
 
 
 
-def get_candles(symbol):
+def get_data(symbol,tf):
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
-        f"?symbol={symbol}&granularity=1h&limit=100"
+        f"?symbol={symbol}&granularity={tf}&limit=100"
     )
 
     data = requests.get(url).json()
 
-    df = pd.DataFrame(data["data"])
+    df = pd.DataFrame(
+        data["data"]
+    )
 
     df = df.iloc[:, :6]
 
@@ -86,14 +97,12 @@ def get_candles(symbol):
 
 
 
-def calculate_rsi(prices):
+def rsi(prices):
 
     delta = prices.diff()
 
     gain = delta.clip(lower=0)
-
     loss = -delta.clip(upper=0)
-
 
     rs = (
         gain.rolling(14).mean()
@@ -101,62 +110,116 @@ def calculate_rsi(prices):
         loss.rolling(14).mean()
     )
 
+    return 100-(100/(1+rs))
 
-    return 100 - (100/(1+rs))
+
+
+def analyze(tf):
+
+    df = get_data(symbol,tf)
+
+    df["RSI"] = rsi(
+        df["close"]
+    )
+
+
+    df["EMA20"] = (
+        df["close"]
+        .ewm(span=20)
+        .mean()
+    )
+
+
+    df["EMA50"] = (
+        df["close"]
+        .ewm(span=50)
+        .mean()
+    )
+
+
+    trend = (
+        "BULLISH 🟢"
+        if df["EMA20"].iloc[-1] >
+        df["EMA50"].iloc[-1]
+        else "BEARISH 🔴"
+    )
+
+
+    return (
+        trend,
+        df["RSI"].iloc[-1],
+        df
+    )
 
 
 
 if st.button("🤖 Run AI Analysis"):
 
 
-    with st.spinner("🧠 Qwen AI analysing market..."):
+    with st.spinner(
+        "🧠 Qwen AI analysing all timeframes..."
+    ):
 
 
-        df = get_candles(symbol)
+        t15,r15,df = analyze("15min")
+        t1,r1,_ = analyze("1h")
+        t4,r4,_ = analyze("4h")
 
 
-        df["RSI"] = calculate_rsi(
-            df["close"]
+        bullish = [
+            t15,
+            t1,
+            t4
+        ].count(
+            "BULLISH 🟢"
         )
 
 
         price = df["close"].iloc[-1]
 
-        current_rsi = df["RSI"].iloc[-1]
 
-
-
-        if current_rsi < 30:
+        if bullish >= 2:
 
             signal = "BUY 🟢"
             direction = "LONG 📈"
-            risk = "Medium"
+            confidence = "85%"
 
-            stop_loss = round(price * 0.98,2)
-            take_profit = round(price * 1.04,2)
+            sl = round(
+                price*0.98,
+                2
+            )
+
+            tp = round(
+                price*1.04,
+                2
+            )
 
 
-
-        elif current_rsi > 70:
+        elif bullish == 0:
 
             signal = "SELL 🔴"
             direction = "SHORT 📉"
-            risk = "High"
+            confidence = "85%"
 
-            stop_loss = round(price * 1.02,2)
-            take_profit = round(price * 0.96,2)
+            sl = round(
+                price*1.02,
+                2
+            )
 
+            tp = round(
+                price*0.96,
+                2
+            )
 
 
         else:
 
             signal = "HOLD 🟡"
             direction = "NO TRADE ⏳"
-            risk = "Low"
+            confidence = "60%"
 
-            stop_loss = "Waiting"
-            take_profit = "Waiting"
-
+            sl = "Waiting"
+            tp = "Waiting"
 
 
 
@@ -169,7 +232,7 @@ if st.button("🤖 Run AI Analysis"):
                 {
                     "role":"system",
                     "content":
-                    "You are a professional crypto trading AI agent."
+                    "You are an expert crypto trading AI agent."
                 },
 
 
@@ -179,16 +242,19 @@ if st.button("🤖 Run AI Analysis"):
                     "content":
 
                     f"""
-Analyze crypto market.
+Create professional trading analysis.
 
 Pair:
 {symbol}
 
-Price:
-{price}
+15m:
+{t15}
 
-RSI:
-{round(current_rsi,2)}
+1H:
+{t1}
+
+4H:
+{t4}
 
 Signal:
 {signal}
@@ -196,27 +262,21 @@ Signal:
 Direction:
 {direction}
 
-Risk:
-{risk}
+Confidence:
+{confidence}
 
 Stop Loss:
-{stop_loss}
+{sl}
 
 Take Profit:
-{take_profit}
+{tp}
 
 
-Give:
-
-📊 Technical Breakdown
-
-📈 LONG / SHORT Decision
-
-🎯 Entry Strategy
-
-🛡 Risk Management
-
-📋 Final Trade Plan
+Explain:
+📊 Market
+📈 Direction
+🎯 Trade Plan
+🛡 Risk
 """
                 }
 
@@ -226,56 +286,54 @@ Give:
 
 
 
-    col1,col2,col3 = st.columns(3)
+    c1,c2,c3 = st.columns(3)
 
+    c1.metric(
+        "⚡15m",
+        t15
+    )
 
-    col1.metric(
-        "💰 Price",
-        round(price,2)
+    c2.metric(
+        "📈1H",
+        t1
+    )
+
+    c3.metric(
+        "🏦4H",
+        t4
     )
 
 
-    col2.metric(
-        "📊 RSI",
-        round(current_rsi,2)
-    )
 
+    c4,c5,c6 = st.columns(3)
 
-    col3.metric(
-        "⚠️ Risk",
-        risk
-    )
-
-
-
-    col4,col5 = st.columns(2)
-
-
-    col4.metric(
+    c4.metric(
         "🤖 Signal",
         signal
     )
 
-
-    col5.metric(
+    c5.metric(
         "📍 Direction",
         direction
     )
 
-
-
-    col6,col7 = st.columns(2)
-
-
-    col6.metric(
-        "🛑 Stop Loss",
-        stop_loss
+    c6.metric(
+        "🎯 Confidence",
+        confidence
     )
 
 
-    col7.metric(
-        "🎯 Take Profit",
-        take_profit
+
+    c7,c8 = st.columns(2)
+
+    c7.metric(
+        "🛑 Stop Loss",
+        sl
+    )
+
+    c8.metric(
+        "💰 Take Profit",
+        tp
     )
 
 
@@ -284,12 +342,26 @@ Give:
 
 
     fig.add_trace(
-
         go.Scatter(
             y=df["close"],
             name="Price"
         )
+    )
 
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["EMA20"],
+            name="EMA20"
+        )
+    )
+
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["EMA50"],
+            name="EMA50"
+        )
     )
 
 
@@ -299,8 +371,9 @@ Give:
     )
 
 
-
-    st.subheader("🧠 Qwen AI Analysis")
+    st.subheader(
+        "🧠 Qwen AI Analysis"
+    )
 
 
     st.write(
