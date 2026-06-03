@@ -6,19 +6,21 @@ import plotly.graph_objects as go
 from openai import OpenAI
 
 
+# =====================
+# PAGE
+# =====================
+
 st.set_page_config(
     page_title="AI Trade Guardian",
     page_icon="🤖",
     layout="wide"
 )
 
-
 st.title("🤖 AI Trade Guardian")
 st.success("System Online")
 
-
 st.markdown(
-"""
+    """
 ### 🚀 Bitget AI Hackathon Project
 
 🤖 Qwen AI Intelligence  
@@ -32,10 +34,11 @@ AI powered crypto market assistant.
 
 
 # =====================
-# API
+# SECRETS
 # =====================
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
+
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
 
 
@@ -51,13 +54,11 @@ client = OpenAI(
 
 st.subheader("🔗 Connection Status")
 
-
 st.success(
     "✅ Bitget Qwen Connected"
     if QWEN_API_KEY
     else "❌ Qwen Missing"
 )
-
 
 st.success(
     "✅ Bitget API Connected"
@@ -72,7 +73,6 @@ st.success(
 
 st.subheader("📈 AI Trading Dashboard")
 
-
 symbol = st.selectbox(
     "Select Trading Pair",
     [
@@ -83,6 +83,9 @@ symbol = st.selectbox(
 )
 
 
+# =====================
+# MARKET DATA
+# =====================
 
 def get_candles(symbol):
 
@@ -91,17 +94,13 @@ def get_candles(symbol):
         f"?symbol={symbol}&granularity=1h&limit=100"
     )
 
-
     data = requests.get(url).json()
-
 
     df = pd.DataFrame(
         data["data"]
     )
 
-
     df = df.iloc[:, :6]
-
 
     df.columns = [
         "time",
@@ -112,28 +111,22 @@ def get_candles(symbol):
         "volume"
     ]
 
-
     df["close"] = df["close"].astype(float)
-
 
     return df
 
 
+# =====================
+# RSI
+# =====================
 
 def calculate_rsi(prices):
 
     delta = prices.diff()
 
+    gain = delta.clip(lower=0)
 
-    gain = delta.clip(
-        lower=0
-    )
-
-
-    loss = -delta.clip(
-        upper=0
-    )
-
+    loss = -delta.clip(upper=0)
 
     rs = (
         gain.rolling(14).mean()
@@ -141,85 +134,49 @@ def calculate_rsi(prices):
         loss.rolling(14).mean()
     )
 
-
     return 100 - (100/(1+rs))
 
 
+# =====================
+# RUN AI
+# =====================
 
 if st.button("🤖 Run AI Analysis"):
 
 
-    with st.spinner("🤖 Qwen AI is analysing market..."):
+    df = get_candles(symbol)
 
 
-        df = get_candles(symbol)
+    df["RSI"] = calculate_rsi(
+        df["close"]
+    )
 
 
-        df["RSI"] = calculate_rsi(
-            df["close"]
-        )
+    price = df["close"].iloc[-1]
+
+    current_rsi = df["RSI"].iloc[-1]
 
 
-        price = df["close"].iloc[-1]
+    if current_rsi < 30:
+
+        signal = "BUY 🟢"
+        risk = "Medium"
 
 
-        current_rsi = df["RSI"].iloc[-1]
+    elif current_rsi > 70:
+
+        signal = "SELL 🔴"
+        risk = "High"
 
 
-        if current_rsi < 30:
+    else:
 
-            signal = "BUY 🟢"
-            risk = "Medium"
-
-
-        elif current_rsi > 70:
-
-            signal = "SELL 🔴"
-            risk = "High"
-
-
-        else:
-
-            signal = "HOLD 🟡"
-            risk = "Low"
+        signal = "HOLD 🟡"
+        risk = "Low"
 
 
 
-        response = client.chat.completions.create(
-
-            model="qwen3.6-flash",
-
-            messages=[
-
-                {
-                    "role":"system",
-                    "content":
-                    "You are a crypto trading AI."
-                },
-
-                {
-                    "role":"user",
-                    "content":
-                    f"""
-Analyze shortly:
-
-Pair: {symbol}
-Price: {price}
-RSI: {round(current_rsi,2)}
-Signal: {signal}
-Risk: {risk}
-
-Reply under 5 lines.
-"""
-                }
-
-            ]
-
-        )
-
-
-
-    col1,col2,col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
 
 
     col1.metric(
@@ -227,12 +184,10 @@ Reply under 5 lines.
         price
     )
 
-
     col2.metric(
         "📊 RSI",
         round(current_rsi,2)
     )
-
 
     col3.metric(
         "⚠️ Risk",
@@ -248,7 +203,6 @@ Reply under 5 lines.
 
     fig = go.Figure()
 
-
     fig.add_trace(
         go.Scatter(
             y=df["close"],
@@ -256,18 +210,59 @@ Reply under 5 lines.
         )
     )
 
-
     st.plotly_chart(
         fig,
         use_container_width=True
     )
 
 
-    st.subheader(
-        "🧠 Qwen AI Analysis"
-    )
+    try:
+
+        response = client.chat.completions.create(
+
+            model="qwen3.6-plus",
+
+            messages=[
+                {
+                    "role":"system",
+                    "content":
+                    "You are a professional crypto trading AI."
+                },
+
+                {
+                    "role":"user",
+                    "content":
+                    f"""
+Analyze:
+
+Pair: {symbol}
+
+Price: {price}
+
+RSI: {round(current_rsi,2)}
+
+Signal: {signal}
+
+Risk: {risk}
+
+Give professional trading analysis.
+"""
+                }
+            ]
+        )
 
 
-    st.write(
-        response.choices[0].message.content
-    )
+        st.subheader(
+            "🧠 Qwen AI Analysis"
+        )
+
+        st.write(
+            response.choices[0].message.content
+        )
+
+
+    except Exception as e:
+
+        st.error(
+            f"Qwen Error: {e}"
+        )
