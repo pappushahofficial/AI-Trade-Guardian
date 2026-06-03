@@ -20,6 +20,22 @@ st.set_page_config(
 st.title("🤖 AI Trade Guardian")
 st.success("System Online")
 
+st.markdown(
+    """
+### 🚀 Bitget AI Hackathon Project
+
+AI Trade Guardian combines:
+
+🤖 Qwen AI Intelligence  
+📈 Bitget Live Market Data  
+📊 RSI Technical Analysis  
+⚠️ Risk Management System  
+
+Helping traders analyze crypto markets smarter.
+"""
+)
+
+
 st_autorefresh(
     interval=60000,
     key="refresh"
@@ -44,7 +60,7 @@ client = OpenAI(
 # STATUS
 # =====================
 
-st.subheader("Connection Status")
+st.subheader("🔗 Connection Status")
 
 st.success(
     "✅ Bitget Qwen Connected"
@@ -65,8 +81,9 @@ st.success(
 
 st.subheader("📈 AI Trading Dashboard")
 
+
 symbol = st.selectbox(
-    "Select Pair",
+    "Select Trading Pair",
     [
         "BTCUSDT",
         "ETHUSDT",
@@ -76,7 +93,7 @@ symbol = st.selectbox(
 
 
 # =====================
-# BITGET DATA
+# MARKET DATA
 # =====================
 
 def get_candles(symbol):
@@ -117,54 +134,58 @@ def calculate_rsi(prices):
     gain = delta.clip(lower=0)
     loss = -delta.clip(upper=0)
 
-    rs = (
-        gain.rolling(14).mean()
-        /
-        loss.rolling(14).mean()
-    )
+    rs = gain.rolling(14).mean() / loss.rolling(14).mean()
 
     return 100 - (100/(1+rs))
 
 
 # =====================
-# RUN AI
+# AI ANALYSIS
 # =====================
 
 if st.button("🤖 Run AI Analysis"):
 
     df = get_candles(symbol)
 
-    df["RSI"] = calculate_rsi(
-        df["close"]
-    )
+    df["RSI"] = calculate_rsi(df["close"])
 
     price = df["close"].iloc[-1]
-
     current_rsi = df["RSI"].iloc[-1]
 
 
     if current_rsi < 30:
+
         signal = "BUY 🟢"
         risk = "Medium"
 
     elif current_rsi > 70:
+
         signal = "SELL 🔴"
         risk = "High"
 
     else:
+
         signal = "HOLD 🟡"
         risk = "Low"
 
 
-    st.metric("Price", price)
+    col1, col2, col3 = st.columns(3)
 
-    st.metric(
-        "RSI",
+    col1.metric("💰 Price", price)
+
+    col2.metric(
+        "📊 RSI",
         round(current_rsi,2)
     )
 
+    col3.metric(
+        "⚠️ Risk",
+        risk
+    )
+
+
     st.metric(
-        "Signal",
+        "🤖 AI Signal",
         signal
     )
 
@@ -194,14 +215,14 @@ if st.button("🤖 Run AI Analysis"):
                 {
                     "role":"system",
                     "content":
-                    "You are an expert crypto trading AI."
+                    "You are a professional crypto trading AI assistant."
                 },
 
                 {
                     "role":"user",
                     "content":
                     f"""
-Analyze:
+Analyze this crypto:
 
 Pair: {symbol}
 Price: {price}
@@ -209,14 +230,16 @@ RSI: {round(current_rsi,2)}
 Signal: {signal}
 Risk: {risk}
 
-Give short trading analysis.
+Give smart trading insight.
 """
                 }
             ]
         )
 
 
-        st.subheader("🧠 Qwen AI Analysis")
+        st.subheader(
+            "🧠 Qwen AI Analysis"
+        )
 
         st.write(
             response.choices[0].message.content
