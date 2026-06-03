@@ -83,22 +83,42 @@ st.success(
 
 
 
+
 # =====================
-# SELECT
+# MARKET SELECTOR
 # =====================
 
 st.subheader("📈 Market Scanner")
 
 
-symbol = st.selectbox(
-    "Select Asset",
+default_pair = st.selectbox(
+    "Popular Assets",
     [
         "BTCUSDT",
         "ETHUSDT",
-        "SOLUSDT"
+        "SOLUSDT",
+        "BNBUSDT",
+        "XRPUSDT",
+        "DOGEUSDT",
+        "ADAUSDT",
+        "AVAXUSDT",
+        "LINKUSDT",
+        "LTCUSDT"
     ]
 )
 
+
+custom_pair = st.text_input(
+    "🔎 Custom Bitget Pair",
+    placeholder="Example: SUIUSDT"
+)
+
+
+symbol = (
+    custom_pair.upper().strip()
+    if custom_pair
+    else default_pair
+)
 
 
 # =====================
