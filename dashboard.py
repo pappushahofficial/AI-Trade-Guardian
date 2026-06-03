@@ -24,16 +24,15 @@ st.markdown(
 🤖 Qwen AI Intelligence  
 📈 Bitget Live Market Data  
 📊 RSI Technical Analysis  
-⚠️ Risk Management System  
+⚠️ AI Risk Management  
+🎯 Smart Trade Planning  
 
-AI powered crypto trading assistant.
+AI powered crypto trading agent.
 """
 )
 
 
-# =====================
-# API KEYS
-# =====================
+# API
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
@@ -45,9 +44,8 @@ client = OpenAI(
 )
 
 
-# =====================
+
 # STATUS
-# =====================
 
 st.subheader("🔗 Connection Status")
 
@@ -66,9 +64,8 @@ st.success(
 )
 
 
-# =====================
+
 # DASHBOARD
-# =====================
 
 st.subheader("📈 AI Trading Dashboard")
 
@@ -83,9 +80,8 @@ symbol = st.selectbox(
 )
 
 
-# =====================
+
 # MARKET DATA
-# =====================
 
 def get_candles(symbol):
 
@@ -94,17 +90,11 @@ def get_candles(symbol):
         f"?symbol={symbol}&granularity=1h&limit=100"
     )
 
-
     data = requests.get(url).json()
 
-
-    df = pd.DataFrame(
-        data["data"]
-    )
-
+    df = pd.DataFrame(data["data"])
 
     df = df.iloc[:, :6]
-
 
     df.columns = [
         "time",
@@ -115,32 +105,21 @@ def get_candles(symbol):
         "volume"
     ]
 
-
     df["close"] = df["close"].astype(float)
-
 
     return df
 
 
 
-# =====================
 # RSI
-# =====================
 
 def calculate_rsi(prices):
 
     delta = prices.diff()
 
+    gain = delta.clip(lower=0)
 
-    gain = delta.clip(
-        lower=0
-    )
-
-
-    loss = -delta.clip(
-        upper=0
-    )
-
+    loss = -delta.clip(upper=0)
 
     rs = (
         gain.rolling(14).mean()
@@ -148,14 +127,11 @@ def calculate_rsi(prices):
         loss.rolling(14).mean()
     )
 
-
     return 100 - (100/(1+rs))
 
 
 
-# =====================
-# AI RUN
-# =====================
+# RUN AI
 
 if st.button("🤖 Run AI Analysis"):
 
@@ -175,7 +151,6 @@ if st.button("🤖 Run AI Analysis"):
 
         price = df["close"].iloc[-1]
 
-
         current_rsi = df["RSI"].iloc[-1]
 
 
@@ -185,17 +160,26 @@ if st.button("🤖 Run AI Analysis"):
             signal = "BUY 🟢"
             risk = "Medium"
 
+            stop_loss = price * 0.98
+            take_profit = price * 1.04
+
 
         elif current_rsi > 70:
 
             signal = "SELL 🔴"
             risk = "High"
 
+            stop_loss = price * 1.02
+            take_profit = price * 0.96
+
 
         else:
 
             signal = "HOLD 🟡"
             risk = "Low"
+
+            stop_loss = price * 0.98
+            take_profit = price * 1.02
 
 
 
@@ -208,7 +192,7 @@ if st.button("🤖 Run AI Analysis"):
                 {
                     "role":"system",
                     "content":
-                    "You are a professional crypto trading analyst."
+                    "You are a professional crypto trading AI."
                 },
 
 
@@ -219,27 +203,37 @@ if st.button("🤖 Run AI Analysis"):
                     f"""
 Create professional crypto trading analysis.
 
-Pair: {symbol}
+Pair:
+{symbol}
 
-Price: {price}
+Price:
+{price}
 
-RSI: {round(current_rsi,2)}
+RSI:
+{round(current_rsi,2)}
 
-Signal: {signal}
+Signal:
+{signal}
 
-Risk: {risk}
+Risk:
+{risk}
+
+Stop Loss:
+{round(stop_loss,2)}
+
+Take Profit:
+{round(take_profit,2)}
 
 
 Include:
 
 📊 Technical Breakdown
 
-🎯 Key Support & Resistance Levels
+🎯 Support & Resistance
 
 🛡 Risk Management
 
-📋 Actionable Trade Plan
-
+📋 Trade Plan
 
 Use clear sections and tables.
 """
@@ -278,6 +272,22 @@ Use clear sections and tables.
     )
 
 
+    col4,col5 = st.columns(2)
+
+
+    col4.metric(
+        "🛑 Stop Loss",
+        round(stop_loss,2)
+    )
+
+
+    col5.metric(
+        "🎯 Take Profit",
+        round(take_profit,2)
+    )
+
+
+
     fig = go.Figure()
 
 
@@ -295,6 +305,7 @@ Use clear sections and tables.
         fig,
         use_container_width=True
     )
+
 
 
     st.subheader(
