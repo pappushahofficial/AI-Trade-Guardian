@@ -38,6 +38,7 @@ AI powered crypto market assistant.
 # =====================
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
+
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
 
 
@@ -83,7 +84,7 @@ symbol = st.selectbox(
 
 
 # =====================
-# DATA
+# MARKET DATA
 # =====================
 
 def get_candles(symbol):
@@ -95,7 +96,9 @@ def get_candles(symbol):
 
     data = requests.get(url).json()
 
-    df = pd.DataFrame(data["data"])
+    df = pd.DataFrame(
+        data["data"]
+    )
 
     df = df.iloc[:, :6]
 
@@ -122,6 +125,7 @@ def calculate_rsi(prices):
     delta = prices.diff()
 
     gain = delta.clip(lower=0)
+
     loss = -delta.clip(upper=0)
 
     rs = (
@@ -134,16 +138,19 @@ def calculate_rsi(prices):
 
 
 # =====================
-# ANALYSIS
+# RUN AI
 # =====================
 
 if st.button("🤖 Run AI Analysis"):
 
+
     df = get_candles(symbol)
+
 
     df["RSI"] = calculate_rsi(
         df["close"]
     )
+
 
     price = df["close"].iloc[-1]
 
@@ -155,10 +162,12 @@ if st.button("🤖 Run AI Analysis"):
         signal = "BUY 🟢"
         risk = "Medium"
 
+
     elif current_rsi > 70:
 
         signal = "SELL 🔴"
         risk = "High"
+
 
     else:
 
@@ -207,43 +216,40 @@ if st.button("🤖 Run AI Analysis"):
     )
 
 
-    # QWEN AI
-
     try:
 
-        with st.spinner(
-            "🧠 Qwen AI is analysing market... Please wait ⚡"
-        ):
+        response = client.chat.completions.create(
 
-            response = client.chat.completions.create(
+            model="qwen3.6-plus",
 
-                model="qwen3.6-flash",
+            messages=[
+                {
+                    "role":"system",
+                    "content":
+                    "You are a professional crypto trading AI."
+                },
 
-                messages=[
-
-                    {
-                        "role":"system",
-                        "content":
-                        "You are a crypto trading AI assistant."
-                    },
-
-                    {
-                        "role":"user",
-                        "content":
-                        f"""
+                {
+                    "role":"user",
+                    "content":
+                    f"""
 Analyze:
 
 Pair: {symbol}
+
 Price: {price}
+
 RSI: {round(current_rsi,2)}
+
 Signal: {signal}
+
 Risk: {risk}
 
-Give short analysis under 5 lines.
+Give professional trading analysis.
 """
-                    }
-                ]
-            )
+                }
+            ]
+        )
 
 
         st.subheader(
