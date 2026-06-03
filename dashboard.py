@@ -6,10 +6,6 @@ import plotly.graph_objects as go
 from openai import OpenAI
 
 
-# =====================
-# PAGE
-# =====================
-
 st.set_page_config(
     page_title="AI Trade Guardian",
     page_icon="🤖",
@@ -17,41 +13,22 @@ st.set_page_config(
 )
 
 
-st.title("🤖 AI Trade Guardian")
+st.title("🤖 AI Trade Guardian v2")
+st.success("Trading Agent Online 🚀")
 
 
 st.markdown(
 """
-### Autonomous Crypto Trading Agent 🚀
+### 🏆 Bitget AI Hackathon
 
-Powered by:
-
-🧠 **Alibaba Qwen AI**  
-📡 **Bitget Market API**
-
----
-
-### Agent Pipeline
-
-📊 **PERCEIVE**  
-Live multi-timeframe market scanning
-
-🧠 **DECIDE**  
-AI trading reasoning & strategy generation
-
-🛡 **MANAGE RISK**  
-Stop Loss + Take Profit planning
+🤖 Qwen AI  
+📈 Bitget Market Data  
+📊 RSI + EMA  
+⚡ Multi-Timeframe Scanner  
+🎯 AI Risk Engine
 """
 )
 
-
-st.success("🟢 Agent System Online")
-
-
-
-# =====================
-# API
-# =====================
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
@@ -63,38 +40,24 @@ client = OpenAI(
 )
 
 
-
-# =====================
-# CONNECTION
-# =====================
-
-st.subheader("🔗 AI Infrastructure")
-
+st.subheader("🔗 Status")
 
 st.success(
-    "🧠 Qwen Engine Connected"
+    "✅ Qwen Connected"
     if QWEN_API_KEY
-    else "❌ Qwen Offline"
+    else "❌ Qwen Missing"
 )
-
 
 st.success(
-    "📡 Bitget Data Connected"
+    "✅ Bitget Connected"
     if BITGET_API_KEY
-    else "❌ Bitget Offline"
+    else "❌ Bitget Missing"
 )
 
-
-
-# =====================
-# SELECT
-# =====================
-
-st.subheader("📈 Market Scanner")
 
 
 symbol = st.selectbox(
-    "Select Asset",
+    "Select Pair",
     [
         "BTCUSDT",
         "ETHUSDT",
@@ -104,10 +67,6 @@ symbol = st.selectbox(
 
 
 
-# =====================
-# DATA
-# =====================
-
 def get_data(symbol,tf):
 
     url = (
@@ -115,15 +74,13 @@ def get_data(symbol,tf):
         f"?symbol={symbol}&granularity={tf}&limit=100"
     )
 
-
     data = requests.get(url).json()
 
-
-    df = pd.DataFrame(data["data"])
-
+    df = pd.DataFrame(
+        data["data"]
+    )
 
     df = df.iloc[:, :6]
-
 
     df.columns = [
         "time",
@@ -134,25 +91,18 @@ def get_data(symbol,tf):
         "volume"
     ]
 
-
     df["close"] = df["close"].astype(float)
-
 
     return df
 
 
 
-# RSI
-
 def rsi(prices):
 
     delta = prices.diff()
 
-
     gain = delta.clip(lower=0)
-
     loss = -delta.clip(upper=0)
-
 
     rs = (
         gain.rolling(14).mean()
@@ -160,20 +110,13 @@ def rsi(prices):
         loss.rolling(14).mean()
     )
 
-
     return 100-(100/(1+rs))
 
 
 
-# ANALYSIS
-
 def analyze(tf):
 
-    df = get_data(
-        symbol,
-        tf
-    )
-
+    df = get_data(symbol,tf)
 
     df["RSI"] = rsi(
         df["close"]
@@ -196,39 +139,31 @@ def analyze(tf):
 
     trend = (
         "BULLISH 🟢"
-        if df["EMA20"].iloc[-1]
-        >
+        if df["EMA20"].iloc[-1] >
         df["EMA50"].iloc[-1]
-
-        else
-        "BEARISH 🔴"
+        else "BEARISH 🔴"
     )
 
 
-    return trend,df
+    return (
+        trend,
+        df["RSI"].iloc[-1],
+        df
+    )
 
 
 
-# =====================
-# RUN
-# =====================
-
-if st.button("🤖 Launch AI Agent"):
+if st.button("🤖 Run AI Analysis"):
 
 
     with st.spinner(
-        "🧠 Qwen AI analysing market..."
+        "🧠 Qwen AI analysing all timeframes..."
     ):
 
 
-        t15,df = analyze("15min")
-
-        t1,_ = analyze("1h")
-
-        t4,_ = analyze("4h")
-
-
-        price = df["close"].iloc[-1]
+        t15,r15,df = analyze("15min")
+        t1,r1,_ = analyze("1h")
+        t4,r4,_ = analyze("4h")
 
 
         bullish = [
@@ -240,6 +175,8 @@ if st.button("🤖 Launch AI Agent"):
         )
 
 
+        price = df["close"].iloc[-1]
+
 
         if bullish >= 2:
 
@@ -247,9 +184,15 @@ if st.button("🤖 Launch AI Agent"):
             direction = "LONG 📈"
             confidence = "85%"
 
-            sl = round(price*0.98,2)
-            tp = round(price*1.04,2)
+            sl = round(
+                price*0.98,
+                2
+            )
 
+            tp = round(
+                price*1.04,
+                2
+            )
 
 
         elif bullish == 0:
@@ -258,9 +201,15 @@ if st.button("🤖 Launch AI Agent"):
             direction = "SHORT 📉"
             confidence = "85%"
 
-            sl = round(price*1.02,2)
-            tp = round(price*0.96,2)
+            sl = round(
+                price*1.02,
+                2
+            )
 
+            tp = round(
+                price*0.96,
+                2
+            )
 
 
         else:
@@ -283,8 +232,9 @@ if st.button("🤖 Launch AI Agent"):
                 {
                     "role":"system",
                     "content":
-                    "You are an autonomous crypto trading agent."
+                    "You are an expert crypto trading AI agent."
                 },
+
 
                 {
                     "role":"user",
@@ -292,9 +242,9 @@ if st.button("🤖 Launch AI Agent"):
                     "content":
 
                     f"""
-Generate professional AI trading report.
+Create professional trading analysis.
 
-Asset:
+Pair:
 {symbol}
 
 15m:
@@ -306,7 +256,10 @@ Asset:
 4H:
 {t4}
 
-Decision:
+Signal:
+{signal}
+
+Direction:
 {direction}
 
 Confidence:
@@ -318,10 +271,12 @@ Stop Loss:
 Take Profit:
 {tp}
 
-Include:
-Market analysis
-Trade reasoning
-Risk management
+
+Explain:
+📊 Market
+📈 Direction
+🎯 Trade Plan
+🛡 Risk
 """
                 }
 
@@ -331,30 +286,55 @@ Risk management
 
 
 
-    a,b,c = st.columns(3)
+    c1,c2,c3 = st.columns(3)
+
+    c1.metric(
+        "⚡15m",
+        t15
+    )
+
+    c2.metric(
+        "📈1H",
+        t1
+    )
+
+    c3.metric(
+        "🏦4H",
+        t4
+    )
 
 
-    a.metric("⚡ 15m",t15)
-    b.metric("📈 1H",t1)
-    c.metric("🏦 4H",t4)
+
+    c4,c5,c6 = st.columns(3)
+
+    c4.metric(
+        "🤖 Signal",
+        signal
+    )
+
+    c5.metric(
+        "📍 Direction",
+        direction
+    )
+
+    c6.metric(
+        "🎯 Confidence",
+        confidence
+    )
 
 
 
-    d,e,f = st.columns(3)
+    c7,c8 = st.columns(2)
 
+    c7.metric(
+        "🛑 Stop Loss",
+        sl
+    )
 
-    d.metric("🤖 Signal",signal)
-    e.metric("📍 Direction",direction)
-    f.metric("🎯 Confidence",confidence)
-
-
-
-    g,h = st.columns(2)
-
-
-    g.metric("🛑 Stop Loss",sl)
-
-    h.metric("💰 Take Profit",tp)
+    c8.metric(
+        "💰 Take Profit",
+        tp
+    )
 
 
 
@@ -391,9 +371,8 @@ Risk management
     )
 
 
-
     st.subheader(
-        "🧠 Qwen AI Trading Report"
+        "🧠 Qwen AI Analysis"
     )
 
 
