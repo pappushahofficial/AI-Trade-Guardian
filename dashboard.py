@@ -26,23 +26,15 @@ client = OpenAI(
 
 st.title("🤖 AI Trade Guardian v4")
 
-st.caption(
-    "Real Qwen Powered Crypto Trading Agent"
-)
+st.caption("Real Qwen Powered Crypto Trading Agent 🧠")
 
-
-st.sidebar.title("⚙️ Control")
 
 capital = st.sidebar.number_input(
     "Capital ($)",
     value=10000
 )
 
-
-st.sidebar.success(
-    "Qwen Brain Online 🟢"
-)
-
+st.sidebar.success("Agent Online 🟢")
 
 
 coins = {
@@ -59,8 +51,7 @@ backup = {
 }
 
 
-
-def get_market(name, coin):
+def market(name, coin):
 
     try:
         url = (
@@ -69,15 +60,9 @@ def get_market(name, coin):
             "/market_chart?vs_currency=usd&days=7"
         )
 
-        data = requests.get(
-            url,
-            timeout=5
-        ).json()
+        data = requests.get(url, timeout=5).json()
 
-        prices = [
-            x[1]
-            for x in data["prices"]
-        ]
+        prices = [x[1] for x in data["prices"]]
 
     except:
 
@@ -93,7 +78,7 @@ def get_market(name, coin):
     )
 
 
-    delta = df["price"].diff()
+    delta = df.price.diff()
 
     gain = delta.where(
         delta > 0,
@@ -108,51 +93,46 @@ def get_market(name, coin):
 
 
     rsi = 100 - (
-        100 / (1 + gain / loss)
+        100/(1+gain/loss)
     )
 
 
     return {
-
         "coin": name,
-
-        "price": round(
-            df["price"].iloc[-1],
-            2
-        ),
-
-        "rsi": round(
-            rsi.iloc[-1],
-            2
-        ),
-
+        "price": round(df.price.iloc[-1],2),
+        "rsi": round(rsi.iloc[-1],2),
         "chart": df
     }
 
 
 
-data = []
-
-
-for name, coin in coins.items():
-
-    data.append(
-        get_market(
-            name,
-            coin
-        )
-    )
+data = [
+    market(n,c)
+    for n,c in coins.items()
+]
 
 
 best = data[0]
 
 
+def qwen(asset):
 
-def qwen_ai(asset):
+    response = client.chat.completions.create(
 
-    prompt = f"""
-You are an AI crypto trading assistant.
+        model="qwen-plus",
 
+        messages=[
+
+            {
+                "role":"system",
+                "content":
+                "You are a professional crypto AI trading analyst."
+            },
+
+            {
+                "role":"user",
+                "content":
+                f"""
 Analyze:
 
 Coin: {asset['coin']}
@@ -164,16 +144,8 @@ Decision
 Risk
 Reason
 """
-
-
-    response = client.chat.completions.create(
-        model="qwen-plus",
-
-        messages=[
-            {
-                "role":"user",
-                "content":prompt
             }
+
         ]
     )
 
@@ -185,27 +157,22 @@ Reason
 st.header("📊 Market Scanner")
 
 
-for item in data:
+for x in data:
 
-    st.subheader(
-        item["coin"]
-    )
-
+    st.subheader(x["coin"])
 
     st.metric(
         "Price",
-        "$" + str(item["price"])
+        "$"+str(x["price"])
     )
-
 
     st.metric(
         "RSI",
-        item["rsi"]
+        x["rsi"]
     )
 
-
     st.line_chart(
-        item["chart"]
+        x["chart"]
     )
 
 
@@ -215,18 +182,15 @@ st.header("🧠 Real Qwen AI Brain")
 
 try:
 
-    result = qwen_ai(best)
+    answer = qwen(best)
 
-    st.success(
-        result
-    )
+    st.success(answer)
 
 
 except Exception as e:
 
-    st.error(
-        "Qwen connection failed"
-    )
+    st.error("QWEN ERROR:")
+    st.code(str(e))
 
 
 
@@ -235,9 +199,8 @@ st.header("🛡 Risk Engine")
 
 st.metric(
     "Position Size",
-    "$" + str(capital * 0.05)
+    "$"+str(capital*0.05)
 )
-
 
 
 st.success(
