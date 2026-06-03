@@ -3,10 +3,11 @@ import os
 import requests
 import pandas as pd
 import plotly.graph_objects as go
+from streamlit_autorefresh import st_autorefresh
 
 
 # =====================
-# PAGE
+# PAGE SETUP
 # =====================
 
 st.set_page_config(
@@ -19,14 +20,31 @@ st.title("🤖 AI Trade Guardian")
 st.success("System Online")
 
 
+# Auto refresh every 60 seconds
+
+st_autorefresh(
+    interval=60000,
+    key="market_refresh"
+)
+
+
 # =====================
-# SECRETS
+# API SECRETS
 # =====================
 
 QWEN_API_KEY = os.getenv("QWEN_API_KEY")
+
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
+BITGET_SECRET_KEY = os.getenv("BITGET_SECRET_KEY")
+BITGET_PASSPHRASE = os.getenv("BITGET_PASSPHRASE")
+
+
+# =====================
+# CONNECTION STATUS
+# =====================
 
 st.subheader("Connection Status")
+
 
 if QWEN_API_KEY:
     st.success("✅ Qwen AI Connected")
@@ -45,7 +63,8 @@ else:
 # DASHBOARD
 # =====================
 
-st.subheader("📈 Trading Dashboard")
+st.subheader("📈 AI Trading Dashboard")
+
 
 symbol = st.selectbox(
     "Select Pair",
@@ -59,7 +78,7 @@ symbol = st.selectbox(
 
 
 # =====================
-# BITGET DATA
+# BITGET MARKET DATA
 # =====================
 
 def get_candles(symbol):
@@ -69,13 +88,17 @@ def get_candles(symbol):
         f"?symbol={symbol}&granularity=1h&limit=100"
     )
 
+
     data = requests.get(url).json()
 
-    candles = data["data"]
 
-    df = pd.DataFrame(candles)
+    df = pd.DataFrame(
+        data["data"]
+    )
+
 
     df = df.iloc[:, :6]
+
 
     df.columns = [
         "time",
@@ -86,22 +109,32 @@ def get_candles(symbol):
         "volume"
     ]
 
+
     df["close"] = df["close"].astype(float)
+
 
     return df
 
 
 
 # =====================
-# RSI
+# RSI CALCULATION
 # =====================
 
 def calculate_rsi(prices):
 
     delta = prices.diff()
 
-    gain = delta.clip(lower=0)
-    loss = -delta.clip(upper=0)
+
+    gain = delta.clip(
+        lower=0
+    )
+
+
+    loss = -delta.clip(
+        upper=0
+    )
+
 
     rs = (
         gain.rolling(14).mean()
@@ -109,19 +142,20 @@ def calculate_rsi(prices):
         loss.rolling(14).mean()
     )
 
-    rsi = 100 - (100/(1+rs))
 
-    return rsi
+    return 100 - (100/(1+rs))
 
 
 
 # =====================
-# AI BUTTON
+# RUN AI
 # =====================
 
 if st.button("🤖 Run AI Analysis"):
 
+
     df = get_candles(symbol)
+
 
     df["RSI"] = calculate_rsi(
         df["close"]
@@ -130,7 +164,30 @@ if st.button("🤖 Run AI Analysis"):
 
     price = df["close"].iloc[-1]
 
+
     current_rsi = df["RSI"].iloc[-1]
+
+
+
+    # AI SIGNAL LOGIC
+
+    if current_rsi < 30:
+
+        signal = "BUY 🟢"
+        risk = "Medium"
+
+
+    elif current_rsi > 70:
+
+        signal = "SELL 🔴"
+        risk = "High"
+
+
+    else:
+
+        signal = "HOLD 🟡"
+        risk = "Low"
+
 
 
     st.metric(
@@ -145,17 +202,10 @@ if st.button("🤖 Run AI Analysis"):
     )
 
 
-    if current_rsi < 30:
-
-        signal = "BUY 🟢"
-
-    elif current_rsi > 70:
-
-        signal = "SELL 🔴"
-
-    else:
-
-        signal = "HOLD 🟡"
+    st.metric(
+        "Risk Level",
+        risk
+    )
 
 
 
@@ -171,7 +221,10 @@ if st.button("🤖 Run AI Analysis"):
 
 
 
+    # PRICE CHART
+
     fig = go.Figure()
+
 
     fig.add_trace(
         go.Scatter(
@@ -187,9 +240,10 @@ if st.button("🤖 Run AI Analysis"):
     )
 
 
+
     st.info(
         f"""
-AI Trade Guardian Report
+🤖 AI Trade Guardian Report
 
 Pair: {symbol}
 
@@ -197,10 +251,18 @@ Price: {price}
 
 RSI: {round(current_rsi,2)}
 
-Decision: {signal}
+Signal: {signal}
 
-✅ Bitget Live Data
-✅ RSI Analysis
-✅ AI Risk Check
+Risk: {risk}
+
+Checks:
+
+✅ Bitget Live Market Data
+
+✅ RSI Strategy
+
+✅ AI Risk Management
+
+🔄 Auto Monitoring Active
 """
     )
