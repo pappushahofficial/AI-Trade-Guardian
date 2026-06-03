@@ -4,6 +4,11 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 
+
+# =====================
+# PAGE
+# =====================
+
 st.set_page_config(
     page_title="AI Trade Guardian",
     page_icon="🤖",
@@ -14,17 +19,31 @@ st.title("🤖 AI Trade Guardian")
 st.success("System Online")
 
 
-# API SECRETS
+# =====================
+# SECRETS
+# =====================
 
 QWEN_API_KEY = os.getenv("QWEN_API_KEY")
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
 
-
 st.subheader("Connection Status")
 
-st.success("✅ Qwen AI Connected" if QWEN_API_KEY else "❌ Qwen Missing")
-st.success("✅ Bitget API Connected" if BITGET_API_KEY else "❌ Bitget Missing")
+if QWEN_API_KEY:
+    st.success("✅ Qwen AI Connected")
+else:
+    st.error("❌ Qwen Missing")
 
+
+if BITGET_API_KEY:
+    st.success("✅ Bitget API Connected")
+else:
+    st.error("❌ Bitget Missing")
+
+
+
+# =====================
+# DASHBOARD
+# =====================
 
 st.subheader("📈 Trading Dashboard")
 
@@ -38,7 +57,10 @@ symbol = st.selectbox(
 )
 
 
-# GET BITGET CANDLES
+
+# =====================
+# BITGET DATA
+# =====================
 
 def get_candles(symbol):
 
@@ -51,27 +73,30 @@ def get_candles(symbol):
 
     candles = data["data"]
 
-    df = pd.DataFrame(
-        candles,
-        columns=[
-            "time",
-            "open",
-            "high",
-            "low",
-            "close",
-            "volume",
-            "quote"
-        ]
-    )
+    df = pd.DataFrame(candles)
+
+    df = df.iloc[:, :6]
+
+    df.columns = [
+        "time",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+    ]
 
     df["close"] = df["close"].astype(float)
 
     return df
 
 
-# RSI
 
-def rsi(prices):
+# =====================
+# RSI
+# =====================
+
+def calculate_rsi(prices):
 
     delta = prices.diff()
 
@@ -84,16 +109,27 @@ def rsi(prices):
         loss.rolling(14).mean()
     )
 
-    return 100 - (100/(1+rs))
+    rsi = 100 - (100/(1+rs))
 
+    return rsi
+
+
+
+# =====================
+# AI BUTTON
+# =====================
 
 if st.button("🤖 Run AI Analysis"):
 
     df = get_candles(symbol)
 
-    df["RSI"] = rsi(df["close"])
+    df["RSI"] = calculate_rsi(
+        df["close"]
+    )
+
 
     price = df["close"].iloc[-1]
+
     current_rsi = df["RSI"].iloc[-1]
 
 
@@ -110,21 +146,29 @@ if st.button("🤖 Run AI Analysis"):
 
 
     if current_rsi < 30:
+
         signal = "BUY 🟢"
 
     elif current_rsi > 70:
+
         signal = "SELL 🔴"
 
     else:
+
         signal = "HOLD 🟡"
 
 
-    st.subheader("🤖 AI Decision")
+
+    st.subheader(
+        "🤖 AI Decision"
+    )
+
 
     st.metric(
         "Signal",
         signal
     )
+
 
 
     fig = go.Figure()
@@ -135,6 +179,7 @@ if st.button("🤖 Run AI Analysis"):
             name="Price"
         )
     )
+
 
     st.plotly_chart(
         fig,
@@ -148,12 +193,14 @@ AI Trade Guardian Report
 
 Pair: {symbol}
 
+Price: {price}
+
 RSI: {round(current_rsi,2)}
 
 Decision: {signal}
 
-✅ Bitget Data
+✅ Bitget Live Data
 ✅ RSI Analysis
-✅ Risk Check
+✅ AI Risk Check
 """
     )
