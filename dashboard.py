@@ -3,7 +3,6 @@ import os
 import requests
 import pandas as pd
 import plotly.graph_objects as go
-from streamlit_autorefresh import st_autorefresh
 from openai import OpenAI
 
 
@@ -24,21 +23,13 @@ st.markdown(
     """
 ### 🚀 Bitget AI Hackathon Project
 
-AI Trade Guardian combines:
-
 🤖 Qwen AI Intelligence  
 📈 Bitget Live Market Data  
 📊 RSI Technical Analysis  
 ⚠️ Risk Management System  
 
-Helping traders analyze crypto markets smarter.
+AI powered crypto market assistant.
 """
-)
-
-
-st_autorefresh(
-    interval=60000,
-    key="refresh"
 )
 
 
@@ -47,6 +38,7 @@ st_autorefresh(
 # =====================
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
+
 BITGET_API_KEY = os.getenv("BITGET_API_KEY")
 
 
@@ -81,7 +73,6 @@ st.success(
 
 st.subheader("📈 AI Trading Dashboard")
 
-
 symbol = st.selectbox(
     "Select Trading Pair",
     [
@@ -105,7 +96,9 @@ def get_candles(symbol):
 
     data = requests.get(url).json()
 
-    df = pd.DataFrame(data["data"])
+    df = pd.DataFrame(
+        data["data"]
+    )
 
     df = df.iloc[:, :6]
 
@@ -132,24 +125,35 @@ def calculate_rsi(prices):
     delta = prices.diff()
 
     gain = delta.clip(lower=0)
+
     loss = -delta.clip(upper=0)
 
-    rs = gain.rolling(14).mean() / loss.rolling(14).mean()
+    rs = (
+        gain.rolling(14).mean()
+        /
+        loss.rolling(14).mean()
+    )
 
     return 100 - (100/(1+rs))
 
 
 # =====================
-# AI ANALYSIS
+# RUN AI
 # =====================
 
 if st.button("🤖 Run AI Analysis"):
 
+
     df = get_candles(symbol)
 
-    df["RSI"] = calculate_rsi(df["close"])
+
+    df["RSI"] = calculate_rsi(
+        df["close"]
+    )
+
 
     price = df["close"].iloc[-1]
+
     current_rsi = df["RSI"].iloc[-1]
 
 
@@ -158,10 +162,12 @@ if st.button("🤖 Run AI Analysis"):
         signal = "BUY 🟢"
         risk = "Medium"
 
+
     elif current_rsi > 70:
 
         signal = "SELL 🔴"
         risk = "High"
+
 
     else:
 
@@ -169,9 +175,14 @@ if st.button("🤖 Run AI Analysis"):
         risk = "Low"
 
 
+
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("💰 Price", price)
+
+    col1.metric(
+        "💰 Price",
+        price
+    )
 
     col2.metric(
         "📊 RSI",
@@ -185,7 +196,7 @@ if st.button("🤖 Run AI Analysis"):
 
 
     st.metric(
-        "🤖 AI Signal",
+        "🤖 Signal",
         signal
     )
 
@@ -215,22 +226,26 @@ if st.button("🤖 Run AI Analysis"):
                 {
                     "role":"system",
                     "content":
-                    "You are a professional crypto trading AI assistant."
+                    "You are a professional crypto trading AI."
                 },
 
                 {
                     "role":"user",
                     "content":
                     f"""
-Analyze this crypto:
+Analyze:
 
 Pair: {symbol}
+
 Price: {price}
+
 RSI: {round(current_rsi,2)}
+
 Signal: {signal}
+
 Risk: {risk}
 
-Give smart trading insight.
+Give professional trading analysis.
 """
                 }
             ]
