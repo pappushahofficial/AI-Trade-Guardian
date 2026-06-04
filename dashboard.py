@@ -549,6 +549,13 @@ symbol = (
 
 
 def get_data():
+    # Bitget API code here
+    return df
+
+
+# ⭐ WATCHLIST CODE HERE
+if page == "⭐ Watchlist":
+    ...
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
