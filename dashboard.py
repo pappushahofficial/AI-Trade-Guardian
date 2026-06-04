@@ -323,16 +323,11 @@ client = OpenAI(
 # MARKET SCANNER
 # ======================
 
-
 st.markdown(
 """
 <div class="card">
 
 <h2>📈 Market Scanner</h2>
-
-<p style="color:#94a3b8">
-Real-time Bitget market analysis
-</p>
 
 </div>
 """,
