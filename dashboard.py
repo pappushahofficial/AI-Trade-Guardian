@@ -11,7 +11,145 @@ st.set_page_config(
     page_icon="🤖",
     layout="wide"
 )
+st.markdown(
+"""
+<style>
 
+/* AI TRADE GUARDIAN MODERN UI */
+
+
+/* Background */
+.stApp {
+
+    background:
+    linear-gradient(
+        135deg,
+        #020617,
+        #111827
+    );
+
+    color:white;
+
+}
+
+
+/* Main container */
+.block-container {
+
+    padding-top:2rem;
+
+}
+
+
+/* Title glow */
+h1 {
+
+    color:white;
+
+    text-shadow:
+    0 0 20px #38bdf8;
+
+}
+
+
+/* Headings */
+h2,h3 {
+
+    color:#e5e7eb;
+
+}
+
+
+/* Launch Button */
+.stButton button {
+
+    width:100%;
+
+    height:55px;
+
+    border-radius:18px;
+
+    background:
+    linear-gradient(
+        90deg,
+        #06b6d4,
+        #8b5cf6
+    );
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    border:none;
+
+}
+
+
+/* Button hover */
+.stButton button:hover {
+
+    transform:scale(1.02);
+
+}
+
+
+/* Metric Cards */
+[data-testid="stMetric"] {
+
+    background:
+    linear-gradient(
+        145deg,
+        #0f172a,
+        #1e293b
+    );
+
+    padding:20px;
+
+    border-radius:20px;
+
+    border:
+    1px solid #334155;
+
+    box-shadow:
+    0px 0px 15px #0f172a;
+
+}
+
+
+/* Inputs */
+.stTextInput input {
+
+    background:#020617;
+
+    color:white;
+
+    border-radius:15px;
+
+}
+
+
+/* Dropdown */
+.stSelectbox div {
+
+    border-radius:15px;
+
+}
+
+
+/* Alert boxes */
+.stAlert {
+
+    border-radius:18px;
+
+}
+
+
+</style>
+""",
+unsafe_allow_html=True
+)
 
 st.title("🤖 AI Trade Guardian")
 
