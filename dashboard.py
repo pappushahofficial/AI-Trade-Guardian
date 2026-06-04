@@ -252,9 +252,7 @@ st.markdown(
 )
 
 
-st.success(
-    "🟢 Trading Agent Online"
-)
+
 
 
 demo = st.toggle(
