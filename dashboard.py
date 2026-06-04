@@ -27,21 +27,17 @@ st.markdown(
     color:white;
 }
 
-
 .block-container {
     padding-top:2rem;
 }
 
-
 section[data-testid="stSidebar"] {
-
     background:
     linear-gradient(
     180deg,
     #050816,
     #0f172a
     );
-
 }
 
 
@@ -66,13 +62,6 @@ h1,h2,h3 {
 }
 
 
-.neon {
-
-    color:#22d3ee;
-
-}
-
-
 .stButton button {
 
     height:60px;
@@ -93,7 +82,6 @@ h1,h2,h3 {
     font-size:22px;
 
     border:none;
-
 }
 
 
@@ -106,7 +94,6 @@ h1,h2,h3 {
     border-radius:20px;
 
     border:1px solid #334155;
-
 }
 
 
@@ -117,7 +104,6 @@ h1,h2,h3 {
     color:white;
 
     border-radius:15px;
-
 }
 
 
@@ -125,7 +111,6 @@ h1,h2,h3 {
 """,
 unsafe_allow_html=True
 )
-
 
 
 # ======================
@@ -169,11 +154,6 @@ Autonomous Trading Agent
     )
 
 
-# ======================
-# CLICKABLE MENU
-# ======================
-
-
 menu = st.sidebar.radio(
     "Menu",
     [
@@ -183,11 +163,6 @@ menu = st.sidebar.radio(
         "⚙️ Settings"
     ]
 )
-
-
-# ======================
-# AGENT STATUS
-# ======================
 
 
 st.sidebar.markdown("---")
@@ -238,6 +213,7 @@ QWEN_API_KEY = os.getenv(
     "BITGET_QWEN_API_KEY"
 )
 
+
 client = OpenAI(
     api_key=QWEN_API_KEY,
     base_url="https://hackathon.bitgetops.com/v1"
@@ -256,13 +232,17 @@ def get_data(symbol):
         f"?symbol={symbol}&granularity=15min&limit=100"
     )
 
+
     data = requests.get(url).json()
+
 
     df = pd.DataFrame(
         data["data"]
     )
 
+
     df = df.iloc[:, :6]
+
 
     df.columns = [
         "time",
@@ -273,17 +253,19 @@ def get_data(symbol):
         "volume"
     ]
 
-    for col in [
+
+    for x in [
         "open",
         "high",
         "low",
         "close"
     ]:
 
-        df[col] = (
-            df[col]
+        df[x] = (
+            df[x]
             .astype(float)
         )
+
 
     return df
 
@@ -295,10 +277,7 @@ def get_data(symbol):
 
 if menu == "⭐ Watchlist":
 
-
-    st.title(
-        "⭐ Watchlist"
-    )
+    st.title("⭐ Watchlist")
 
 
     watchlist = [
@@ -307,6 +286,18 @@ if menu == "⭐ Watchlist":
         "SOLUSDT",
         "BGBUSDT"
     ]
+
+
+    st.markdown(
+        """
+<div class="card">
+
+<h3>🔥 Tracked Assets</h3>
+
+</div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
     for coin in watchlist:
@@ -323,28 +314,28 @@ if menu == "⭐ Watchlist":
         )
 
 
-        c1,c2,c3 = st.columns(
+        col1,col2,col3 = st.columns(
             [2,2,1]
         )
 
 
-        c1.write(
+        col1.write(
             "🟢 " + coin
         )
 
 
-        c2.write(
+        col2.write(
             f"💰 {price}"
         )
 
 
-        show = c3.button(
+        show_chart = col3.button(
             "📈 Chart",
             key=coin
         )
 
 
-        if show:
+        if show_chart:
 
 
             st.subheader(
@@ -375,102 +366,3 @@ if menu == "⭐ Watchlist":
                 fig,
                 use_container_width=True
             )
-
-
-
-# ======================
-# HEADER
-# ======================
-
-if menu == "📈 Market Scanner":
-
-
-    st.title(
-        "Autonomous Crypto Trading Agent 🚀"
-    )
-
-
-    st.markdown(
-"""
-### Powered by
-
-🧠 **Alibaba Qwen AI** | 📡 **Bitget API**
-
-🏆 Bitget AI Hackathon
-
-📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
-"""
-    )
-
-
-    demo = st.toggle(
-        "🧪 Demo Mode (Save Qwen Credits)",
-        value=True
-    )
-
-
-    st.subheader(
-        "📈 Market Scanner"
-    )
-
-
-    default_coin = st.selectbox(
-        "🔥 Top Crypto Assets",
-        [
-            "BTCUSDT",
-            "ETHUSDT",
-            "BGBUSDT",
-            "SOLUSDT",
-            "BNBUSDT",
-            "XRPUSDT",
-            "DOGEUSDT",
-            "ADAUSDT",
-            "AVAXUSDT",
-            "LINKUSDT"
-        ]
-    )
-
-
-    custom_coin = st.text_input(
-        "🔎 Custom Bitget Pair",
-        placeholder="Example: SUIUSDT"
-    )
-
-
-    symbol = (
-        custom_coin.upper().strip()
-        if custom_coin
-        else default_coin
-    )
-
-
-    if st.button(
-        "🤖 Launch AI Agent"
-    ):
-
-
-        df = get_data(
-            symbol
-        )
-
-
-        st.success(
-            "🤖 Agent Analysis Complete"
-        )
-
-
-        fig = go.Figure()
-
-
-        fig.add_trace(
-            go.Scatter(
-                y=df["close"],
-                name="Price"
-            )
-        )
-
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
