@@ -97,6 +97,7 @@ default_pair = st.selectbox(
         "BTCUSDT",
         "ETHUSDT",
         "SOLUSDT",
+        "BGBUSDT",
         "BNBUSDT",
         "XRPUSDT",
         "DOGEUSDT",
