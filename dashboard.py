@@ -13,10 +13,6 @@ st.set_page_config(
 )
 
 
-# =====================
-# HEADER
-# =====================
-
 st.title("🤖 AI Trade Guardian")
 
 
@@ -29,7 +25,7 @@ Powered by:
 
 🏆 **Bitget AI Hackathon**
 
-📊 Perceive → 🧠 Decide → 🛡 Manage Risk
+📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
 
 **Features**
 
@@ -45,13 +41,14 @@ Powered by:
 st.success("🟢 Trading Agent Online")
 
 
+demo_mode = st.toggle(
+    "🧪 Demo Mode (Save Qwen Credits)",
+    value=True
+)
 
-# =====================
-# API
-# =====================
+
 
 QWEN_API_KEY = os.getenv("BITGET_QWEN_API_KEY")
-BITGET_API_KEY = os.getenv("BITGET_API_KEY")
 
 
 client = OpenAI(
@@ -60,10 +57,6 @@ client = OpenAI(
 )
 
 
-
-# =====================
-# STATUS
-# =====================
 
 st.subheader("🔗 Live Connections")
 
@@ -75,18 +68,6 @@ st.success(
 )
 
 
-st.success(
-    "📡 Bitget Data Connected"
-    if BITGET_API_KEY
-    else "❌ Bitget Offline"
-)
-
-
-
-
-# =====================
-# MARKET SELECTOR
-# =====================
 
 st.subheader("📈 Market Scanner")
 
@@ -96,15 +77,12 @@ default_pair = st.selectbox(
     [
         "BTCUSDT",
         "ETHUSDT",
-        "SOLUSDT",
         "BGBUSDT",
+        "SOLUSDT",
         "BNBUSDT",
         "XRPUSDT",
         "DOGEUSDT",
-        "ADAUSDT",
-        "AVAXUSDT",
-        "LINKUSDT",
-        "LTCUSDT"
+        "ADAUSDT"
     ]
 )
 
@@ -122,11 +100,8 @@ symbol = (
 )
 
 
-# =====================
-# DATA ENGINE
-# =====================
 
-def get_data(symbol, tf):
+def get_data(symbol,tf):
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
@@ -135,14 +110,11 @@ def get_data(symbol, tf):
 
     data = requests.get(url).json()
 
-
     df = pd.DataFrame(
         data["data"]
     )
 
-
     df = df.iloc[:, :6]
-
 
     df.columns = [
         "time",
@@ -153,23 +125,19 @@ def get_data(symbol, tf):
         "volume"
     ]
 
-
     df["close"] = df["close"].astype(float)
-
 
     return df
 
 
 
-def calculate_rsi(prices):
+def rsi(price):
 
-    delta = prices.diff()
-
+    delta = price.diff()
 
     gain = delta.clip(lower=0)
 
     loss = -delta.clip(upper=0)
-
 
     rs = (
         gain.rolling(14).mean()
@@ -177,8 +145,7 @@ def calculate_rsi(prices):
         loss.rolling(14).mean()
     )
 
-
-    return 100 - (100/(1+rs))
+    return 100-(100/(1+rs))
 
 
 
@@ -190,7 +157,7 @@ def scan(tf):
     )
 
 
-    df["RSI"] = calculate_rsi(
+    df["RSI"] = rsi(
         df["close"]
     )
 
@@ -216,102 +183,124 @@ def scan(tf):
         df["EMA50"].iloc[-1]
 
         else
-
         "BEARISH 🔴"
     )
 
 
-    return trend, df
+    return trend,df
 
 
-
-# =====================
-# RUN AGENT
-# =====================
 
 if st.button("🤖 Launch AI Agent"):
 
 
-    with st.spinner(
-        "🧠 Qwen AI analysing market..."
-    ):
+    t15,df = scan("15min")
+
+    t1,_ = scan("1h")
+
+    t4,_ = scan("4h")
 
 
-        t15, df = scan("15min")
-
-        t1, _ = scan("1h")
-
-        t4, _ = scan("4h")
+    price = df["close"].iloc[-1]
 
 
-        price = df["close"].iloc[-1]
+    score = [
+        t15,
+        t1,
+        t4
+    ].count(
+        "BULLISH 🟢"
+    )
 
 
-        score = [
-            t15,
-            t1,
-            t4
-        ].count(
-            "BULLISH 🟢"
-        )
+    if score >= 2:
+
+        signal = "BUY 🟢"
+        direction = "LONG 📈"
+        confidence = "85%"
+        sl = round(price*0.98,2)
+        tp = round(price*1.04,2)
 
 
+    elif score == 0:
 
-        if score >= 2:
-
-            signal = "BUY 🟢"
-            direction = "LONG 📈"
-            confidence = "85%"
-
-            sl = round(price * 0.98,2)
-
-            tp = round(price * 1.04,2)
+        signal = "SELL 🔴"
+        direction = "SHORT 📉"
+        confidence = "85%"
+        sl = round(price*1.02,2)
+        tp = round(price*0.96,2)
 
 
+    else:
 
-        elif score == 0:
+        signal = "HOLD 🟡"
+        direction = "NO TRADE ⏳"
+        confidence = "60%"
+        sl = "Waiting"
+        tp = "Waiting"
+        if demo_mode:
 
-            signal = "SELL 🔴"
-            direction = "SHORT 📉"
-            confidence = "85%"
+        class DemoResponse:
 
-            sl = round(price * 1.02,2)
+            class Choice:
 
-            tp = round(price * 0.96,2)
+                class Message:
+
+                    content = """
+📊 DEMO AI TRADING REPORT
+
+🤖 AI Trade Guardian Simulation
+
+📊 PERCEIVE:
+Market data analysed.
+
+🧠 DECIDE:
+AI generated trading decision.
+
+⚡ EXECUTE:
+Virtual trade action created.
+
+🛡 RISK:
+Stop Loss and Take Profit prepared.
+
+🧪 Demo Mode Active
+Qwen credits saved ✅
+"""
+
+                message = Message()
+
+            choices = [Choice()]
 
 
-
-        else:
-
-            signal = "HOLD 🟡"
-            direction = "NO TRADE ⏳"
-            confidence = "60%"
-
-            sl = "Waiting"
-
-            tp = "Waiting"
+        response = DemoResponse()
 
 
+    else:
 
-        response = client.chat.completions.create(
+        with st.spinner(
+            "🧠 Qwen AI analysing market..."
+        ):
 
-            model="qwen3.6-flash",
+            response = client.chat.completions.create(
 
-            messages=[
+                model="qwen3.6-flash",
 
-                {
-                    "role":"system",
-                    "content":
-                    "You are a professional autonomous crypto trading agent."
-                },
+                messages=[
 
-                {
-                    "role":"user",
+                    {
+                        "role":"system",
+                        "content":
+                        "You are a professional autonomous crypto trading agent."
+                    },
 
-                    "content":
 
-                    f"""
-Create a professional trading report.
+                    {
+                        "role":"user",
+
+                        "content":
+
+                        f"""
+Create professional trading analysis.
 
 Asset:
 {symbol}
@@ -337,23 +326,20 @@ Stop Loss:
 Take Profit:
 {tp}
 
-
 Include:
 Technical analysis
 Trade reasoning
 Risk management
 """
-                }
+                    }
 
-            ]
+                ]
 
-        )
+            )
 
 
 
-    st.subheader(
-        "🤖 AI Agent Decision"
-    )
+    st.subheader("🤖 AI Agent Decision")
 
 
     a,b,c = st.columns(3)
@@ -394,28 +380,26 @@ Risk management
 
 
 
-    st.subheader(
-        "📊 Multi-Timeframe View"
-    )
+    st.subheader("📊 Multi-Timeframe View")
 
 
     x,y,z = st.columns(3)
 
 
     x.metric(
-        "⚡15m",
+        "⚡ 15m",
         t15
     )
 
 
     y.metric(
-        "📈1H",
+        "📈 1H",
         t1
     )
 
 
     z.metric(
-        "🏦4H",
+        "🏦 4H",
         t4
     )
 
@@ -452,9 +436,8 @@ Risk management
         fig,
         use_container_width=True
     )
-# =====================
-    # AUTONOMOUS EXECUTION
-    # =====================
+
+
 
     st.subheader("⚡ Agent Execution Center")
 
@@ -462,82 +445,69 @@ Risk management
     if direction == "LONG 📈":
 
         action = "OPEN LONG POSITION 📈"
-        execution = "Virtual Trade Created ✅"
-
 
     elif direction == "SHORT 📉":
 
         action = "OPEN SHORT POSITION 📉"
-        execution = "Virtual Trade Created ✅"
-
 
     else:
 
         action = "NO POSITION ⏳"
-        execution = "Waiting For Opportunity"
 
 
-    e1,e2 = st.columns(2)
+
+    col1,col2 = st.columns(2)
 
 
-    e1.metric(
+    col1.metric(
         "🤖 Agent Action",
         action
     )
 
 
-    e2.metric(
+    col2.metric(
         "⚙️ Execution",
-        execution
+        "Virtual Trade Created ✅"
+        if action != "NO POSITION ⏳"
+        else "Waiting"
     )
-    # =====================
-    # AGENT MEMORY
-    # =====================
+
+
 
     st.subheader("🧾 Agent Memory")
 
-    col1, col2, col3 = st.columns(3)
 
-    with col1:
-        st.metric(
-            "💎 Asset",
-            symbol
-        )
+    m1,m2,m3 = st.columns(3)
 
-    with col2:
-        st.metric(
-            "📍 Decision",
-            direction
-        )
 
-    with col3:
-        st.metric(
-            "🎯 Confidence",
-            confidence
-        )
+    m1.metric(
+        "💎 Asset",
+        symbol
+    )
 
-    col4, col5 = st.columns(2)
 
-    with col4:
-        st.metric(
-            "🛑 Stop Loss",
-            sl
-        )
+    m2.metric(
+        "📍 Decision",
+        direction
+    )
 
-    with col5:
-        st.metric(
-            "💰 Take Profit",
-            tp
-        )
 
-    st.success("Decision saved to Agent Memory ✅")
-# =====================
-    # QWEN AI REPORT
-    # =====================
+    m3.metric(
+        "🎯 Confidence",
+        confidence
+    )
+
+
+    st.success(
+        "Decision saved to Agent Memory ✅"
+    )
+
+
 
     st.subheader(
         "🧠 Qwen AI Trading Report"
     )
+
 
     st.write(
         response.choices[0].message.content
