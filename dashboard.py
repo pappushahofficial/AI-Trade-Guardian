@@ -327,7 +327,6 @@ Qwen credits saved.
 
 
         else:
-
         response = client.chat.completions.create(
 
             model="qwen3.6-flash",
