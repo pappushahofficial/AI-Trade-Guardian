@@ -317,7 +317,7 @@ if menu == "⭐ Watchlist":
 
             open_chart = st.button(
                 "📈 Chart",
-                key=coin
+                key=f"chart_{coin}"
             )
 
 
@@ -332,17 +332,48 @@ if menu == "⭐ Watchlist":
             try:
 
 
-                candles = get_bitget_candles(
+                df = get_bitget_candles(
                     coin
                 )
 
 
-                if candles is not None:
+                if df is not None:
+
+
+                    fig = go.Figure(
+                        data=[
+                            go.Candlestick(
+
+                                x=df["time"],
+
+                                open=df["open"],
+
+                                high=df["high"],
+
+                                low=df["low"],
+
+                                close=df["close"]
+
+                            )
+                        ]
+                    )
+
+
+                    fig.update_layout(
+
+                        height=450,
+
+                        xaxis_rangeslider_visible=False
+
+                    )
 
 
                     st.plotly_chart(
-                        candles,
+
+                        fig,
+
                         use_container_width=True
+
                     )
 
 
@@ -358,8 +389,9 @@ if menu == "⭐ Watchlist":
 
 
                 st.error(
-                    "Bitget chart loading error"
+                    str(e)
                 )
+
 
 
     st.markdown("---")
