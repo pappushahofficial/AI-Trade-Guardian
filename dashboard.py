@@ -322,18 +322,49 @@ client = OpenAI(
 
 st.markdown(
 """
-<div class="card">
+<style>
+/* =====================
+GLASS CARDS
+===================== */
 
-<h2>📈 Market Scanner</h2>
+.card {
+    background: rgba(15,23,42,0.75);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 0 25px rgba(0,0,0,0.25);
+}
 
-<p style="color:#94a3b8;">
-Real-time Bitget AI market scanner
-</p>
 
-</div>
-""",
-unsafe_allow_html=True
-)
+/* =====================
+MARKET SCANNER BOX
+===================== */
+
+div[data-testid="stVerticalBlock"]:has(
+div[data-testid="stSelectbox"]
+){
+    background: rgba(15,23,42,0.75);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 0 30px rgba(0,0,0,0.30);
+}
+
+
+/* INPUTS */
+div[data-baseweb="select"],
+input {
+    border-radius: 14px !important;
+}
+
+
+/* BUTTON */
+.stButton button {
+    width:100%;
+    border-radius:16px;
+    padding:14px;
+    font-weight:bold;
+}
 
 
 default_coin = st.selectbox(
