@@ -232,6 +232,48 @@ def scan(tf):
 if st.button("🤖 Launch AI Agent"):
 
 
+    if mode == "🧪 Demo Mode (No API)":
+
+        st.info(
+            "Running demo simulation - Qwen API not used 🧪"
+        )
+
+        price = 67000
+
+        direction = "LONG 📈"
+
+        signal = "BUY 🟢"
+
+        confidence = "88%"
+
+        sl = 65660
+
+        tp = 69680
+
+
+        response_text = """
+📊 PROFESSIONAL TRADING REPORT
+
+Market shows bullish structure.
+
+RSI confirms healthy momentum.
+
+EMA trend indicates continuation possibility.
+
+AI Agent Decision:
+LONG opportunity detected.
+
+Risk Plan:
+Use calculated Stop Loss and Take Profit.
+
+Agent Status:
+Trade simulation executed successfully.
+"""
+
+
+    else:
+
+
     with st.spinner(
         "🧠 Qwen AI analysing market..."
     ):
@@ -542,3 +584,14 @@ Risk management
     st.write(
         response.choices[0].message.content
     )
+    # =====================
+# MODE SELECTOR
+# =====================
+
+mode = st.radio(
+    "🤖 Agent Mode",
+    [
+        "🧪 Demo Mode (No API)",
+        "🚀 Live Qwen Mode"
+    ]
+)
