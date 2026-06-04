@@ -269,6 +269,7 @@ if menu == "⭐ Watchlist":
 
     st.title("⭐ Watchlist")
 
+
     watchlist = [
         "BTCUSDT",
         "ETHUSDT",
@@ -280,7 +281,9 @@ if menu == "⭐ Watchlist":
     st.markdown(
         """
         <div class="card">
-        <h3>🔥 Tracked Assets</h3>
+
+        <h2>🔥 Tracked Assets</h2>
+
         </div>
         """,
         unsafe_allow_html=True
@@ -288,6 +291,7 @@ if menu == "⭐ Watchlist":
 
 
     for coin in watchlist:
+
 
         col1, col2, col3 = st.columns(
             [2,2,1]
@@ -319,15 +323,43 @@ if menu == "⭐ Watchlist":
 
         if open_chart:
 
+
             st.subheader(
                 f"📈 {coin} Live Chart"
             )
 
-            st.info(
-                "Loading Bitget market chart..."
-            )
 
-            # connect existing chart function here
+            try:
+
+
+                candles = get_bitget_candles(
+                    coin
+                )
+
+
+                if candles is not None:
+
+
+                    st.plotly_chart(
+                        candles,
+                        use_container_width=True
+                    )
+
+
+                else:
+
+
+                    st.error(
+                        "❌ No Bitget data"
+                    )
+
+
+            except Exception as e:
+
+
+                st.error(
+                    "Bitget chart loading error"
+                )
 
 
     st.markdown("---")
@@ -344,6 +376,10 @@ if menu == "⭐ Watchlist":
         <br><br>
 
         📡 Bitget API: Live Data
+
+        <br><br>
+
+        ⚡ Monitoring opportunities
 
         </div>
         """,
