@@ -169,7 +169,7 @@ Autonomous Trading Agent
     )
 
 
-    st.success("🟢 Online")
+    
 
 
     st.markdown("---")
@@ -252,7 +252,9 @@ st.markdown(
 )
 
 
-
+st.success(
+    "🟢 Trading Agent Online"
+)
 
 
 demo = st.toggle(
