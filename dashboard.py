@@ -175,20 +175,45 @@ Autonomous Trading Agent
     st.markdown("---")
 
 
-    st.markdown(
-"""
-### Menu
+    # ======================
+# CLICKABLE MENU
+# ======================
 
-📈 Market Scanner
-
-⭐ Watchlist
-
-ℹ️ About Agent
-
-⚙️ Settings
-"""
+menu = st.sidebar.radio(
+    "Menu",
+    [
+        "📈 Market Scanner",
+        "⭐ Watchlist",
+        "ℹ️ About Agent",
+        "⚙️ Settings"
+    ]
 )
 
+
+# ======================
+# SETTINGS PAGE
+# ======================
+
+if menu == "⚙️ Settings":
+
+    st.sidebar.markdown("---")
+
+    dark_mode = st.sidebar.toggle(
+        "🌙 Dark Mode",
+        value=True
+    )
+
+    if dark_mode:
+
+        st.sidebar.success(
+            "Dark Theme Active"
+        )
+
+    else:
+
+        st.sidebar.info(
+            "Light Theme Active"
+        )
 
     st.markdown(
     """
