@@ -17,6 +17,7 @@ st.set_page_config(
 # PRO DARK DASHBOARD UI
 # ======================
 
+
 st.markdown(
 """
 <style>
@@ -26,58 +27,99 @@ st.markdown(
     color:white;
 }
 
+
 .block-container {
     padding-top:2rem;
 }
 
+
 section[data-testid="stSidebar"] {
+
     background:
     linear-gradient(
     180deg,
     #050816,
     #0f172a
     );
+
 }
+
 
 h1,h2,h3 {
     color:white;
 }
 
+
 .card {
+
     background:#0f172a;
+
     padding:25px;
+
     border-radius:25px;
+
     border:1px solid #1e293b;
-    box-shadow:0 0 25px #020617;
+
+    box-shadow:
+    0 0 25px #020617;
+
 }
 
+
+.neon {
+
+    color:#22d3ee;
+
+}
+
+
 .stButton button {
+
     height:60px;
+
     width:100%;
+
     border-radius:20px;
+
     background:
     linear-gradient(
     90deg,
     #06b6d4,
     #9333ea
     );
+
     color:white;
+
     font-size:22px;
+
     border:none;
+
 }
+
 
 [data-testid="stMetric"] {
+
     background:#0f172a;
+
     padding:20px;
+
     border-radius:20px;
+
     border:1px solid #334155;
+
 }
 
+
 .stTextInput input {
+
     background:#020617;
+
     color:white;
+
     border-radius:15px;
+
 }
+
 
 </style>
 """,
@@ -85,11 +127,14 @@ unsafe_allow_html=True
 )
 
 
+
 # ======================
 # SIDEBAR
 # ======================
 
+
 with st.sidebar:
+
 
     st.markdown(
     """
@@ -107,7 +152,8 @@ background:#111827;
 border-radius:25px;
 border:2px solid #22d3ee;
 box-shadow:0 0 30px #06b6d4;
-margin-bottom:15px;">
+margin-bottom:15px;
+">
 🤖
 </div>
 
@@ -123,6 +169,16 @@ Autonomous Trading Agent
     )
 
 
+    st.success("🟢 Online")
+
+
+    st.markdown("---")
+
+
+    # ======================
+# CLICKABLE MENU
+# ======================
+
 menu = st.sidebar.radio(
     "Menu",
     [
@@ -134,8 +190,36 @@ menu = st.sidebar.radio(
 )
 
 
-st.sidebar.markdown("---")
+# ======================
+# SETTINGS PAGE
+# ======================
 
+if menu == "⚙️ Settings":
+
+    st.sidebar.markdown("---")
+
+    dark_mode = st.sidebar.toggle(
+        "🌙 Dark Mode",
+        value=True
+    )
+
+    if dark_mode:
+
+        st.sidebar.success(
+            "Dark Theme Active"
+        )
+
+    else:
+
+        st.sidebar.info(
+            "Light Theme Active"
+        )
+
+    # ======================
+# AGENT STATUS
+# ======================
+
+st.sidebar.markdown("---")
 
 st.sidebar.markdown(
 """
@@ -157,8 +241,11 @@ unsafe_allow_html=True
 )
 
 
-st.sidebar.markdown("---")
+# ======================
+# POWERED BY
+# ======================
 
+st.sidebar.markdown("---")
 
 st.sidebar.markdown(
 """
@@ -173,6 +260,236 @@ st.sidebar.markdown(
 </div>
 """,
 unsafe_allow_html=True
+)
+# ======================
+# WATCHLIST PAGE
+# ======================
+
+if menu == "⭐ Watchlist":
+
+    st.title("⭐ Watchlist")
+
+
+    watchlist = [
+        "BTCUSDT",
+        "ETHUSDT",
+        "SOLUSDT",
+        "BGBUSDT"
+    ]
+
+
+    st.markdown(
+        """
+        <div class="card">
+
+        <h2>🔥 Tracked Assets</h2>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    for coin in watchlist:
+
+
+        col1, col2, col3 = st.columns(
+            [2,2,1]
+        )
+
+
+        with col1:
+
+            st.write(
+                "🟢",
+                coin
+            )
+
+
+        with col2:
+
+            st.write(
+                "💰 Live Price"
+            )
+
+
+        with col3:
+
+            open_chart = st.button(
+                "📈 Chart",
+                key=f"chart_{coin}"
+            )
+
+
+        if open_chart:
+
+
+            st.subheader(
+                f"📈 {coin} Live Chart"
+            )
+
+
+            try:
+
+
+                df = get_data()
+
+
+                if df is not None:
+
+
+                    fig = go.Figure(
+                        data=[
+                            go.Candlestick(
+
+                                x=df["time"],
+
+                                open=df["open"],
+
+                                high=df["high"],
+
+                                low=df["low"],
+
+                                close=df["close"]
+
+                            )
+                        ]
+                    )
+
+
+                    fig.update_layout(
+
+                        height=450,
+
+                        xaxis_rangeslider_visible=False
+
+                    )
+
+
+                    st.plotly_chart(
+
+                        fig,
+
+                        use_container_width=True
+
+                    )
+
+
+                else:
+
+
+                    st.error(
+                        "❌ No Bitget data"
+                    )
+
+
+            except Exception as e:
+
+
+                st.error(
+                    str(e)
+                )
+
+
+
+    st.markdown("---")
+
+
+    st.markdown(
+        """
+        <div class="card">
+
+        <h3>🤖 AI Watchlist Monitor</h3>
+
+        🧠 Alibaba Qwen AI: Connected
+
+        <br><br>
+
+        📡 Bitget API: Live Data
+
+        <br><br>
+
+        ⚡ Monitoring opportunities
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# ======================
+# HEADER
+# ======================
+
+
+st.title(
+    "Autonomous Crypto Trading Agent 🚀"
+)
+
+
+st.markdown(
+"""
+### Powered by
+
+🧠 **Alibaba Qwen AI**  |  📡 **Bitget API**
+
+🏆 Bitget AI Hackathon
+
+📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
+"""
+)
+
+
+st.success(
+    "🟢 Trading Agent Online"
+)
+
+
+demo = st.toggle(
+    "🧪 Demo Mode (Save Qwen Credits)",
+    value=True
+)
+
+
+
+# ======================
+# CONNECTIONS
+# ======================
+
+
+st.subheader(
+    "🔗 Live Connections"
+)
+
+
+c1,c2,c3,c4 = st.columns(4)
+
+
+c1.metric(
+    "🧠 AI Model",
+    "Qwen 3.5",
+    "Connected"
+)
+
+
+c2.metric(
+    "📡 Market Data",
+    "Bitget API",
+    "Connected"
+)
+
+
+c3.metric(
+    "🤖 Agent",
+    "Active",
+    "Running"
+)
+
+
+c4.metric(
+    "🟢 Status",
+    "Live",
+    "Ready"
 )
 # ======================
 # API
@@ -191,11 +508,48 @@ client = OpenAI(
 
 
 # ======================
-# BITGET MARKET DATA
+# MARKET SCANNER
 # ======================
 
-def get_data(symbol):
 
+st.subheader(
+    "📈 Market Scanner"
+)
+
+
+default_coin = st.selectbox(
+    "🔥 Top Crypto Assets",
+    [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BGBUSDT",
+        "SOLUSDT",
+        "BNBUSDT",
+        "XRPUSDT",
+        "DOGEUSDT",
+        "ADAUSDT",
+        "AVAXUSDT",
+        "LINKUSDT"
+    ]
+)
+
+
+custom_coin = st.text_input(
+    "🔎 Custom Bitget Pair",
+    placeholder="Example: SUIUSDT"
+)
+
+
+symbol = (
+    custom_coin.upper().strip()
+    if custom_coin
+    else default_coin
+)
+
+
+
+def get_data():
+    
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
@@ -224,49 +578,307 @@ def get_data(symbol):
     ]
 
 
-    for col in [
-        "open",
-        "high",
-        "low",
-        "close"
-    ]:
-
-
-        df[col] = (
-            df[col]
-            .astype(float)
-        )
+    df["close"] = (
+        df["close"]
+        .astype(float)
+    )
 
 
     return df
 
 
 
-# ======================
-# WATCHLIST PAGE
-# ======================
-
-if menu == "⭐ Watchlist":
+if st.button(
+    "🤖 Launch AI Agent"
+):
 
 
-    st.title(
-        "⭐ Watchlist"
+    df = get_data()
+
+
+    df["EMA20"] = (
+        df["close"]
+        .ewm(span=20)
+        .mean()
     )
 
 
-    watchlist = [
-        "BTCUSDT",
-        "ETHUSDT",
-        "SOLUSDT",
-        "BGBUSDT"
-    ]
+    df["EMA50"] = (
+        df["close"]
+        .ewm(span=50)
+        .mean()
+    )
 
+
+    price = (
+        df["close"]
+        .iloc[-1]
+    )
+
+
+    if (
+        df["EMA20"].iloc[-1]
+        >
+        df["EMA50"].iloc[-1]
+    ):
+
+        direction = "LONG 📈"
+
+        signal = "BUY 🟢"
+
+        sl = round(
+            price * 0.98,
+            2
+        )
+
+        tp = round(
+            price * 1.04,
+            2
+        )
+
+
+    else:
+
+        direction = "SHORT 📉"
+
+        signal = "SELL 🔴"
+
+        sl = round(
+            price * 1.02,
+            2
+        )
+
+        tp = round(
+            price * 0.96,
+            2
+        )
+
+
+    confidence = "85%"
+
+
+
+    if demo:
+
+        report = """
+📊 DEMO AI REPORT
+
+📊 PERCEIVE:
+Market scanned.
+
+🧠 DECIDE:
+AI strategy generated.
+
+⚡ EXECUTE:
+Virtual trade created.
+
+🛡 RISK:
+SL / TP calculated.
+
+Qwen credits saved ✅
+"""
+
+
+    else:
+
+
+        response = client.chat.completions.create(
+
+            model="qwen3.6-flash",
+
+            messages=[
+                {
+                    "role":"system",
+                    "content":
+                    "You are an autonomous crypto trading agent."
+                },
+
+                {
+                    "role":"user",
+                    "content":
+                    f"""
+Analyze:
+
+Asset:
+{symbol}
+
+Decision:
+{direction}
+
+Stop Loss:
+{sl}
+
+Take Profit:
+{tp}
+"""
+                }
+            ]
+        )
+
+
+        report = (
+            response
+            .choices[0]
+            .message
+            .content
+        )
+
+
+
+    st.subheader(
+        "🤖 Agent Decision"
+    )
+
+
+    a,b,c = st.columns(3)
+
+
+    a.metric(
+        "Direction",
+        direction
+    )
+
+
+    b.metric(
+        "Confidence",
+        confidence
+    )
+
+
+    c.metric(
+        "Signal",
+        signal
+    )
+
+
+
+    x,y = st.columns(2)
+
+
+    x.metric(
+        "🛑 Stop Loss",
+        sl
+    )
+
+
+    y.metric(
+        "💰 Take Profit",
+        tp
+    )
+
+
+
+    st.subheader(
+        "📊 Market Chart"
+    )
+
+
+    fig = go.Figure()
+
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["close"],
+            name="Price"
+        )
+    )
+
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["EMA20"],
+            name="EMA20"
+        )
+    )
+
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["EMA50"],
+            name="EMA50"
+        )
+    )
+
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+
+
+    st.subheader(
+        "⚡ Agent Execution Center"
+    )
+
+
+    st.success(
+        f"Virtual Execution Created ✅ {direction}"
+    )
+
+
+
+    st.subheader(
+        "🧾 Agent Memory"
+    )
+
+
+    m1,m2,m3 = st.columns(3)
+
+
+    m1.metric(
+        "Asset",
+        symbol
+    )
+
+
+    m2.metric(
+        "Decision",
+        direction
+    )
+
+
+    m3.metric(
+        "Confidence",
+        confidence
+    )
+
+
+
+    st.subheader(
+        "🧠 Qwen AI Report"
+    )
+
+
+    st.write(
+        report
+    )
+# ======================
+# AGENT WORKFLOW CARDS
+# ======================
+
+
+st.markdown("## 🤖 Agent Workflow")
+
+
+w1,w2,w3,w4 = st.columns(4)
+
+
+with w1:
 
     st.markdown(
     """
-<div class="card">
+<div class="card" style="text-align:center">
 
-<h3>🔥 Tracked Assets</h3>
+<h1>👁</h1>
+
+<h3>Perceive</h3>
+
+<p>
+Scanning real-time
+market data from
+Bitget API
+</p>
 
 </div>
 """,
@@ -274,379 +886,64 @@ if menu == "⭐ Watchlist":
     )
 
 
-    for coin in watchlist:
-
-
-        df = get_data(
-            coin
-        )
-
-
-        price = (
-            df["close"]
-            .iloc[-1]
-        )
-
-
-        c1,c2,c3 = st.columns(
-            [2,2,1]
-        )
-
-
-        with c1:
-
-
-            st.write(
-                "🟢",
-                coin
-            )
-
-
-        with c2:
-
-
-            st.write(
-                f"💰 {price}"
-            )
-
-
-        with c3:
-
-
-            open_chart = st.button(
-                "📈 Chart",
-                key=coin
-            )
-
-
-        if open_chart:
-
-
-            st.subheader(
-                f"📈 {coin} Live Chart"
-            )
-
-
-            fig = go.Figure(
-                data=[
-                    go.Candlestick(
-
-                        x=df["time"],
-
-                        open=df["open"],
-
-                        high=df["high"],
-
-                        low=df["low"],
-
-                        close=df["close"]
-
-                    )
-                ]
-            )
-
-
-            fig.update_layout(
-                height=450,
-                xaxis_rangeslider_visible=False
-            )
-
-
-            st.plotly_chart(
-                fig,
-                use_container_width=True
-            )
-            # ======================
-# MARKET SCANNER PAGE
-# ======================
-
-if menu == "📈 Market Scanner":
-
-
-    st.title(
-        "Autonomous Crypto Trading Agent 🚀"
-    )
-
+with w2:
 
     st.markdown(
-"""
-### Powered by
+    """
+<div class="card" style="text-align:center">
 
-🧠 **Alibaba Qwen AI**  |  📡 **Bitget API**
+<h1>🧠</h1>
 
-🏆 Bitget AI Hackathon
+<h3>Decide</h3>
 
-📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
-"""
+<p>
+AI reasoning using
+Alibaba Qwen model
+</p>
+
+</div>
+""",
+    unsafe_allow_html=True
     )
 
 
-    st.success(
-        "🟢 Trading Agent Online"
+with w3:
+
+    st.markdown(
+    """
+<div class="card" style="text-align:center">
+
+<h1>⚡</h1>
+
+<h3>Execute</h3>
+
+<p>
+Generate smart
+trading actions
+</p>
+
+</div>
+""",
+    unsafe_allow_html=True
     )
 
 
-    demo = st.toggle(
-        "🧪 Demo Mode (Save Qwen Credits)",
-        value=True
+with w4:
+
+    st.markdown(
+    """
+<div class="card" style="text-align:center">
+
+<h1>🛡</h1>
+
+<h3>Manage Risk</h3>
+
+<p>
+Calculate SL/TP
+and protect trades
+</p>
+
+</div>
+""",
+    unsafe_allow_html=True
     )
-
-
-    # ======================
-    # CONNECTIONS
-    # ======================
-
-
-    st.subheader(
-        "🔗 Live Connections"
-    )
-
-
-    c1,c2,c3,c4 = st.columns(4)
-
-
-    c1.metric(
-        "🧠 AI Model",
-        "Qwen 3.5",
-        "Connected"
-    )
-
-
-    c2.metric(
-        "📡 Market Data",
-        "Bitget API",
-        "Connected"
-    )
-
-
-    c3.metric(
-        "🤖 Agent",
-        "Active",
-        "Running"
-    )
-
-
-    c4.metric(
-        "🟢 Status",
-        "Live",
-        "Ready"
-    )
-
-
-    # ======================
-    # MARKET SCANNER
-    # ======================
-
-
-    st.subheader(
-        "📈 Market Scanner"
-    )
-
-
-    default_coin = st.selectbox(
-        "🔥 Top Crypto Assets",
-        [
-            "BTCUSDT",
-            "ETHUSDT",
-            "BGBUSDT",
-            "SOLUSDT",
-            "BNBUSDT",
-            "XRPUSDT",
-            "DOGEUSDT",
-            "ADAUSDT",
-            "AVAXUSDT",
-            "LINKUSDT"
-        ]
-    )
-
-
-    custom_coin = st.text_input(
-        "🔎 Custom Bitget Pair",
-        placeholder="Example: SUIUSDT"
-    )
-
-
-    symbol = (
-        custom_coin.upper().strip()
-        if custom_coin
-        else default_coin
-    )
-
-
-    if st.button(
-        "🤖 Launch AI Agent"
-    ):
-
-
-        df = get_data(
-            symbol
-        )
-
-
-        df["EMA20"] = (
-            df["close"]
-            .ewm(span=20)
-            .mean()
-        )
-
-
-        df["EMA50"] = (
-            df["close"]
-            .ewm(span=50)
-            .mean()
-        )
-
-
-        price = (
-            df["close"]
-            .iloc[-1]
-        )
-
-
-        if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
-
-            direction = "LONG 📈"
-
-            signal = "BUY 🟢"
-
-            sl = round(
-                price * 0.98,
-                2
-            )
-
-            tp = round(
-                price * 1.04,
-                2
-            )
-
-
-        else:
-
-            direction = "SHORT 📉"
-
-            signal = "SELL 🔴"
-
-            sl = round(
-                price * 1.02,
-                2
-            )
-
-            tp = round(
-                price * 0.96,
-                2
-            )
-
-
-        st.subheader(
-            "🤖 Agent Decision"
-        )
-
-
-        a,b,c = st.columns(3)
-
-
-        a.metric(
-            "Direction",
-            direction
-        )
-
-
-        b.metric(
-            "Confidence",
-            "85%"
-        )
-
-
-        c.metric(
-            "Signal",
-            signal
-        )
-
-
-        x,y = st.columns(2)
-
-
-        x.metric(
-            "🛑 Stop Loss",
-            sl
-        )
-
-
-        y.metric(
-            "💰 Take Profit",
-            tp
-        )
-
-
-        st.subheader(
-            "📊 Market Chart"
-        )
-
-
-        fig = go.Figure()
-
-
-        fig.add_trace(
-            go.Scatter(
-                y=df["close"],
-                name="Price"
-            )
-        )
-
-
-        fig.add_trace(
-            go.Scatter(
-                y=df["EMA20"],
-                name="EMA20"
-            )
-        )
-
-
-        fig.add_trace(
-            go.Scatter(
-                y=df["EMA50"],
-                name="EMA50"
-            )
-        )
-
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
-
-
-        st.subheader(
-            "⚡ Agent Execution Center"
-        )
-
-
-        st.success(
-            f"Virtual Execution Created ✅ {direction}"
-        )
-
-
-        st.subheader(
-            "🧾 Agent Memory"
-        )
-
-
-        m1,m2,m3 = st.columns(3)
-
-
-        m1.metric(
-            "Asset",
-            symbol
-        )
-
-
-        m2.metric(
-            "Decision",
-            direction
-        )
-
-
-        m3.metric(
-            "Confidence",
-            "85%"
-        )
