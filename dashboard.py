@@ -170,24 +170,7 @@ Autonomous Trading Agent
 
 
     st.success("🟢 Online")
-    st.markdown(
-    """
-<div class="card">
-
-<h4>🤖 AGENT STATUS</h4>
-
-<p>🟢 <b>Status:</b> Online</p>
-
-<p>⏱ <b>Uptime:</b> 02:45:32</p>
-
-<p>📈 <b>Signals Today:</b> 12</p>
-
-<p>🎯 <b>Accuracy:</b> 85.6%</p>
-
-</div>
-""",
-    unsafe_allow_html=True
-    )
+    
 
 
     st.markdown("---")
@@ -218,6 +201,24 @@ Autonomous Trading Agent
     st.info(
     """
 POWERED BY
+st.markdown(
+    """
+<div class="card">
+
+<h4>🤖 AGENT STATUS</h4>
+
+<p>🟢 <b>Status:</b> Online</p>
+
+<p>⏱ <b>Uptime:</b> 02:45:32</p>
+
+<p>📈 <b>Signals Today:</b> 12</p>
+
+<p>🎯 <b>Accuracy:</b> 85.6%</p>
+
+</div>
+""",
+    unsafe_allow_html=True
+    )
 
 🧠 Alibaba Qwen AI
 
