@@ -26,19 +26,20 @@ Powered by:
 
 📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
 
-Features:
-- 🧠 AI Market Reasoning
-- 📈 Live Market Data
-- 📊 RSI + EMA Strategy
-- ⚡ Multi-Timeframe Scanner
-- 🎯 Smart Risk Engine
+**Features**
+
+🧠 AI Market Reasoning  
+📈 Live Market Data  
+📊 RSI + EMA Strategy  
+⚡ Multi-Timeframe Scanner  
+🎯 Smart Risk Engine
 """)
 
 
 st.success("🟢 Trading Agent Online")
 
 
-demo_mode = st.toggle(
+demo = st.toggle(
     "🧪 Demo Mode (Save Qwen Credits)",
     value=True
 )
@@ -53,40 +54,22 @@ client = OpenAI(
 )
 
 
+
 st.subheader("📈 Market Scanner")
 
 
-default_pair = st.selectbox(
-    "Select Asset",
-    [
-        "BTCUSDT",
-        "ETHUSDT",
-        "BGBUSDT",
-        "SOLUSDT",
-        "BNBUSDT",
-        "XRPUSDT"
-    ]
-)
+symbol = st.text_input(
+    "Trading Pair",
+    value="BGBUSDT"
+).upper()
 
 
-custom_pair = st.text_input(
-    "Custom Bitget Pair",
-    placeholder="Example: SUIUSDT"
-)
 
-
-symbol = (
-    custom_pair.upper().strip()
-    if custom_pair
-    else default_pair
-)
-
-
-def get_data(symbol, tf):
+def get_data():
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
-        f"?symbol={symbol}&granularity={tf}&limit=100"
+        f"?symbol={symbol}&granularity=15min&limit=100"
     )
 
     data = requests.get(url).json()
@@ -109,9 +92,11 @@ def get_data(symbol, tf):
     return df
 
 
-def scan(tf):
 
-    df = get_data(symbol, tf)
+if st.button("🤖 Launch AI Agent"):
+
+
+    df = get_data()
 
 
     df["EMA20"] = (
@@ -128,186 +113,136 @@ def scan(tf):
     )
 
 
-    trend = (
-        "BULLISH 🟢"
-        if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]
-        else
-        "BEARISH 🔴"
-    )
-
-
-    return trend, df
-
-
-if st.button("🤖 Launch AI Agent"):
-
-
-    t15, df = scan("15min")
-    t1, _ = scan("1h")
-    t4, _ = scan("4h")
-
-
     price = df["close"].iloc[-1]
 
 
-    bullish = [
-        t15,
-        t1,
-        t4
-    ].count("BULLISH 🟢")
-
-
-    if bullish >= 2:
+    if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
 
         direction = "LONG 📈"
         signal = "BUY 🟢"
-        confidence = "85%"
-        sl = round(price * 0.98, 2)
-        tp = round(price * 1.04, 2)
-
-
-    elif bullish == 0:
-
-        direction = "SHORT 📉"
-        signal = "SELL 🔴"
-        confidence = "85%"
-        sl = round(price * 1.02, 2)
-        tp = round(price * 0.96, 2)
-
+        sl = round(price * 0.98,2)
+        tp = round(price * 1.04,2)
 
     else:
 
-        direction = "WAIT ⏳"
-        signal = "HOLD 🟡"
-        confidence = "60%"
-        sl = "Waiting"
-        tp = "Waiting"
-        if demo_mode:
+        direction = "SHORT 📉"
+        signal = "SELL 🔴"
+        sl = round(price * 1.02,2)
+        tp = round(price * 0.96,2)
 
-        response_text = """
-📊 DEMO AI TRADING REPORT
 
-🤖 AI Trade Guardian
+    confidence = "85%"
 
-📊 PERCEIVE:
-Bitget market data analysed.
 
-🧠 DECIDE:
-AI generated trading decision.
+    if demo:
 
-⚡ EXECUTE:
-Virtual trade action created.
+        report = """
+📊 DEMO AI REPORT
 
-🛡 RISK:
-Stop Loss and Take Profit prepared.
+📊 Perceive:
+Market scanned successfully.
 
-🧪 Demo Mode Active
+🧠 Decide:
+Trading decision generated.
+
+⚡ Execute:
+Virtual trade created.
+
+🛡 Risk:
+SL / TP calculated.
+
+🧪 Demo Mode
 Qwen credits saved ✅
 """
 
 
     else:
 
-        response_text = "Qwen Error"
+        with st.spinner("🧠 Qwen analysing..."):
 
-        try:
+            response = client.chat.completions.create(
 
-            with st.spinner("🧠 Qwen AI analysing..."):
+                model="qwen3.6-flash",
 
-                response = client.chat.completions.create(
+                messages=[
 
-                    model="qwen3.6-flash",
+                    {
+                        "role":"system",
+                        "content":
+                        "You are an autonomous crypto trading agent."
+                    },
 
-                    messages=[
-                        {
-                            "role": "system",
-                            "content":
-                            "You are a professional autonomous crypto trading agent."
-                        },
-
-                        {
-                            "role": "user",
-                            "content": f"""
-Create crypto trading report.
+                    {
+                        "role":"user",
+                        "content":
+                        f"""
+Analyze:
 
 Asset:
 {symbol}
 
-15m:
-{t15}
-
-1H:
-{t1}
-
-4H:
-{t4}
-
 Decision:
 {direction}
 
-Confidence:
-{confidence}
-
-Stop Loss:
+SL:
 {sl}
 
-Take Profit:
+TP:
 {tp}
 """
-                        }
-                    ]
-                )
+                    }
+
+                ]
+
+            )
 
 
-                response_text = (
-                    response
-                    .choices[0]
-                    .message
-                    .content
-                )
-
-
-        except Exception as e:
-
-            response_text = str(e)
+            report = response.choices[0].message.content
 
 
 
     st.subheader("🤖 AI Agent Decision")
 
 
-    c1, c2, c3 = st.columns(3)
+    a,b,c = st.columns(3)
 
 
-    c1.metric("📍 Direction", direction)
-
-    c2.metric("🎯 Confidence", confidence)
-
-    c3.metric("🤖 Signal", signal)
-
+    a.metric(
+        "Direction",
+        direction
+    )
 
 
-    d1, d2 = st.columns(2)
+    b.metric(
+        "Confidence",
+        confidence
+    )
 
 
-    d1.metric("🛑 Stop Loss", sl)
-
-    d2.metric("💰 Take Profit", tp)
-
-
-
-    st.subheader("📊 Multi-Timeframe View")
+    c.metric(
+        "Signal",
+        signal
+    )
 
 
-    tcol1, tcol2, tcol3 = st.columns(3)
+
+    x,y = st.columns(2)
 
 
-    tcol1.metric("15m", t15)
+    x.metric(
+        "🛑 Stop Loss",
+        sl
+    )
 
-    tcol2.metric("1H", t1)
 
-    tcol3.metric("4H", t4)
+    y.metric(
+        "💰 Take Profit",
+        tp
+    )
 
+
+
+    st.subheader("📊 Market Chart")
 
 
     fig = go.Figure()
@@ -347,32 +282,8 @@ Take Profit:
     st.subheader("⚡ Agent Execution Center")
 
 
-    if direction == "LONG 📈":
-
-        action = "OPEN LONG 📈"
-
-    elif direction == "SHORT 📉":
-
-        action = "OPEN SHORT 📉"
-
-    else:
-
-        action = "WAIT ⏳"
-
-
-
-    e1, e2 = st.columns(2)
-
-
-    e1.metric(
-        "🤖 Agent Action",
-        action
-    )
-
-
-    e2.metric(
-        "⚙️ Execution",
-        "Virtual Trade Created ✅"
+    st.success(
+        f"Virtual Execution Created ✅ {direction}"
     )
 
 
@@ -380,18 +291,24 @@ Take Profit:
     st.subheader("🧾 Agent Memory")
 
 
-    m1, m2, m3 = st.columns(3)
+    m1,m2,m3 = st.columns(3)
 
 
-    m1.metric("💎 Asset", symbol)
+    m1.metric(
+        "Asset",
+        symbol
+    )
 
-    m2.metric("📍 Decision", direction)
 
-    m3.metric("🎯 Confidence", confidence)
+    m2.metric(
+        "Decision",
+        direction
+    )
 
 
-    st.success(
-        "Decision saved to Agent Memory ✅"
+    m3.metric(
+        "Confidence",
+        confidence
     )
 
 
@@ -399,6 +316,4 @@ Take Profit:
     st.subheader("🧠 Qwen AI Trading Report")
 
 
-    st.write(
-        response_text
-    )
+    st.write(report)
