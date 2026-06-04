@@ -182,7 +182,7 @@ if st.button("🤖 Launch AI Agent"):
         confidence = "60%"
         sl = "Waiting"
         tp = "Waiting"
-if demo_mode:
+        if demo_mode:
 
         response_text = """
 📊 DEMO AI TRADING REPORT
