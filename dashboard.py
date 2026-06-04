@@ -19,20 +19,12 @@ st.title("🤖 AI Trade Guardian")
 st.markdown("""
 ### Autonomous Crypto Trading Agent 🚀
 
-Powered by:
-🧠 Alibaba Qwen AI | 📡 Bitget API
+Powered by:  
+🧠 **Alibaba Qwen AI** | 📡 **Bitget API**
 
 🏆 Bitget AI Hackathon
 
 📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
-
-**Features**
-
-🧠 AI Market Reasoning  
-📈 Live Market Data  
-📊 RSI + EMA Strategy  
-⚡ Multi-Timeframe Scanner  
-🎯 Smart Risk Engine
 """)
 
 
@@ -54,14 +46,41 @@ client = OpenAI(
 )
 
 
+# =====================
+# MARKET SELECTOR
+# =====================
 
 st.subheader("📈 Market Scanner")
 
 
-symbol = st.text_input(
-    "Trading Pair",
-    value="BGBUSDT"
-).upper()
+default_coin = st.selectbox(
+    "🔥 Top Crypto Assets",
+    [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BGBUSDT",
+        "SOLUSDT",
+        "BNBUSDT",
+        "XRPUSDT",
+        "DOGEUSDT",
+        "ADAUSDT",
+        "AVAXUSDT",
+        "LINKUSDT"
+    ]
+)
+
+
+custom_coin = st.text_input(
+    "🔎 Custom Bitget Pair",
+    placeholder="Example: SUIUSDT"
+)
+
+
+symbol = (
+    custom_coin.upper().strip()
+    if custom_coin
+    else default_coin
+)
 
 
 
@@ -99,18 +118,9 @@ if st.button("🤖 Launch AI Agent"):
     df = get_data()
 
 
-    df["EMA20"] = (
-        df["close"]
-        .ewm(span=20)
-        .mean()
-    )
+    df["EMA20"] = df["close"].ewm(span=20).mean()
 
-
-    df["EMA50"] = (
-        df["close"]
-        .ewm(span=50)
-        .mean()
-    )
+    df["EMA50"] = df["close"].ewm(span=50).mean()
 
 
     price = df["close"].iloc[-1]
@@ -120,14 +130,19 @@ if st.button("🤖 Launch AI Agent"):
 
         direction = "LONG 📈"
         signal = "BUY 🟢"
+
         sl = round(price * 0.98,2)
+
         tp = round(price * 1.04,2)
+
 
     else:
 
         direction = "SHORT 📉"
         signal = "SELL 🔴"
+
         sl = round(price * 1.02,2)
+
         tp = round(price * 0.96,2)
 
 
@@ -140,10 +155,10 @@ if st.button("🤖 Launch AI Agent"):
 📊 DEMO AI REPORT
 
 📊 Perceive:
-Market scanned successfully.
+Bitget market scanned.
 
 🧠 Decide:
-Trading decision generated.
+AI decision generated.
 
 ⚡ Execute:
 Virtual trade created.
@@ -151,7 +166,7 @@ Virtual trade created.
 🛡 Risk:
 SL / TP calculated.
 
-🧪 Demo Mode
+🧪 Demo Mode Active
 Qwen credits saved ✅
 """
 
@@ -165,7 +180,6 @@ Qwen credits saved ✅
                 model="qwen3.6-flash",
 
                 messages=[
-
                     {
                         "role":"system",
                         "content":
@@ -191,9 +205,7 @@ TP:
 {tp}
 """
                     }
-
                 ]
-
             )
 
 
@@ -207,38 +219,19 @@ TP:
     a,b,c = st.columns(3)
 
 
-    a.metric(
-        "Direction",
-        direction
-    )
+    a.metric("Direction", direction)
 
+    b.metric("Confidence", confidence)
 
-    b.metric(
-        "Confidence",
-        confidence
-    )
-
-
-    c.metric(
-        "Signal",
-        signal
-    )
-
+    c.metric("Signal", signal)
 
 
     x,y = st.columns(2)
 
 
-    x.metric(
-        "🛑 Stop Loss",
-        sl
-    )
+    x.metric("🛑 Stop Loss", sl)
 
-
-    y.metric(
-        "💰 Take Profit",
-        tp
-    )
+    y.metric("💰 Take Profit", tp)
 
 
 
@@ -294,22 +287,11 @@ TP:
     m1,m2,m3 = st.columns(3)
 
 
-    m1.metric(
-        "Asset",
-        symbol
-    )
+    m1.metric("Asset", symbol)
 
+    m2.metric("Decision", direction)
 
-    m2.metric(
-        "Decision",
-        direction
-    )
-
-
-    m3.metric(
-        "Confidence",
-        confidence
-    )
+    m3.metric("Confidence", confidence)
 
 
 
