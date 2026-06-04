@@ -490,39 +490,44 @@ Risk management
         "⚙️ Execution",
         execution
     )
+    # =====================
+    # AGENT MEMORY
+    # =====================
 
+    st.subheader("🧾 Agent Memory")
 
-   st.subheader("🧾 Agent Memory")
+    col1, col2, col3 = st.columns(3)
 
-    m1, m2, m3 = st.columns(3)
+    with col1:
+        st.metric(
+            "💎 Asset",
+            symbol
+        )
 
-    m1.metric(
-        "💎 Asset",
-        symbol
-    )
+    with col2:
+        st.metric(
+            "📍 Decision",
+            direction
+        )
 
-    m2.metric(
-        "📍 Decision",
-        direction
-    )
+    with col3:
+        st.metric(
+            "🎯 Confidence",
+            confidence
+        )
 
-    m3.metric(
-        "🎯 Confidence",
-        confidence
-    )
+    col4, col5 = st.columns(2)
 
-    m4, m5 = st.columns(2)
+    with col4:
+        st.metric(
+            "🛑 Stop Loss",
+            sl
+        )
 
-    m4.metric(
-        "🛑 Stop Loss",
-        sl
-    )
+    with col5:
+        st.metric(
+            "💰 Take Profit",
+            tp
+        )
 
-    m5.metric(
-        "💰 Take Profit",
-        tp
-    )
-
-    st.success(
-        "Decision saved to Agent Memory ✅"
-    )
+    st.success("Decision saved to Agent Memory ✅")
