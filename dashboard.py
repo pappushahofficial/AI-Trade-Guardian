@@ -283,119 +283,56 @@ Take Profit:
             )
 st.subheader("🤖 AI Agent Decision")
 
-
     c1, c2, c3 = st.columns(3)
 
+    c1.metric("📍 Direction", direction)
 
-    c1.metric(
-        "📍 Direction",
-        direction
-    )
+    c2.metric("🎯 Confidence", confidence)
 
-
-    c2.metric(
-        "🎯 Confidence",
-        confidence
-    )
-
-
-    c3.metric(
-        "🤖 Signal",
-        signal
-    )
-
-
-
-    c4, c5 = st.columns(2)
-
-
-    c4.metric(
-        "🛑 Stop Loss",
-        sl
-    )
-
-
-    c5.metric(
-        "💰 Take Profit",
-        tp
-    )
-
-
-
-    st.subheader("📊 Multi-Timeframe")
-
-
-    a, b, c = st.columns(3)
-
-
-    a.metric(
-        "15m",
-        t15
-    )
-
-
-    b.metric(
-        "1H",
-        t1
-    )
-
-
-    c.metric(
-        "4H",
-        t4
-    )
-
-
-
-    fig = go.Figure()
-
-
-    fig.add_trace(
-        go.Scatter(
-            y=df["close"],
-            name="Price"
-        )
-    )
-
-
-    fig.add_trace(
-        go.Scatter(
-            y=df["EMA20"],
-            name="EMA20"
-        )
-    )
-
-
-    fig.add_trace(
-        go.Scatter(
-            y=df["EMA50"],
-            name="EMA50"
-        )
-    )
-
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
+    c3.metric("🤖 Signal", signal)
 
 
     st.subheader("⚡ Agent Execution Center")
 
-
     if direction == "LONG 📈":
-
         action = "OPEN LONG 📈"
 
     elif direction == "SHORT 📉":
-
         action = "OPEN SHORT 📉"
 
     else:
-
         action = "WAIT ⏳"
 
+
+    x1, x2 = st.columns(2)
+
+    x1.metric("🤖 Agent Action", action)
+
+    x2.metric(
+        "⚙️ Execution",
+        "Virtual Trade Created ✅"
+    )
+
+
+    st.subheader("🧾 Agent Memory")
+
+    m1, m2, m3 = st.columns(3)
+
+    m1.metric("💎 Asset", symbol)
+
+    m2.metric("📍 Decision", direction)
+
+    m3.metric("🎯 Confidence", confidence)
+
+
+    st.success(
+        "Decision saved to Agent Memory ✅"
+    )
+
+
+    st.subheader("🧠 Qwen AI Trading Report")
+
+    st.write(response_text)
 
 
     x1, x2 = st.columns(2)
