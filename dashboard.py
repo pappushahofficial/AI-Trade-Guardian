@@ -43,10 +43,6 @@ Powered by:
 
 
 st.success("🟢 Trading Agent Online")
-demo_mode = st.toggle(
-    "🧪 Demo Mode (Save Qwen Credits)",
-    value=True
-)
 
 
 
@@ -295,38 +291,8 @@ if st.button("🤖 Launch AI Agent"):
 
             tp = "Waiting"
 
-if demo_mode:
-
-            class DemoResponse:
-                class Choice:
-                    class Message:
-                        content = """
-📊 Demo Trading Report
-
-Market structure analysed successfully.
-
-🤖 AI Agent Simulation:
-📊 Perceive → 🧠 Decide → ⚡ Execute
-
-📈 Strategy:
-Multi-timeframe RSI + EMA checked.
-
-🛡 Risk:
-Stop Loss and Take Profit prepared.
-
-🧪 Demo Mode Active
-Qwen credits saved.
-"""
-
-                    message = Message()
-
-                choices = [Choice()]
 
 
-            response = DemoResponse()
-
-
-        else:
         response = client.chat.completions.create(
 
             model="qwen3.6-flash",
