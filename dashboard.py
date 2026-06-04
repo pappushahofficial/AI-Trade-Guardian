@@ -170,6 +170,33 @@ Autonomous Trading Agent
 
 
     st.success("🟢 Online")
+    st.markdown(
+    """
+<div class="card">
+
+<h4>🤖 AGENT STATUS</h4>
+
+<br>
+
+🟢 <b>Status:</b> Online
+
+<br><br>
+
+⏱ <b>Uptime:</b> 02:45:32
+
+<br><br>
+
+📈 <b>Signals Today:</b> 12
+
+<br><br>
+
+🎯 <b>Accuracy:</b> 85.6%
+
+</div>
+
+""",
+    unsafe_allow_html=True
+    )
 
 
     st.markdown("---")
