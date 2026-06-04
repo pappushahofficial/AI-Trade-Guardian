@@ -175,32 +175,23 @@ Autonomous Trading Agent
     st.markdown("---")
 
 
-    menu = st.sidebar.radio(
-    "Menu",
-    [
-        "📈 Market Scanner",
-        "⭐ Watchlist",
-        "ℹ️ About Agent",
-        "⚙️ Settings"
-    ]
-)
+    st.markdown(
+    """
+### Menu
 
+📈 Market Scanner
 
-if menu == "⚙️ Settings":
+📊 Dashboard
 
-    theme = st.sidebar.toggle(
-        "🌙 Dark Mode",
-        value=True
+💼 Portfolio
+
+🕒 Trade History
+
+⭐ Watchlist
+
+⚙️ Settings
+"""
     )
-
-    if theme:
-        st.sidebar.success(
-            "Dark Mode Active"
-        )
-    else:
-        st.sidebar.info(
-            "Light Mode Active"
-        )
 
 
     st.markdown(
