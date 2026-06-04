@@ -220,8 +220,7 @@ Qwen credits saved ✅
 """
 
 else:
-
-        with st.spinner("🧠 Qwen AI analysing..."):
+    with st.spinner("🧠 Qwen AI analysing..."):
 
             response = client.chat.completions.create(
 
