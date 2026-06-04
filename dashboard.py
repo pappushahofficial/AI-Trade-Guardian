@@ -138,11 +138,27 @@ with st.sidebar:
 
     st.markdown(
     """
-# 🤖 AI Trade  
-# Guardian
+<div style="text-align:center">
 
+<div style="
+font-size:60px;
+background:linear-gradient(135deg,#06b6d4,#9333ea);
+border-radius:25px;
+padding:15px;
+margin-bottom:10px;
+">
+🤖
+</div>
+
+<h2>AI Trade<br>Guardian</h2>
+
+<p style="color:#94a3b8">
 Autonomous Trading Agent
-"""
+</p>
+
+</div>
+""",
+    unsafe_allow_html=True
     )
 
 
