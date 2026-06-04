@@ -215,8 +215,14 @@ if menu == "⚙️ Settings":
             "Light Theme Active"
         )
 
-    st.markdown(
-    """
+    # ======================
+# AGENT STATUS
+# ======================
+
+st.sidebar.markdown("---")
+
+st.sidebar.markdown(
+"""
 <div class="card">
 
 <h4>🤖 AGENT STATUS</h4>
@@ -231,22 +237,30 @@ if menu == "⚙️ Settings":
 
 </div>
 """,
-    unsafe_allow_html=True
-    )
+unsafe_allow_html=True
+)
 
 
-    st.markdown("---")
+# ======================
+# POWERED BY
+# ======================
 
+st.sidebar.markdown("---")
 
-    st.info(
-    """
-POWERED BY
-
-🧠 Alibaba Qwen AI
-
-📡 Bitget API
+st.sidebar.markdown(
 """
-    )
+<div class="card">
+
+<h4>POWERED BY</h4>
+
+<p>🧠 Alibaba Qwen AI</p>
+
+<p>📡 Bitget API</p>
+
+</div>
+""",
+unsafe_allow_html=True
+)
 
 
 
