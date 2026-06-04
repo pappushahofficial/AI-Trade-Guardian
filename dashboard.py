@@ -326,6 +326,10 @@ st.markdown(
 
 <h2>📈 Market Scanner</h2>
 
+<p style="color:#94a3b8;">
+Real-time Bitget AI market scanner
+</p>
+
 </div>
 """,
 unsafe_allow_html=True
