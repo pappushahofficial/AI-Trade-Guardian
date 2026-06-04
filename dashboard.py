@@ -14,8 +14,9 @@ st.set_page_config(
 
 
 # ======================
-# STYLE
+# PRO DARK DASHBOARD UI
 # ======================
+
 
 st.markdown(
 """
@@ -26,36 +27,99 @@ st.markdown(
     color:white;
 }
 
+
+.block-container {
+    padding-top:2rem;
+}
+
+
 section[data-testid="stSidebar"] {
-    background:#0f172a;
+
+    background:
+    linear-gradient(
+    180deg,
+    #050816,
+    #0f172a
+    );
+
 }
 
-.card {
-    background:#0f172a;
-    padding:25px;
-    border-radius:20px;
-    border:1px solid #334155;
-    box-shadow:0 0 25px #020617;
-}
-
-.stButton button {
-    width:100%;
-    height:55px;
-    border-radius:18px;
-    background:linear-gradient(90deg,#06b6d4,#9333ea);
-    color:white;
-    border:none;
-}
-
-[data-testid="stMetric"] {
-    background:#0f172a;
-    padding:15px;
-    border-radius:15px;
-}
 
 h1,h2,h3 {
     color:white;
 }
+
+
+.card {
+
+    background:#0f172a;
+
+    padding:25px;
+
+    border-radius:25px;
+
+    border:1px solid #1e293b;
+
+    box-shadow:
+    0 0 25px #020617;
+
+}
+
+
+.neon {
+
+    color:#22d3ee;
+
+}
+
+
+.stButton button {
+
+    height:60px;
+
+    width:100%;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+    90deg,
+    #06b6d4,
+    #9333ea
+    );
+
+    color:white;
+
+    font-size:22px;
+
+    border:none;
+
+}
+
+
+[data-testid="stMetric"] {
+
+    background:#0f172a;
+
+    padding:20px;
+
+    border-radius:20px;
+
+    border:1px solid #334155;
+
+}
+
+
+.stTextInput input {
+
+    background:#020617;
+
+    color:white;
+
+    border-radius:15px;
+
+}
+
 
 </style>
 """,
@@ -63,8 +127,126 @@ unsafe_allow_html=True
 )
 
 
+
 # ======================
-# BITGET DATA FUNCTION
+# SIDEBAR
+# ======================
+
+
+with st.sidebar:
+
+
+    st.markdown(
+    """
+<div style="text-align:center">
+
+<div style="
+font-size:65px;
+width:90px;
+height:90px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#111827;
+border-radius:25px;
+border:2px solid #22d3ee;
+box-shadow:0 0 30px #06b6d4;
+margin-bottom:15px;
+">
+🤖
+</div>
+
+<h2>AI Trade<br>Guardian</h2>
+
+<p style="color:#94a3b8">
+Autonomous Trading Agent
+</p>
+
+</div>
+""",
+    unsafe_allow_html=True
+    )
+
+
+# ======================
+# CLICKABLE MENU
+# ======================
+
+
+menu = st.sidebar.radio(
+    "Menu",
+    [
+        "📈 Market Scanner",
+        "⭐ Watchlist",
+        "ℹ️ About Agent",
+        "⚙️ Settings"
+    ]
+)
+
+
+# ======================
+# AGENT STATUS
+# ======================
+
+
+st.sidebar.markdown("---")
+
+
+st.sidebar.markdown(
+"""
+<div class="card">
+
+<h4>🤖 AGENT STATUS</h4>
+
+<p>🟢 <b>Status:</b> Online</p>
+
+<p>⏱ <b>Uptime:</b> 02:45:32</p>
+
+<p>📈 <b>Signals Today:</b> 12</p>
+
+<p>🎯 <b>Accuracy:</b> 85.6%</p>
+
+</div>
+""",
+unsafe_allow_html=True
+)
+
+
+st.sidebar.markdown("---")
+
+
+st.sidebar.markdown(
+"""
+<div class="card">
+
+<h4>POWERED BY</h4>
+
+<p>🧠 Alibaba Qwen AI</p>
+
+<p>📡 Bitget API</p>
+
+</div>
+""",
+unsafe_allow_html=True
+)
+# ======================
+# API
+# ======================
+
+QWEN_API_KEY = os.getenv(
+    "BITGET_QWEN_API_KEY"
+)
+
+client = OpenAI(
+    api_key=QWEN_API_KEY,
+    base_url="https://hackathon.bitgetops.com/v1"
+)
+
+
+
+# ======================
+# BITGET DATA
 # ======================
 
 def get_data(symbol):
@@ -91,121 +273,117 @@ def get_data(symbol):
         "volume"
     ]
 
-    for c in [
+    for col in [
         "open",
         "high",
         "low",
         "close"
     ]:
-        df[c] = df[c].astype(float)
+
+        df[col] = (
+            df[col]
+            .astype(float)
+        )
 
     return df
 
 
-# ======================
-# QWEN
-# ======================
-
-QWEN_API_KEY = os.getenv(
-    "BITGET_QWEN_API_KEY"
-)
-
-
-client = OpenAI(
-    api_key=QWEN_API_KEY,
-    base_url="https://hackathon.bitgetops.com/v1"
-)
-
 
 # ======================
-# SIDEBAR
+# WATCHLIST PAGE
 # ======================
 
-with st.sidebar:
+if menu == "⭐ Watchlist":
 
-    st.markdown(
-    """
-<div style="text-align:center">
 
-<div style="
-font-size:60px;
-width:90px;
-height:90px;
-margin:auto;
-display:flex;
-align-items:center;
-justify-content:center;
-background:#111827;
-border-radius:25px;
-border:2px solid #22d3ee;
-box-shadow:0 0 25px #06b6d4;">
-🤖
-</div>
-
-<h2>AI Trade<br>Guardian</h2>
-
-</div>
-""",
-    unsafe_allow_html=True
+    st.title(
+        "⭐ Watchlist"
     )
 
 
-menu = st.sidebar.radio(
-    "Menu",
-    [
-        "📈 Market Scanner",
-        "⭐ Watchlist",
-        "ℹ️ About Agent",
-        "⚙️ Settings"
+    watchlist = [
+        "BTCUSDT",
+        "ETHUSDT",
+        "SOLUSDT",
+        "BGBUSDT"
     ]
-)
 
 
-st.sidebar.markdown("---")
+    for coin in watchlist:
 
 
-st.sidebar.markdown(
-"""
-<div class="card">
-
-<h4>🤖 AGENT STATUS</h4>
-
-<p>🟢 Status: Online</p>
-
-<p>⏱ Uptime: 02:45:32</p>
-
-<p>📈 Signals Today: 12</p>
-
-<p>🎯 Accuracy: 85.6%</p>
-
-</div>
-""",
-unsafe_allow_html=True
-)
+        df = get_data(
+            coin
+        )
 
 
-st.sidebar.markdown("---")
+        price = (
+            df["close"]
+            .iloc[-1]
+        )
 
 
-st.sidebar.markdown(
-"""
-<div class="card">
+        c1,c2,c3 = st.columns(
+            [2,2,1]
+        )
 
-<h4>POWERED BY</h4>
 
-<p>🧠 Alibaba Qwen AI</p>
+        c1.write(
+            "🟢 " + coin
+        )
 
-<p>📡 Bitget API</p>
 
-</div>
-""",
-unsafe_allow_html=True
-)
+        c2.write(
+            f"💰 {price}"
+        )
+
+
+        show = c3.button(
+            "📈 Chart",
+            key=coin
+        )
+
+
+        if show:
+
+
+            st.subheader(
+                f"📈 {coin} Live Chart"
+            )
+
+
+            fig = go.Figure(
+                data=[
+                    go.Candlestick(
+                        x=df["time"],
+                        open=df["open"],
+                        high=df["high"],
+                        low=df["low"],
+                        close=df["close"]
+                    )
+                ]
+            )
+
+
+            fig.update_layout(
+                height=450,
+                xaxis_rangeslider_visible=False
+            )
+
+
+            st.plotly_chart(
+                fig,
+                use_container_width=True
+            )
+
+
+
 # ======================
-# MARKET SCANNER PAGE
+# HEADER
 # ======================
 
 if menu == "📈 Market Scanner":
+
 
     st.title(
         "Autonomous Crypto Trading Agent 🚀"
@@ -213,8 +391,12 @@ if menu == "📈 Market Scanner":
 
 
     st.markdown(
-    """
+"""
+### Powered by
+
 🧠 **Alibaba Qwen AI** | 📡 **Bitget API**
+
+🏆 Bitget AI Hackathon
 
 📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
 """
@@ -227,30 +409,12 @@ if menu == "📈 Market Scanner":
     )
 
 
-    c1,c2,c3 = st.columns(3)
-
-    c1.metric(
-        "🧠 Qwen AI",
-        "Connected"
-    )
-
-    c2.metric(
-        "📡 Bitget",
-        "Connected"
-    )
-
-    c3.metric(
-        "🤖 Agent",
-        "Online"
-    )
-
-
     st.subheader(
         "📈 Market Scanner"
     )
 
 
-    coin = st.selectbox(
+    default_coin = st.selectbox(
         "🔥 Top Crypto Assets",
         [
             "BTCUSDT",
@@ -258,21 +422,25 @@ if menu == "📈 Market Scanner":
             "BGBUSDT",
             "SOLUSDT",
             "BNBUSDT",
-            "XRPUSDT"
+            "XRPUSDT",
+            "DOGEUSDT",
+            "ADAUSDT",
+            "AVAXUSDT",
+            "LINKUSDT"
         ]
     )
 
 
-    custom = st.text_input(
+    custom_coin = st.text_input(
         "🔎 Custom Bitget Pair",
         placeholder="Example: SUIUSDT"
     )
 
 
     symbol = (
-        custom.upper()
-        if custom
-        else coin
+        custom_coin.upper().strip()
+        if custom_coin
+        else default_coin
     )
 
 
@@ -280,75 +448,14 @@ if menu == "📈 Market Scanner":
         "🤖 Launch AI Agent"
     ):
 
+
         df = get_data(
             symbol
         )
 
 
-        df["EMA20"] = (
-            df["close"]
-            .ewm(span=20)
-            .mean()
-        )
-
-
-        df["EMA50"] = (
-            df["close"]
-            .ewm(span=50)
-            .mean()
-        )
-
-
-        price = df["close"].iloc[-1]
-
-
-        if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
-
-            decision = "LONG 📈"
-
-            sl = round(price * 0.98,2)
-
-            tp = round(price * 1.04,2)
-
-        else:
-
-            decision = "SHORT 📉"
-
-            sl = round(price * 1.02,2)
-
-            tp = round(price * 0.96,2)
-
-
-        a,b,c = st.columns(3)
-
-
-        a.metric(
-            "Decision",
-            decision
-        )
-
-
-        b.metric(
-            "Confidence",
-            "85%"
-        )
-
-
-        c.metric(
-            "Price",
-            price
-        )
-
-
-        st.metric(
-            "🛑 SL",
-            sl
-        )
-
-
-        st.metric(
-            "🎯 TP",
-            tp
+        st.success(
+            "🤖 Agent Analysis Complete"
         )
 
 
@@ -367,134 +474,3 @@ if menu == "📈 Market Scanner":
             fig,
             use_container_width=True
         )
-
-
-        st.success(
-            "⚡ Virtual Execution Created"
-        )
-
-
-
-# ======================
-# WATCHLIST
-# ======================
-
-if menu == "⭐ Watchlist":
-
-    st.title("⭐ Watchlist")
-
-
-    coins = [
-        "BTCUSDT",
-        "ETHUSDT",
-        "SOLUSDT",
-        "BGBUSDT"
-    ]
-
-
-    for coin in coins:
-
-        df = get_data(
-            coin
-        )
-
-        price = df["close"].iloc[-1]
-
-
-        col1,col2,col3 = st.columns(
-            [2,2,1]
-        )
-
-
-        col1.write(
-            "🟢 " + coin
-        )
-
-
-        col2.write(
-            f"💰 {price}"
-        )
-
-
-        open_chart = col3.button(
-            "📈 Chart",
-            key=coin
-        )
-
-
-        if open_chart:
-
-            st.subheader(
-                coin
-            )
-
-
-            fig = go.Figure(
-                data=[
-                    go.Candlestick(
-                        x=df["time"],
-                        open=df["open"],
-                        high=df["high"],
-                        low=df["low"],
-                        close=df["close"]
-                    )
-                ]
-            )
-
-
-            st.plotly_chart(
-                fig,
-                use_container_width=True
-            )
-
-
-
-# ======================
-# ABOUT
-# ======================
-
-if menu == "ℹ️ About Agent":
-
-    st.title(
-        "🤖 AI Trade Guardian"
-    )
-
-    st.write(
-        """
-AI autonomous trading assistant.
-
-Powered by:
-
-🧠 Alibaba Qwen AI
-
-📡 Bitget Market API
-
-Flow:
-
-📊 Perceive
-
-🧠 Decide
-
-⚡ Execute
-
-🛡 Manage Risk
-"""
-    )
-
-
-
-# ======================
-# SETTINGS
-# ======================
-
-if menu == "⚙️ Settings":
-
-    st.title(
-        "⚙️ Settings"
-    )
-
-
-    st.toggle(
-        "🌙 Dark Mode",
-        value=True
-    )
