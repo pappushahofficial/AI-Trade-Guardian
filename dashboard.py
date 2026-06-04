@@ -141,11 +141,18 @@ with st.sidebar:
 <div style="text-align:center">
 
 <div style="
-font-size:60px;
-background:linear-gradient(135deg,#06b6d4,#9333ea);
+font-size:65px;
+width:90px;
+height:90px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#111827;
 border-radius:25px;
-padding:15px;
-margin-bottom:10px;
+border:2px solid #22d3ee;
+box-shadow:0 0 30px #06b6d4;
+margin-bottom:15px;
 ">
 🤖
 </div>
