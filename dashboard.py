@@ -240,13 +240,20 @@ if st.button("🤖 Launch AI Agent"):
         tp = "Waiting"
         if demo_mode:
 
-        class DemoResponse:
-
-            class Choice:
-
-                class Message:
-
-                    content = """
+        response = type(
+            "DemoResponse",
+            (),
+            {
+                "choices": [
+                    type(
+                        "Choice",
+                        (),
+                        {
+                            "message": type(
+                                "Message",
+                                (),
+                                {
+                                    "content": """
 📊 DEMO AI TRADING REPORT
 
 🤖 AI Trade Guardian Simulation
@@ -266,249 +273,10 @@ Stop Loss and Take Profit prepared.
 🧪 Demo Mode Active
 Qwen credits saved ✅
 """
-
-                message = Message()
-
-            choices = [Choice()]
-
-
-        response = DemoResponse()
-
-
-    else:
-
-        with st.spinner(
-            "🧠 Qwen AI analysing market..."
-        ):
-
-            response = client.chat.completions.create(
-
-                model="qwen3.6-flash",
-
-                messages=[
-
-                    {
-                        "role":"system",
-                        "content":
-                        "You are a professional autonomous crypto trading agent."
-                    },
-
-
-                    {
-                        "role":"user",
-
-                        "content":
-
-                        f"""
-Create professional trading analysis.
-
-Asset:
-{symbol}
-
-15m:
-{t15}
-
-1H:
-{t1}
-
-4H:
-{t4}
-
-Decision:
-{direction}
-
-Confidence:
-{confidence}
-
-Stop Loss:
-{sl}
-
-Take Profit:
-{tp}
-
-Include:
-Technical analysis
-Trade reasoning
-Risk management
-"""
-                    }
-
+                                }
+                            )()
+                        }
+                    )()
                 ]
-
-            )
-
-
-
-    st.subheader("🤖 AI Agent Decision")
-
-
-    a,b,c = st.columns(3)
-
-
-    a.metric(
-        "📍 Direction",
-        direction
-    )
-
-
-    b.metric(
-        "🎯 Confidence",
-        confidence
-    )
-
-
-    c.metric(
-        "🤖 Signal",
-        signal
-    )
-
-
-
-    d,e = st.columns(2)
-
-
-    d.metric(
-        "🛑 Stop Loss",
-        sl
-    )
-
-
-    e.metric(
-        "💰 Take Profit",
-        tp
-    )
-
-
-
-    st.subheader("📊 Multi-Timeframe View")
-
-
-    x,y,z = st.columns(3)
-
-
-    x.metric(
-        "⚡ 15m",
-        t15
-    )
-
-
-    y.metric(
-        "📈 1H",
-        t1
-    )
-
-
-    z.metric(
-        "🏦 4H",
-        t4
-    )
-
-
-
-    fig = go.Figure()
-
-
-    fig.add_trace(
-        go.Scatter(
-            y=df["close"],
-            name="Price"
-        )
-    )
-
-
-    fig.add_trace(
-        go.Scatter(
-            y=df["EMA20"],
-            name="EMA20"
-        )
-    )
-
-
-    fig.add_trace(
-        go.Scatter(
-            y=df["EMA50"],
-            name="EMA50"
-        )
-    )
-
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
-
-
-    st.subheader("⚡ Agent Execution Center")
-
-
-    if direction == "LONG 📈":
-
-        action = "OPEN LONG POSITION 📈"
-
-    elif direction == "SHORT 📉":
-
-        action = "OPEN SHORT POSITION 📉"
-
-    else:
-
-        action = "NO POSITION ⏳"
-
-
-
-    col1,col2 = st.columns(2)
-
-
-    col1.metric(
-        "🤖 Agent Action",
-        action
-    )
-
-
-    col2.metric(
-        "⚙️ Execution",
-        "Virtual Trade Created ✅"
-        if action != "NO POSITION ⏳"
-        else "Waiting"
-    )
-
-
-
-    st.subheader("🧾 Agent Memory")
-
-
-    m1,m2,m3 = st.columns(3)
-
-
-    m1.metric(
-        "💎 Asset",
-        symbol
-    )
-
-
-    m2.metric(
-        "📍 Decision",
-        direction
-    )
-
-
-    m3.metric(
-        "🎯 Confidence",
-        confidence
-    )
-
-
-    st.success(
-        "Decision saved to Agent Memory ✅"
-    )
-
-
-
-    st.subheader(
-        "🧠 Qwen AI Trading Report"
-    )
-
-
-    st.write(
-        response.choices[0].message.content
-    )
+            }
+        )()
