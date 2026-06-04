@@ -170,7 +170,6 @@ Autonomous Trading Agent
 
 
     st.success("🟢 Online")
-    
 
 
     st.markdown("---")
@@ -201,24 +200,6 @@ Autonomous Trading Agent
     st.info(
     """
 POWERED BY
-st.markdown(
-    """
-<div class="card">
-
-<h4>🤖 AGENT STATUS</h4>
-
-<p>🟢 <b>Status:</b> Online</p>
-
-<p>⏱ <b>Uptime:</b> 02:45:32</p>
-
-<p>📈 <b>Signals Today:</b> 12</p>
-
-<p>🎯 <b>Accuracy:</b> 85.6%</p>
-
-</div>
-""",
-    unsafe_allow_html=True
-    )
 
 🧠 Alibaba Qwen AI
 
@@ -662,98 +643,4 @@ Take Profit:
 
     st.write(
         report
-    )
-    # ======================
-# AGENT WORKFLOW CARDS
-# ======================
-
-
-st.markdown("## 🤖 Agent Workflow")
-
-
-w1,w2,w3,w4 = st.columns(4)
-
-
-with w1:
-
-    st.markdown(
-    """
-<div class="card" style="text-align:center">
-
-<h1>👁</h1>
-
-<h3>Perceive</h3>
-
-<p>
-Scanning real-time
-market data from
-Bitget API
-</p>
-
-</div>
-""",
-    unsafe_allow_html=True
-    )
-
-
-with w2:
-
-    st.markdown(
-    """
-<div class="card" style="text-align:center">
-
-<h1>🧠</h1>
-
-<h3>Decide</h3>
-
-<p>
-AI reasoning using
-Alibaba Qwen model
-</p>
-
-</div>
-""",
-    unsafe_allow_html=True
-    )
-
-
-with w3:
-
-    st.markdown(
-    """
-<div class="card" style="text-align:center">
-
-<h1>⚡</h1>
-
-<h3>Execute</h3>
-
-<p>
-Generate smart
-trading actions
-</p>
-
-</div>
-""",
-    unsafe_allow_html=True
-    )
-
-
-with w4:
-
-    st.markdown(
-    """
-<div class="card" style="text-align:center">
-
-<h1>🛡</h1>
-
-<h3>Manage Risk</h3>
-
-<p>
-Calculate SL/TP
-and protect trades
-</p>
-
-</div>
-""",
-    unsafe_allow_html=True
     )
