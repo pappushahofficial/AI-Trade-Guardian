@@ -282,7 +282,7 @@ c4.metric(
     "Live",
     "Ready"
 )
-with w2:
+withw2:
 
     st.markdown(
     """
