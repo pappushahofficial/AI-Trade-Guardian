@@ -531,3 +531,14 @@ Risk management
         )
 
     st.success("Decision saved to Agent Memory ✅")
+# =====================
+    # QWEN AI REPORT
+    # =====================
+
+    st.subheader(
+        "🧠 Qwen AI Trading Report"
+    )
+
+    st.write(
+        response.choices[0].message.content
+    )
