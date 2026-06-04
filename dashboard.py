@@ -15,105 +15,79 @@ st.markdown(
 """
 <style>
 
-/* AI TRADE GUARDIAN MODERN UI */
+/* ===== AI TRADE GUARDIAN PRO UI ===== */
 
-
-/* Background */
 .stApp {
+    background:
+    radial-gradient(circle at top left,#172554,#020617 45%);
+    color:white;
+}
 
+
+.block-container {
+    padding-top:2rem;
+    max-width:1200px;
+}
+
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
     background:
     linear-gradient(
-        135deg,
+        180deg,
         #020617,
-        #111827
+        #0f172a
     );
 
-    color:white;
-
+    border-right:
+    1px solid #1e293b;
 }
 
 
-/* Main container */
-.block-container {
-
-    padding-top:2rem;
-
-}
-
-
-/* Title glow */
+/* Titles */
 h1 {
 
-    color:white;
+    color:#f8fafc;
 
     text-shadow:
-    0 0 20px #38bdf8;
+    0 0 25px #06b6d4;
 
 }
 
 
-/* Headings */
 h2,h3 {
 
-    color:#e5e7eb;
+    color:#e2e8f0;
 
 }
 
 
-/* Launch Button */
+/* Button */
 .stButton button {
+
+    height:60px;
 
     width:100%;
 
-    height:55px;
-
-    border-radius:18px;
+    border-radius:20px;
 
     background:
     linear-gradient(
         90deg,
         #06b6d4,
-        #8b5cf6
+        #9333ea
     );
 
     color:white;
 
-    font-size:20px;
+    font-size:22px;
 
     font-weight:bold;
 
     border:none;
 
-}
-
-
-/* Button hover */
-.stButton button:hover {
-
-    transform:scale(1.02);
-
-}
-
-
-/* Metric Cards */
-[data-testid="stMetric"] {
-
-    background:
-    linear-gradient(
-        145deg,
-        #0f172a,
-        #1e293b
-    );
-
-    padding:20px;
-
-    border-radius:20px;
-
-    border:
-    1px solid #334155;
-
     box-shadow:
-    0px 0px 15px #0f172a;
+    0 0 25px #2563eb;
 
 }
 
@@ -127,6 +101,8 @@ h2,h3 {
 
     border-radius:15px;
 
+    height:50px;
+
 }
 
 
@@ -138,10 +114,33 @@ h2,h3 {
 }
 
 
-/* Alert boxes */
+/* Metrics */
+[data-testid="stMetric"] {
+
+    background:
+    linear-gradient(
+        145deg,
+        #111827,
+        #020617
+    );
+
+    padding:25px;
+
+    border-radius:25px;
+
+    border:
+    1px solid #334155;
+
+    box-shadow:
+    0 0 20px #020617;
+
+}
+
+
+/* Alerts */
 .stAlert {
 
-    border-radius:18px;
+    border-radius:20px;
 
 }
 
@@ -151,6 +150,63 @@ h2,h3 {
 unsafe_allow_html=True
 )
 
+
+
+# =====================
+# SIDEBAR UI
+# =====================
+
+
+with st.sidebar:
+
+
+    st.title("🤖 AI Trade\nGuardian")
+
+
+    st.caption(
+        "Autonomous Trading Agent"
+    )
+
+
+    st.markdown("---")
+
+
+    st.success(
+        "🟢 Agent Online"
+    )
+
+
+    st.markdown(
+        """
+### Menu
+
+📈 Market Scanner
+
+📊 Dashboard
+
+💼 Portfolio
+
+🕒 Trade History
+
+⭐ Watchlist
+
+⚙️ Settings
+"""
+    )
+
+
+    st.markdown("---")
+
+
+    st.info(
+        """
+POWERED BY
+
+🧠 Alibaba Qwen AI
+
+📡 Bitget API
+"""
+    )
 st.title("🤖 AI Trade Guardian")
 
 
