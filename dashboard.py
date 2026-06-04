@@ -324,8 +324,19 @@ client = OpenAI(
 # ======================
 
 
-st.subheader(
-    "📈 Market Scanner"
+st.markdown(
+"""
+<div class="card">
+
+<h2>📈 Market Scanner</h2>
+
+<p style="color:#94a3b8">
+Real-time Bitget market analysis
+</p>
+
+</div>
+""",
+unsafe_allow_html=True
 )
 
 
