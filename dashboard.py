@@ -282,7 +282,6 @@ c4.metric(
     "Live",
     "Ready"
 )
-
 with w2:
 
     st.markdown(
