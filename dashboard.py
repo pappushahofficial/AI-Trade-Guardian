@@ -283,7 +283,9 @@ Take Profit:
             )
 
 
-    st.subheader("🤖 AI Agent Decision")
+
+
+st.subheader("🤖 AI Agent Decision")
 
 
     c1, c2, c3 = st.columns(3)
