@@ -492,55 +492,16 @@ Risk management
     )
 
 
-st.subheader("🧾 Agent Memory")
+    st.subheader("🧾 Agent Memory")
 
 
-    m1,m2,m3 = st.columns(3)
+    memory = {
+        "Asset": symbol,
+        "Decision": direction,
+        "Confidence": confidence,
+        "SL": sl,
+        "TP": tp
+    }
 
 
-    m1.metric(
-        "💎 Asset",
-        symbol
-    )
-
-
-    m2.metric(
-        "📍 Decision",
-        direction
-    )
-
-
-    m3.metric(
-        "🎯 Confidence",
-        confidence
-    )
-
-
-    m4,m5 = st.columns(2)
-
-
-    m4.metric(
-        "🛑 Stop Loss",
-        sl
-    )
-
-
-    m5.metric(
-        "💰 Take Profit",
-        tp
-    )
-
-
-    st.success(
-        "Decision saved to Agent Memory ✅"
-    )
-
-
-    st.subheader(
-        "🧠 Qwen AI Trading Report"
-    )
-
-
-    st.write(
-        response.choices[0].message.content
-    )
+    st.json(memory)
