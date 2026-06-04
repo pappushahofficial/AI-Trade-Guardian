@@ -27,11 +27,11 @@ Powered by:
 📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
 
 Features:
-- AI Market Reasoning
-- Live Market Data
-- RSI + EMA Strategy
-- Multi-Timeframe Scanner
-- Smart Risk Engine
+- 🧠 AI Market Reasoning
+- 📈 Live Market Data
+- 📊 RSI + EMA Strategy
+- ⚡ Multi-Timeframe Scanner
+- 🎯 Smart Risk Engine
 """)
 
 
@@ -53,21 +53,11 @@ client = OpenAI(
 )
 
 
-st.subheader("🔗 Connections")
-
-
-st.success(
-    "🧠 Qwen Connected"
-    if QWEN_API_KEY
-    else "❌ Qwen Offline"
-)
-
-
 st.subheader("📈 Market Scanner")
 
 
 default_pair = st.selectbox(
-    "Select Pair",
+    "Select Asset",
     [
         "BTCUSDT",
         "ETHUSDT",
@@ -80,13 +70,16 @@ default_pair = st.selectbox(
 
 
 custom_pair = st.text_input(
-    "Custom Pair",
+    "Custom Bitget Pair",
     placeholder="Example: SUIUSDT"
 )
 
 
-symbol = custom_pair.upper() if custom_pair else default_pair
-
+symbol = (
+    custom_pair.upper().strip()
+    if custom_pair
+    else default_pair
+)
 
 
 def get_data(symbol, tf):
@@ -116,13 +109,9 @@ def get_data(symbol, tf):
     return df
 
 
-
 def scan(tf):
 
-    df = get_data(
-        symbol,
-        tf
-    )
+    df = get_data(symbol, tf)
 
 
     df["EMA20"] = (
@@ -150,7 +139,6 @@ def scan(tf):
     return trend, df
 
 
-
 if st.button("🤖 Launch AI Agent"):
 
 
@@ -162,16 +150,14 @@ if st.button("🤖 Launch AI Agent"):
     price = df["close"].iloc[-1]
 
 
-    score = [
+    bullish = [
         t15,
         t1,
         t4
-    ].count(
-        "BULLISH 🟢"
-    )
+    ].count("BULLISH 🟢")
 
 
-    if score >= 2:
+    if bullish >= 2:
 
         direction = "LONG 📈"
         signal = "BUY 🟢"
@@ -180,7 +166,7 @@ if st.button("🤖 Launch AI Agent"):
         tp = round(price * 1.04, 2)
 
 
-    elif score == 0:
+    elif bullish == 0:
 
         direction = "SHORT 📉"
         signal = "SELL 🔴"
@@ -204,10 +190,10 @@ if demo_mode:
 🤖 AI Trade Guardian
 
 📊 PERCEIVE:
-Bitget market data scanned.
+Bitget market data analysed.
 
 🧠 DECIDE:
-AI strategy generated decision.
+AI generated trading decision.
 
 ⚡ EXECUTE:
 Virtual trade action created.
@@ -220,9 +206,9 @@ Qwen credits saved ✅
 """
 
 
-else:
+    else:
 
-        response_text = "⚠️ Qwen Live Mode Error"
+        response_text = "Qwen Error"
 
         try:
 
@@ -233,7 +219,6 @@ else:
                     model="qwen3.6-flash",
 
                     messages=[
-
                         {
                             "role": "system",
                             "content":
@@ -243,10 +228,19 @@ else:
                         {
                             "role": "user",
                             "content": f"""
-Create professional crypto trading report.
+Create crypto trading report.
 
 Asset:
 {symbol}
+
+15m:
+{t15}
+
+1H:
+{t1}
+
+4H:
+{t4}
 
 Decision:
 {direction}
@@ -261,9 +255,7 @@ Take Profit:
 {tp}
 """
                         }
-
                     ]
-
                 )
 
 
@@ -277,13 +269,15 @@ Take Profit:
 
         except Exception as e:
 
-            response_text = (
-                "⚠️ Qwen Error:\n\n"
-                + str(e)
-            )
-st.subheader("🤖 AI Agent Decision")
+            response_text = str(e)
+
+
+
+    st.subheader("🤖 AI Agent Decision")
+
 
     c1, c2, c3 = st.columns(3)
+
 
     c1.metric("📍 Direction", direction)
 
@@ -292,31 +286,102 @@ st.subheader("🤖 AI Agent Decision")
     c3.metric("🤖 Signal", signal)
 
 
+
+    d1, d2 = st.columns(2)
+
+
+    d1.metric("🛑 Stop Loss", sl)
+
+    d2.metric("💰 Take Profit", tp)
+
+
+
+    st.subheader("📊 Multi-Timeframe View")
+
+
+    tcol1, tcol2, tcol3 = st.columns(3)
+
+
+    tcol1.metric("15m", t15)
+
+    tcol2.metric("1H", t1)
+
+    tcol3.metric("4H", t4)
+
+
+
+    fig = go.Figure()
+
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["close"],
+            name="Price"
+        )
+    )
+
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["EMA20"],
+            name="EMA20"
+        )
+    )
+
+
+    fig.add_trace(
+        go.Scatter(
+            y=df["EMA50"],
+            name="EMA50"
+        )
+    )
+
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+
+
     st.subheader("⚡ Agent Execution Center")
 
+
     if direction == "LONG 📈":
+
         action = "OPEN LONG 📈"
 
     elif direction == "SHORT 📉":
+
         action = "OPEN SHORT 📉"
 
     else:
+
         action = "WAIT ⏳"
 
 
-    x1, x2 = st.columns(2)
 
-    x1.metric("🤖 Agent Action", action)
+    e1, e2 = st.columns(2)
 
-    x2.metric(
+
+    e1.metric(
+        "🤖 Agent Action",
+        action
+    )
+
+
+    e2.metric(
         "⚙️ Execution",
         "Virtual Trade Created ✅"
     )
 
 
+
     st.subheader("🧾 Agent Memory")
 
+
     m1, m2, m3 = st.columns(3)
+
 
     m1.metric("💎 Asset", symbol)
 
@@ -330,60 +395,8 @@ st.subheader("🤖 AI Agent Decision")
     )
 
 
+
     st.subheader("🧠 Qwen AI Trading Report")
-
-    st.write(response_text)
-
-
-    x1, x2 = st.columns(2)
-
-
-    x1.metric(
-        "🤖 Agent Action",
-        action
-    )
-
-
-    x2.metric(
-        "⚙️ Execution",
-        "Virtual Trade Created ✅"
-    )
-
-
-
-    st.subheader("🧾 Agent Memory")
-
-
-    m1, m2, m3 = st.columns(3)
-
-
-    m1.metric(
-        "Asset",
-        symbol
-    )
-
-
-    m2.metric(
-        "Decision",
-        direction
-    )
-
-
-    m3.metric(
-        "Confidence",
-        confidence
-    )
-
-
-    st.success(
-        "Saved to Agent Memory ✅"
-    )
-
-
-
-    st.subheader(
-        "🧠 Qwen AI Trading Report"
-    )
 
 
     st.write(
