@@ -323,17 +323,82 @@ client = OpenAI(
 st.markdown(
 """
 <style>
+
+/* =====================
+APP BACKGROUND
+===================== */
+
+.stApp {
+
+    background:#050816;
+
+    color:white;
+
+}
+
+
+.block-container {
+
+    padding-top:2rem;
+
+}
+
+
+/* =====================
+SIDEBAR
+===================== */
+
+section[data-testid="stSidebar"] {
+
+    background:
+    linear-gradient(
+    180deg,
+    #050816,
+    #0f172a
+    );
+
+}
+
+
 /* =====================
 GLASS CARDS
 ===================== */
 
 .card {
-    background: rgba(15,23,42,0.75);
-    padding: 25px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.10);
-    box-shadow: 0 0 25px rgba(0,0,0,0.25);
+
+    background:
+    rgba(15,23,42,0.75);
+
+    padding:25px;
+
+    border-radius:20px;
+
+    border:
+    1px solid rgba(255,255,255,0.12);
+
+    box-shadow:
+    0 0 25px rgba(0,0,0,0.4);
+
 }
+
+
+/* =====================
+AUTO STREAMLIT CARDS
+===================== */
+
+div[data-testid="stMetric"] {
+
+    background:#0f172a;
+
+    padding:20px;
+
+    border-radius:20px;
+
+    border:
+    1px solid #334155;
+
+}
+
 
 
 /* =====================
@@ -343,28 +408,80 @@ MARKET SCANNER BOX
 div[data-testid="stVerticalBlock"]:has(
 div[data-testid="stSelectbox"]
 ){
-    background: rgba(15,23,42,0.75);
-    padding: 25px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 0 30px rgba(0,0,0,0.30);
+
+    background:
+    rgba(15,23,42,0.7);
+
+    padding:25px;
+
+    border-radius:22px;
+
+    border:
+    1px solid rgba(255,255,255,0.12);
+
+    box-shadow:
+    0 0 30px rgba(0,0,0,0.4);
+
 }
 
 
-/* INPUTS */
-div[data-baseweb="select"],
-input {
-    border-radius: 14px !important;
-}
+/* =====================
+BUTTON
+===================== */
 
-
-/* BUTTON */
 .stButton button {
+
     width:100%;
-    border-radius:16px;
-    padding:14px;
+
+    height:60px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+    90deg,
+    #06b6d4,
+    #9333ea
+    );
+
+    color:white;
+
+    font-size:20px;
+
     font-weight:bold;
+
+    border:none;
+
 }
+
+
+/* =====================
+INPUTS
+===================== */
+
+.stTextInput input {
+
+    background:#020617;
+
+    color:white;
+
+    border-radius:15px;
+
+}
+
+
+h1,h2,h3 {
+
+    color:white;
+
+}
+
+
+</style>
+""",
+unsafe_allow_html=True
+)
+
 
 
 default_coin = st.selectbox(
