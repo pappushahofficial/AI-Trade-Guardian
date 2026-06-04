@@ -219,37 +219,34 @@ Stop Loss and Take Profit prepared.
 Qwen credits saved ✅
 """
 
-else:
-    with st.spinner("🧠 Qwen AI analysing..."):
 
-            response = client.chat.completions.create(
+    else:
 
-                model="qwen3.6-flash",
+        response_text = "⚠️ Qwen Live Mode Error"
 
-                messages=[
+        try:
 
-                    {
-                        "role": "system",
-                        "content":
-                        "You are a professional autonomous crypto trading agent."
-                    },
+            with st.spinner("🧠 Qwen AI analysing..."):
 
-                    {
-                        "role": "user",
-                        "content": f"""
-Analyze crypto market.
+                response = client.chat.completions.create(
+
+                    model="qwen3.6-flash",
+
+                    messages=[
+
+                        {
+                            "role": "system",
+                            "content":
+                            "You are a professional autonomous crypto trading agent."
+                        },
+
+                        {
+                            "role": "user",
+                            "content": f"""
+Create professional crypto trading report.
 
 Asset:
 {symbol}
-
-15m:
-{t15}
-
-1H:
-{t1}
-
-4H:
-{t4}
 
 Decision:
 {direction}
@@ -257,26 +254,33 @@ Decision:
 Confidence:
 {confidence}
 
-SL:
+Stop Loss:
 {sl}
 
-TP:
+Take Profit:
 {tp}
 """
-                    }
+                        }
 
-                ]
+                    ]
 
-            )
+                )
 
+
+                response_text = (
+                    response
+                    .choices[0]
+                    .message
+                    .content
+                )
+
+
+        except Exception as e:
 
             response_text = (
-                response
-                .choices[0]
-                .message
-                .content
+                "⚠️ Qwen Error:\n\n"
+                + str(e)
             )
-
 
 
     st.subheader("🤖 AI Agent Decision")
