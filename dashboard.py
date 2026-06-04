@@ -332,9 +332,7 @@ if menu == "⭐ Watchlist":
             try:
 
 
-                df = get_bitget_candles(
-                    coin
-                )
+                df = get_data()
 
 
                 if df is not None:
