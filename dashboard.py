@@ -548,12 +548,12 @@ symbol = (
 
 
 
-def get_data(coin_symbol=None):
+def get_data():
     
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
-        f"?symbol={coin_symbol if coin_symbol else symbol}&granularity=15min&limit=100"
+        f"?symbol={symbol}&granularity=15min&limit=100"
     )
 
 
@@ -578,28 +578,13 @@ def get_data(coin_symbol=None):
     ]
 
 
-    df["open"] = (
-    df["open"]
-    .astype(float)
-)
-
-df["high"] = (
-    df["high"]
-    .astype(float)
-)
-
-df["low"] = (
-    df["low"]
-    .astype(float)
-)
-
-df["close"] = (
-    df["close"]
-    .astype(float)
-)
+    df["close"] = (
+        df["close"]
+        .astype(float)
+    )
 
 
-return df
+    return df
 
 
 
@@ -608,9 +593,7 @@ if st.button(
 ):
 
 
-    df = get_data(
-    coin
-)
+    df = get_data()
 
 
     df["EMA20"] = (
