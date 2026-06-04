@@ -219,8 +219,7 @@ Stop Loss and Take Profit prepared.
 Qwen credits saved ✅
 """
 
-
-    else:
+else:
 
         with st.spinner("🧠 Qwen AI analysing..."):
 
