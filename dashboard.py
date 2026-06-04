@@ -261,6 +261,53 @@ st.sidebar.markdown(
 """,
 unsafe_allow_html=True
 )
+# ======================
+# WATCHLIST PAGE
+# ======================
+
+if menu == "⭐ Watchlist":
+
+    st.title("⭐ Watchlist")
+
+    st.markdown(
+    """
+    <div class="card">
+
+        <h3>🔥 Tracked Crypto Assets</h3>
+
+        <p>🟢 BTCUSDT — Watching</p>
+
+        <p>🟢 ETHUSDT — Watching</p>
+
+        <p>🟢 SOLUSDT — Watching</p>
+
+        <p>🟢 BGBUSDT — Watching</p>
+
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
+
+
+    st.markdown("---")
+
+
+    st.markdown(
+    """
+    <div class="card">
+
+        <h3>🤖 AI Watchlist Monitor</h3>
+
+        <p>🧠 Alibaba Qwen AI: Connected</p>
+
+        <p>📡 Bitget API: Live Data</p>
+
+        <p>⚡ Status: Monitoring market opportunities</p>
+
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
 
 
 
