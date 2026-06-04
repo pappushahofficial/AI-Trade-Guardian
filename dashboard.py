@@ -169,9 +169,6 @@ Autonomous Trading Agent
     )
 
 
-    st.success("🟢 Online")
-
-
     st.markdown("---")
 
 
