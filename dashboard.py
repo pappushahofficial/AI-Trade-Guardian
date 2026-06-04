@@ -269,46 +269,86 @@ if menu == "⭐ Watchlist":
 
     st.title("⭐ Watchlist")
 
+    watchlist = [
+        "BTCUSDT",
+        "ETHUSDT",
+        "SOLUSDT",
+        "BGBUSDT"
+    ]
+
+
     st.markdown(
-    """
-    <div class="card">
-
-        <h3>🔥 Tracked Crypto Assets</h3>
-
-        <p>🟢 BTCUSDT — Watching</p>
-
-        <p>🟢 ETHUSDT — Watching</p>
-
-        <p>🟢 SOLUSDT — Watching</p>
-
-        <p>🟢 BGBUSDT — Watching</p>
-
-    </div>
-    """,
-    unsafe_allow_html=True
+        """
+        <div class="card">
+        <h3>🔥 Tracked Assets</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
+
+
+    for coin in watchlist:
+
+        col1, col2, col3 = st.columns(
+            [2,2,1]
+        )
+
+
+        with col1:
+
+            st.write(
+                "🟢",
+                coin
+            )
+
+
+        with col2:
+
+            st.write(
+                "💰 Live Price"
+            )
+
+
+        with col3:
+
+            open_chart = st.button(
+                "📈 Chart",
+                key=coin
+            )
+
+
+        if open_chart:
+
+            st.subheader(
+                f"📈 {coin} Live Chart"
+            )
+
+            st.info(
+                "Loading Bitget market chart..."
+            )
+
+            # connect existing chart function here
 
 
     st.markdown("---")
 
 
     st.markdown(
-    """
-    <div class="card">
+        """
+        <div class="card">
 
         <h3>🤖 AI Watchlist Monitor</h3>
 
-        <p>🧠 Alibaba Qwen AI: Connected</p>
+        🧠 Alibaba Qwen AI: Connected
 
-        <p>📡 Bitget API: Live Data</p>
+        <br><br>
 
-        <p>⚡ Status: Monitoring market opportunities</p>
+        📡 Bitget API: Live Data
 
-    </div>
-    """,
-    unsafe_allow_html=True
+        </div>
+        """,
+        unsafe_allow_html=True
     )
-
 
 
 # ======================
