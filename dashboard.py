@@ -281,7 +281,6 @@ Take Profit:
                 "⚠️ Qwen Error:\n\n"
                 + str(e)
             )
-
 st.subheader("🤖 AI Agent Decision")
 
 
