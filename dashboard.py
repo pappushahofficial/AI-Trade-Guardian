@@ -176,24 +176,15 @@ Autonomous Trading Agent
 
 <h4>🤖 AGENT STATUS</h4>
 
-<br>
+<p>🟢 <b>Status:</b> Online</p>
 
-🟢 <b>Status:</b> Online
+<p>⏱ <b>Uptime:</b> 02:45:32</p>
 
-<br><br>
+<p>📈 <b>Signals Today:</b> 12</p>
 
-⏱ <b>Uptime:</b> 02:45:32
-
-<br><br>
-
-📈 <b>Signals Today:</b> 12
-
-<br><br>
-
-🎯 <b>Accuracy:</b> 85.6%
+<p>🎯 <b>Accuracy:</b> 85.6%</p>
 
 </div>
-
 """,
     unsafe_allow_html=True
     )
