@@ -372,8 +372,7 @@ if menu == "⭐ Watchlist":
                 df = get_data(coin)
 
 
-                if df is not None:
-
+            if df is not None:
 
                 fig = go.Figure(
                     fig = go.Figure(
