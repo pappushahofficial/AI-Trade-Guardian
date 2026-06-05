@@ -374,50 +374,39 @@ if menu == "⭐ Watchlist":
 
                 if df is not None:
 
+                latest = df.iloc[-1]
 
-                    fig = go.Figure(
-                        data=[
-                            go.Candlestick(
+                c1, c2, c3, c4 = st.columns(4)
 
-                                x=df["time"],
-
-                                open=df["open"],
-
-                                high=df["high"],
-
-                                low=df["low"],
-
-                                close=df["close"]
-
-                            )
-                        ]
-                    )
+                c1.metric("🟢 Open", latest["open"])
+                c2.metric("🔺 High", latest["high"])
+                c3.metric("🔻 Low", latest["low"])
+                c4.metric("🔵 Close", latest["close"])
 
 
-                    fig.update_layout(
-
-                        height=450,
-
-                        xaxis_rangeslider_visible=False
-
-                    )
-
-
-                    st.plotly_chart(
-
-                        fig,
-
-                        use_container_width=True
-
-                    )
+                fig = go.Figure(
+                    data=[
+                        go.Candlestick(
+                            x=df["time"],
+                            open=df["open"],
+                            high=df["high"],
+                            low=df["low"],
+                            close=df["close"]
+                        )
+                    ]
+                )
 
 
-                else:
+                fig.update_layout(
+                    height=450,
+                    xaxis_rangeslider_visible=False
+                )
 
 
-                    st.error(
-                        "❌ No Bitget data"
-                    )
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True
+                )
 
 
             except Exception as e:
