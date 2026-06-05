@@ -373,7 +373,14 @@ if menu == "⭐ Watchlist":
 
 
                 if df is not None:
+latest = df.iloc[-1]
 
+            c1, c2, c3, c4 = st.columns(4)
+
+            c1.metric("🟢 Open", latest["open"])
+            c2.metric("🔺 High", latest["high"])
+            c3.metric("🔻 Low", latest["low"])
+            c4.metric("🔵 Close", latest["close"])
 
                     fig = go.Figure(
                         data=[
