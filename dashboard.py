@@ -266,7 +266,7 @@ def get_data(coin_symbol=None):
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
-        f"?symbol={coin_symbol if coin_symbol else symbol}&granularity=15min&limit=100"
+        f"?symbol={coin_symbol if coin_symbol else 'BTCUSDT'}&granularity=15min&limit=100"
     )
 
 
