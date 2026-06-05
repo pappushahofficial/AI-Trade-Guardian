@@ -369,7 +369,7 @@ if menu == "⭐ Watchlist":
             try:
 
 
-                df = get_data()
+                df = get_data(coin)
 
 
                 if df is not None:
