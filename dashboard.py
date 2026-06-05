@@ -373,7 +373,8 @@ if menu == "⭐ Watchlist":
 
 
                 if df is not None:
-latest = df.iloc[-1]
+                    
+            latest = df.iloc[-1]
 
             c1, c2, c3, c4 = st.columns(4)
 
