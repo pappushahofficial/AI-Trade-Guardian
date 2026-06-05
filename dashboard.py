@@ -291,13 +291,13 @@ def get_data(coin_symbol=None):
     ]
 
 
-    df["open"]
-    df["high"]
-    df["low"]
-    df["close"]
+    df["close"] = (
+        df["close"]
+        .astype(float)
+    )
+
+
     return df
-
-
 # ======================
 # WATCHLIST PAGE
 # ======================
@@ -372,9 +372,9 @@ if menu == "⭐ Watchlist":
                 df = get_data(coin)
 
 
-            if df is not None:
+                if df is not None:
 
-                fig = go.Figure(
+
                     fig = go.Figure(
                         data=[
                             go.Candlestick(
