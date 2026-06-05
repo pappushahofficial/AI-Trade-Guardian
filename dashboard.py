@@ -291,28 +291,13 @@ def get_data(coin_symbol=None):
     ]
 
 
-    df["open"] = (
     df["open"]
-    .astype(float)
-)
-
-df["high"] = (
     df["high"]
-    .astype(float)
-)
-
-df["low"] = (
     df["low"]
-    .astype(float)
-)
-
-df["close"] = (
     df["close"]
-    .astype(float)
-)
-
-
     return df
+
+
 # ======================
 # WATCHLIST PAGE
 # ======================
