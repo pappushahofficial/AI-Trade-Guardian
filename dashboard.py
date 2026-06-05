@@ -261,6 +261,43 @@ st.sidebar.markdown(
 """,
 unsafe_allow_html=True
 )
+def get_data(coin_symbol=None):
+    
+
+    url = (
+        "https://api.bitget.com/api/v2/spot/market/candles"
+        f"?symbol={coin_symbol if coin_symbol else symbol}&granularity=15min&limit=100"
+    )
+
+
+    data = requests.get(url).json()
+
+
+    df = pd.DataFrame(
+        data["data"]
+    )
+
+
+    df = df.iloc[:, :6]
+
+
+    df.columns = [
+        "time",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+    ]
+
+
+    df["close"] = (
+        df["close"]
+        .astype(float)
+    )
+
+
+    return df
 # ======================
 # WATCHLIST PAGE
 # ======================
@@ -548,43 +585,7 @@ symbol = (
 
 
 
-def get_data(coin_symbol=None):
-    
 
-    url = (
-        "https://api.bitget.com/api/v2/spot/market/candles"
-        f"?symbol={coin_symbol if coin_symbol else symbol}&granularity=15min&limit=100"
-    )
-
-
-    data = requests.get(url).json()
-
-
-    df = pd.DataFrame(
-        data["data"]
-    )
-
-
-    df = df.iloc[:, :6]
-
-
-    df.columns = [
-        "time",
-        "open",
-        "high",
-        "low",
-        "close",
-        "volume"
-    ]
-
-
-    df["close"] = (
-        df["close"]
-        .astype(float)
-    )
-
-
-    return df
 
 
 
