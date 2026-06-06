@@ -453,15 +453,16 @@ if menu == "⭐ Watchlist":
         unsafe_allow_html=True
     )
 
-if menu == "📈 Market Scanner":                                                                                                                                        
-# ======================
-# HEADER
-# ======================
+if menu == "📈 Market Scanner":
+
+    # ======================
+    # HEADER
+    # ======================
 
 
-st.title(
-    "Autonomous Crypto Trading Agent 🚀"
-)
+    st.title(
+        "Autonomous Crypto Trading Agent 🚀"
+    )
 
 
 st.markdown(
