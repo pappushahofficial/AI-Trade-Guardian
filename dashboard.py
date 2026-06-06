@@ -594,7 +594,7 @@ if st.button(
 ):
 
 
-    df = get_data()
+    df = get_data(symbol)
 
 
     df["EMA20"] = (
