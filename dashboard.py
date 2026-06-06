@@ -453,7 +453,7 @@ if menu == "⭐ Watchlist":
         unsafe_allow_html=True
     )
 
-
+if menu == "📈 Market Scanner":                                                                                                                                        
 # ======================
 # HEADER
 # ======================
