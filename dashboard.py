@@ -262,6 +262,49 @@ st.sidebar.markdown(
 unsafe_allow_html=True
 )
 def get_data(coin_symbol=None):
+    def save_trade_log(asset, decision, entry, sl, tp, confidence):
+
+    conn = sqlite3.connect(
+        "agent_logs.db"
+    )
+
+    c = conn.cursor()
+
+
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS trades (
+            time TEXT,
+            asset TEXT,
+            decision TEXT,
+            entry REAL,
+            stop_loss REAL,
+            take_profit REAL,
+            confidence TEXT
+        )
+        """
+    )
+
+
+    c.execute(
+        "INSERT INTO trades VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (
+            datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            ),
+            asset,
+            decision,
+            entry,
+            sl,
+            tp,
+            confidence
+        )
+    )
+
+
+    conn.commit()
+
+    conn.close()
     
 
     url = (
