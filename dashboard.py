@@ -858,23 +858,21 @@ Take Profit:
 
 
     st.success(
-    f"Virtual Execution Created ✅ {direction}"
-)
+            f"Virtual Execution Created ✅ {direction}"
+        )
 
-save_trade_log(
-    symbol,
-    direction,
-    latest,
-    stop_loss,
-    take_profit,
-    "85%"
-)
+        save_trade_log(
+            symbol,
+            direction,
+            latest,
+            stop_loss,
+            take_profit,
+            "85%"
+        )
 
-
-
-    st.subheader(
-    "🧾 Agent Memory"
-)
+        st.subheader(
+            "🧾 Agent Memory"
+        )
 
 
     m1,m2,m3 = st.columns(3)
