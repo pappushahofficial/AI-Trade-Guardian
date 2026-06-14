@@ -873,8 +873,8 @@ save_trade_log(
 
 
     st.subheader(
-        "🧾 Agent Memory"
-    )
+    "🧾 Agent Memory"
+)
 
 
     m1,m2,m3 = st.columns(3)
