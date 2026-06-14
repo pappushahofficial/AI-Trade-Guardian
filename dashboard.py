@@ -858,12 +858,12 @@ Take Profit:
 
 
     st.success(
-    f"Virtual Execution Created ✅ {direction}"
-)
+            f"Virtual Execution Created ✅ {direction}"
+        )
 
-st.subheader(
-    "🧾 Agent Memory"
-)
+        st.subheader(
+            "🧾 Agent Memory"
+        )
     m1,m2,m3 = st.columns(3)
 
 
