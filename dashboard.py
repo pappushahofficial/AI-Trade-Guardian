@@ -853,11 +853,10 @@ Take Profit:
 
 
     st.subheader(
-        "⚡ Agent Execution Center"
-    )
+            "⚡ Agent Execution Center"
+        )
 
-
-    st.success(
+        st.success(
             f"Virtual Execution Created ✅ {direction}"
         )
 
