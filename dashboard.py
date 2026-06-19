@@ -840,9 +840,9 @@ Take Profit:
     "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     "asset": symbol,
     "decision": direction,
-    "entry": "Live Price",
-    "stop_loss": "Calculated SL",
-    "take_profit": "Calculated TP",
+    "entry": latest,
+    "stop_loss": sl,
+    "take_profit": tp,
     "confidence": "85%"
 })
 
