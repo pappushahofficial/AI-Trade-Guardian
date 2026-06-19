@@ -276,7 +276,7 @@ elif menu == "📊 Trade Logs":
 
     st.subheader("📊 Agent Trade Logs")
 
-    logs = load_trade_log()
+    logs = load_trade_logs()
 
     if len(logs) == 0:
         st.info("No trades executed yet")
