@@ -278,21 +278,22 @@ elif menu == "📊 Trade Logs":
 
     logs = load_trade_logs()
 
-if len(logs) == 0:
-    st.info("No trades executed yet")
-else:
-    logs = pd.DataFrame(
-        logs,
-        columns=[
-            "Time",
-            "Asset",
-            "Decision",
-            "Entry",
-            "Stop Loss",
-            "Take Profit",
-            "Confidence"
-        ]
-    )
+    if len(logs) == 0:
+        st.info("No trades executed yet")
+    else:
+        logs = pd.DataFrame(
+            logs,
+            columns=[
+                "Time",
+                "Asset",
+                "Decision",
+                "Entry",
+                "Stop Loss",
+                "Take Profit",
+                "Confidence"
+            ]
+        )
+
         st.dataframe(
             logs,
             use_container_width=True
