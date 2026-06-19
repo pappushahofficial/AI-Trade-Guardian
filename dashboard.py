@@ -276,13 +276,15 @@ elif menu == "📊 Trade Logs":
 
     st.subheader("📊 Agent Trade Logs")
 
-    if len(st.session_state.trade_logs) == 0:
-        st.info("No trades executed yet")
-    else:
-        st.dataframe(
-            st.session_state.trade_logs,
-            use_container_width=True
-        )
+    logs = load_trade_logs()
+
+if len(logs) == 0:
+    st.info("No trades executed yet")
+else:
+    st.dataframe(
+        logs,
+        use_container_width=True
+    )
     # ======================
 # AGENT STATUS
 # ======================
