@@ -896,7 +896,14 @@ Take Profit:
     "confidence": "85%"
 })
 
-
+save_trade_log(
+    symbol,
+    direction,
+    "Live Price",
+    sl,
+    tp,
+    "85%"
+)
 
     st.subheader(
         "🧾 Agent Memory"
