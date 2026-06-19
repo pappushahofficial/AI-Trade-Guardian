@@ -278,13 +278,13 @@ elif menu == "📊 Trade Logs":
 
     logs = load_trade_logs()
 
-if len(logs) == 0:
-    st.info("No trades executed yet")
-else:
-    st.dataframe(
-        logs,
-        use_container_width=True
-    )
+    if len(logs) == 0:
+        st.info("No trades executed yet")
+    else:
+        st.dataframe(
+            logs,
+            use_container_width=True
+        )
     # ======================
 # AGENT STATUS
 # ======================
