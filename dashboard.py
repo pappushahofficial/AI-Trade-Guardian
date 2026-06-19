@@ -188,7 +188,6 @@ menu = st.sidebar.radio(
         "⭐ Watchlist",
         "ℹ️ About Agent",
         "⚙️ Settings"
-        
         "📊 Trade Logs"
     ]
 )
