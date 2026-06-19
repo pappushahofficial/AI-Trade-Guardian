@@ -4,14 +4,16 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 from openai import OpenAI
+from datetime import datetime
 
+if "trade_logs" not in st.session_state:
+    st.session_state.trade_logs = []
 
 st.set_page_config(
     page_title="AI Trade Guardian",
     page_icon="🤖",
     layout="wide"
 )
-
 
 # ======================
 # PRO DARK DASHBOARD UI
