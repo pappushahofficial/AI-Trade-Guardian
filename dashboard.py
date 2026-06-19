@@ -5,6 +5,56 @@ import pandas as pd
 import plotly.graph_objects as go
 from openai import OpenAI
 from datetime import datetime
+import sqlite3
+
+# =========================
+# AGENT TRADE DATABASE
+# =========================
+
+conn = sqlite3.connect("trade_logs.db", check_same_thread=False)
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS trades (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time TEXT,
+    asset TEXT,
+    decision TEXT,
+    entry TEXT,
+    stop_loss TEXT,
+    take_profit TEXT,
+    confidence TEXT
+)
+""")
+
+conn.commit()
+
+
+def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence):
+    cursor.execute(
+        """
+        INSERT INTO trades
+        (time, asset, decision, entry, stop_loss, take_profit, confidence)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            asset,
+            decision,
+            entry,
+            stop_loss,
+            take_profit,
+            confidence
+        )
+    )
+    conn.commit()
+
+
+def load_trade_logs():
+    cursor.execute(
+        "SELECT time, asset, decision, entry, stop_loss, take_profit, confidence FROM trades"
+    )
+    return cursor.fetchall()
 
 if "trade_logs" not in st.session_state:
     st.session_state.trade_logs = []
