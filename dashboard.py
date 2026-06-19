@@ -218,6 +218,21 @@ if menu == "⚙️ Settings":
             "Light Theme Active"
         )
 
+# =========================
+# TRADE LOGS PAGE
+# =========================
+
+elif menu == "📊 Trade Logs":
+
+    st.subheader("📊 Agent Trade Logs")
+
+    if len(st.session_state.trade_logs) == 0:
+        st.info("No trades executed yet")
+    else:
+        st.dataframe(
+            st.session_state.trade_logs,
+            use_container_width=True
+        )
     # ======================
 # AGENT STATUS
 # ======================
