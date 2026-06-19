@@ -820,7 +820,7 @@ Take Profit:
     f"Virtual Execution Created ✅ {direction}"
 )
 
-st.session_state.trade_logs.append({
+    st.session_state.trade_logs.append({
     "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     "asset": symbol,
     "decision": direction,
