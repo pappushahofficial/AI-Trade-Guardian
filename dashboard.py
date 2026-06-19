@@ -841,6 +841,7 @@ Take Profit:
     "asset": symbol,
     "decision": direction,
     "entry": latest,
+    "entry": "Live Price",
     "stop_loss": sl,
     "take_profit": tp,
     "confidence": "85%"
