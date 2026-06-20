@@ -570,7 +570,6 @@ st.success(
         "🟢 Trading Agent Online"
     )
 
-
     demo = st.toggle(
         "🧪 Demo Mode (Save Qwen Credits)",
         value=True
