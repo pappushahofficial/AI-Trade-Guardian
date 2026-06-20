@@ -566,10 +566,9 @@ demo = st.toggle(
     value=True
 )
 
-# ======================
-# CONNECTIONS
-# ======================
-
+# =====================
+    # CONNECTIONS
+    # =====================
 
 st.subheader(
         "🔗 Live Connections"
