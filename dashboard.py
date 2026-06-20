@@ -536,7 +536,10 @@ if menu == "⭐ Watchlist":
         unsafe_allow_html=True
     )
 
-if menu == "📈 Market Scanner":
+if menu != "📈 Market Scanner":
+    st.stop()
+
+# 📈 Market Scanner Page
 
 # ======================
     # HEADER
