@@ -545,7 +545,6 @@ if menu == "📈 Market Scanner":
         "Autonomous Crypto Trading Agent 🚀"
     )
 
-
 st.markdown(
     """
 ### Powered by
