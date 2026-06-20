@@ -729,9 +729,24 @@ if st.button(
         )
 
 
+    # ======================
+    # FIX 11 - AGENT BRAIN
+    # ======================
+
+    agent_score = 0
+
+    if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
+        agent_score += 40
+
+    if df["close"].iloc[-1] > df["close"].iloc[-5]:
+        agent_score += 30
+
     ema_gap = abs(df["EMA20"].iloc[-1] - df["EMA50"].iloc[-1]) / price * 100
 
-    confidence_value = min(95, max(55, round(60 + ema_gap * 10)))
+    if ema_gap > 0.5:
+        agent_score += 30
+
+    confidence_value = min(95, max(55, agent_score))
 
     confidence = f"{confidence_value}%"
 
