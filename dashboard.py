@@ -546,17 +546,17 @@ if menu == "📈 Market Scanner":
     )
 
 st.markdown(
-    """
+        """
 ### Powered by
 
-🧠 **Alibaba Qwen AI**  |  📡 **Bitget API**
+🧠 **Alibaba Qwen AI**  |  🔗 **Bitget API**
 
 🏆 Bitget AI Hackathon
 
-📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
-"""
+📊 Perceive → 🧠 Decide → ⚡ Execute → 🔄 Manage Risk
+        """,
+        unsafe_allow_html=True
     )
-
 st.success(
     "🟢 Trading Agent Online"
 )
