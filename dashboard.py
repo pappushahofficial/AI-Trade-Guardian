@@ -729,7 +729,11 @@ if st.button(
         )
 
 
-    confidence = "85%"
+    ema_gap = abs(df["EMA20"].iloc[-1] - df["EMA50"].iloc[-1]) / price * 100
+
+    confidence_value = min(95, max(55, round(60 + ema_gap * 10)))
+
+    confidence = f"{confidence_value}%"
 
 
 
@@ -895,19 +899,19 @@ Take Profit:
     "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     "asset": symbol,
     "decision": direction,
-    "entry": "Live Price",
+    "entry": price,
     "stop_loss": sl,
     "take_profit": tp,
-    "confidence": "85%"
+    "confidence": confidence
 })
 
     save_trade_log(
         symbol,
         direction,
-        "Live Price",
+        price,
         sl,
         tp,
-        "85%"
+        confidence
     )
 
     st.subheader(
