@@ -567,14 +567,14 @@ st.markdown(
     )
 
 st.success(
-    "🟢 Trading Agent Online"
-)
+        "🟢 Trading Agent Online"
+    )
 
 
-demo = st.toggle(
-    "🧪 Demo Mode (Save Qwen Credits)",
-    value=True
-)
+    demo = st.toggle(
+        "🧪 Demo Mode (Save Qwen Credits)",
+        value=True
+    )
 
 
 
