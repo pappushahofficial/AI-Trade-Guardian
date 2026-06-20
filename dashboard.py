@@ -543,7 +543,7 @@ if menu == "📈 Market Scanner":
     # ======================
 
 
-    st.title(
+        st.title(
         "Autonomous Crypto Trading Agent 🚀"
     )
 
