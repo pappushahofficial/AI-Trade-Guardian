@@ -733,35 +733,35 @@ if st.button(
 # FIX 11.1 - AGENT BRAIN
 # =====================
 
-score = 50
-
-# EMA trend
-if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
-    score += 20
-else:
-    score -= 20
-
-# Momentum
-momentum = (
-    (price - df["close"].iloc[-5])
-    / df["close"].iloc[-5]
-) * 100
-
-score += round(momentum * 5)
-
-# Candle strength
-candle_power = abs(
-    df["close"].iloc[-1]
-    -
-    df["close"].iloc[-2]
-) / price * 100
-
-score += round(candle_power * 10)
-
-# Limit score
-score = max(40, min(95, score))
-
-confidence = f"{score}%"
+    score = 50
+    
+    # EMA trend
+    if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
+        score += 20
+    else:
+        score -= 20
+    
+    # Momentum
+    momentum = (
+        (price - df["close"].iloc[-5])
+        / df["close"].iloc[-5]
+    ) * 100
+    
+    score += round(momentum * 5)
+    
+    # Candle strength
+    candle_power = abs(
+        df["close"].iloc[-1]
+        -
+        df["close"].iloc[-2]
+    ) / price * 100
+    
+    score += round(candle_power * 10)
+    
+    # Limit score
+    score = max(40, min(95, score))
+    
+    confidence = f"{score}%"
 
 
 
