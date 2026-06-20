@@ -566,7 +566,7 @@ st.markdown(
 """
     )
 
-    st.success(
+st.success(
         "🟢 Trading Agent Online"
     )
 
