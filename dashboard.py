@@ -566,7 +566,7 @@ st.markdown(
 """
     )
 
-st.success(
+    st.success(
         "🟢 Trading Agent Online"
     )
 
@@ -575,7 +575,6 @@ st.success(
         "🧪 Demo Mode (Save Qwen Credits)",
         value=True
     )
-
 
 
 # ======================
