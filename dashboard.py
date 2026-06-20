@@ -581,8 +581,8 @@ demo = st.toggle(
 
 
 st.subheader(
-    "🔗 Live Connections"
-)
+        "🔗 Live Connections"
+    )
 
 
 c1,c2,c3,c4 = st.columns(4)
