@@ -587,29 +587,29 @@ st.subheader(
 
 c1,c2,c3,c4 = st.columns(4)
 
-    c1.metric(
-        "🧠 AI Model",
-        "Qwen 3.5",
-        "Connected"
-    )
+c1.metric(
+    "🧠 AI Model",
+    "Qwen 3.5",
+    "Connected"
+)
 
-    c2.metric(
-        "📡 Market Data",
-        "Bitget API",
-        "Connected"
-    )
+c2.metric(
+    "📡 Market Data",
+    "Bitget API",
+    "Connected"
+)
 
-    c3.metric(
-        "🤖 Agent",
-        "Active",
-        "Running"
-    )
+c3.metric(
+    "🤖 Agent",
+    "Active",
+    "Running"
+)
 
-    c4.metric(
-        "🟢 Status",
-        "Live",
-        "Ready"
-    )
+c4.metric(
+    "🟢 Status",
+    "Live",
+    "Ready"
+)
 # ======================
 # API
 # ======================
