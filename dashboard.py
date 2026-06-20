@@ -538,10 +538,9 @@ if menu == "⭐ Watchlist":
 
 if menu == "📈 Market Scanner":
 
-    # ======================
+# ======================
     # HEADER
     # ======================
-
     st.title(
         "Autonomous Crypto Trading Agent 🚀"
     )
