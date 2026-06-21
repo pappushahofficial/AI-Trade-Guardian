@@ -765,8 +765,8 @@ if st.button(
     
     # Limit score
     score = max(40, min(95, score))
-    
-    confidence = f"{score}%"
+
+confidence = f"{score}%"
 
 # =====================
 # FIX 12 - AGENT MEMORY
@@ -780,7 +780,6 @@ elif score >= 60:
     agent_reason = "Medium setup: acceptable trading conditions"
 else:
     agent_reason = "Weak setup: higher risk detected"
-
     if demo:
 
         report = """
