@@ -968,18 +968,16 @@ Take Profit:
 
 
     m1.metric(
-        "Asset",
-        symbol
-    )
+            "Asset",
+            symbol
+        )
 
+        m2.metric(
+            "Decision",
+            direction
+        )
 
-    m2.metric(
-        "Decision",
-        direction
-    )
-
-
-    m3.metric(
+        m3.metric(
             "Confidence",
             confidence
         )
@@ -992,7 +990,6 @@ Take Profit:
         st.info(
             agent_reason
         )
-
 
 
     st.subheader(
