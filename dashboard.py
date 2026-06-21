@@ -769,17 +769,17 @@ if st.button(
 confidence = f"{score}%"
 
 # =====================
-# FIX 12 - AGENT MEMORY
-# =====================
+    # FIX 12 - AGENT MEMORY
+    # =====================
 
-agent_score = f"{score}/100"
+    agent_score = f"{score}/100"
 
-if score >= 80:
-    agent_reason = "Strong setup: trend and momentum aligned"
-elif score >= 60:
-    agent_reason = "Medium setup: acceptable trading conditions"
-else:
-    agent_reason = "Weak setup: higher risk detected"
+    if score >= 80:
+        agent_reason = "Strong setup: trend and momentum aligned"
+    elif score >= 60:
+        agent_reason = "Medium setup: acceptable trading conditions"
+    else:
+        agent_reason = "Weak setup: higher risk detected"
     if demo:
 
         report = """
