@@ -968,29 +968,28 @@ Take Profit:
 
 
     m1.metric(
-            "Asset",
-            symbol
-        )
+        "Asset",
+        symbol
+    )
 
-        m2.metric(
-            "Decision",
-            direction
-        )
+    m2.metric(
+        "Decision",
+        direction
+    )
 
-        m3.metric(
-            "Confidence",
-            confidence
-        )
+    m3.metric(
+        "Confidence",
+        confidence
+    )
 
-        st.metric(
-            "🧠 Agent Score",
-            agent_score
-        )
+    st.metric(
+        "🧠 Agent Score",
+        agent_score
+    )
 
-        st.info(
-            agent_reason
-        )
-
+    st.info(
+        agent_reason
+    )
 
     st.subheader(
         "🧠 Qwen AI Report"
