@@ -772,7 +772,8 @@ if st.button(
 # FIX 12 - AGENT MEMORY
 # =====================
 
-agent_score = confidence.replace("%", "/100")
+agent_score = f"{score}/100"
+
 if score >= 80:
     agent_reason = "Strong setup: trend and momentum aligned"
 elif score >= 60:
