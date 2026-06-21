@@ -772,7 +772,7 @@ if st.button(
 # FIX 12 - AGENT MEMORY
 # =====================
 
-agent_score = f"{score}/100"
+agent_score_text = f"{score}/100"
 
 if score >= 80:
     agent_reason = "Strong setup: trend and momentum aligned"
@@ -957,7 +957,7 @@ Take Profit:
             tp,
             confidence,
             agent_reason,
-            agent_score
+            agent_score_text
         )
     st.subheader(
         "🧾 Agent Memory"
@@ -984,7 +984,7 @@ Take Profit:
 
     st.metric(
         "🧠 Agent Score",
-        agent_score
+        agent_score_text
     )
 
     st.info(
