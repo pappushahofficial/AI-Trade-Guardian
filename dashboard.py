@@ -31,6 +31,18 @@ CREATE TABLE IF NOT EXISTS trades (
 
 conn.commit()
 
+try:
+    cursor.execute("ALTER TABLE trades ADD COLUMN agent_reason TEXT")
+except:
+    pass
+
+try:
+    cursor.execute("ALTER TABLE trades ADD COLUMN agent_score TEXT")
+except:
+    pass
+
+conn.commit()
+
 
 def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence, agent_reason, agent_score):
     cursor.execute(
