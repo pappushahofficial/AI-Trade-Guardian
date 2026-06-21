@@ -772,7 +772,7 @@ confidence = f"{score}%"
 # FIX 12 - AGENT MEMORY
 # =====================
 
-agent_score_text = f"{agent_score}/100"
+agent_score = f"{score}/100"
 
 if agent_score >= 80:
     agent_reason = "Strong setup: trend and momentum aligned"
