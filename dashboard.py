@@ -542,24 +542,25 @@ if menu != "📈 Market Scanner":
 # 📈 Market Scanner Page
 
 # ======================
-    # HEADER
-    # ======================
-    st.title(
-        "Autonomous Crypto Trading Agent 🚀"
-    )
+# HEADER
+# ======================
+
+st.title(
+    "🤖 Autonomous Crypto Trading Agent 🚀"
+)
 
 st.markdown(
-        """
+    """
 ### Powered by
 
 🧠 **Alibaba Qwen AI**  |  🔗 **Bitget API**
 
 🏆 Bitget AI Hackathon
 
-📊 Perceive → 🧠 Decide → ⚡ Execute → 🔄 Manage Risk
-        """,
-        unsafe_allow_html=True
-    )
+📊 Perceive → 🧠 Decide → ⚡ Execute → 🛡 Manage Risk
+    """,
+    unsafe_allow_html=True
+)
 st.success(
     "🟢 Trading Agent Online"
 )
