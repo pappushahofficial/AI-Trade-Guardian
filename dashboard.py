@@ -980,11 +980,11 @@ Take Profit:
 
 
     m3.metric(
-        "Confidence",
-        confidence
-    )
+            "Confidence",
+            confidence
+        )
 
-    st.metric(
+        st.metric(
             "🧠 Agent Score",
             agent_score
         )
