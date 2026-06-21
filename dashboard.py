@@ -766,7 +766,7 @@ if st.button(
     # Limit score
     score = max(40, min(95, score))
 
-    try:
+try:
     confidence = f"{score}%"
 except NameError:
     score = 70
