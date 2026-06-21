@@ -765,9 +765,12 @@ if st.button(
     
     # Limit score
     score = max(40, min(95, score))
-
-confidence = f"{score}%"
-
+    
+try:
+    confidence = f"{score}%"
+except NameError:
+    score = 70
+    confidence = f"{score}%"
 # =====================
 # FIX 12 - AGENT MEMORY
 # =====================
