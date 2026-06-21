@@ -776,11 +776,12 @@ except NameError:
 # FIX 12 - AGENT MEMORY
 # =====================
 
-agent_score = f"{score}/100"
+agent_score = score
+agent_score_text = f"{score}/100"
 
-if agent_score >= 80:
+if score >= 80:
     agent_reason = "Strong setup: trend and momentum aligned"
-elif agent_score >= 60:
+elif score >= 60:
     agent_reason = "Medium setup: acceptable trading conditions"
 else:
     agent_reason = "Weak setup: higher risk detected"
