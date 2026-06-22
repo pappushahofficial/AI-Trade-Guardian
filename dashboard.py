@@ -674,6 +674,9 @@ if st.button(
 
         df = get_data(symbol)
 
+if df is None or df.empty:
+    st.error("❌ Unable to fetch market data. Check trading pair or try again.")
+    st.stop()
 
         df["EMA20"] = (
             df["close"]
