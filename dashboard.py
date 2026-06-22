@@ -672,320 +672,319 @@ if st.button(
         "🤖 AI Trade Guardian analyzing market..."
     ):
 
-
         df = get_data(symbol)
 
 
-    df["EMA20"] = (
-        df["close"]
-        .ewm(span=20)
-        .mean()
-    )
-
-
-    df["EMA50"] = (
-        df["close"]
-        .ewm(span=50)
-        .mean()
-    )
-
-
-    price = (
-        df["close"]
-        .iloc[-1]
-    )
-
-
-    if (
-        df["EMA20"].iloc[-1]
-        >
-        df["EMA50"].iloc[-1]
-    ):
-
-        direction = "LONG 📈"
-
-        signal = "BUY 🟢"
-
-        sl = round(
-            price * 0.98,
-            2
-        )
-
-        tp = round(
-            price * 1.04,
-            2
+        df["EMA20"] = (
+            df["close"]
+            .ewm(span=20)
+            .mean()
         )
 
 
-    else:
-
-        direction = "SHORT 📉"
-
-        signal = "SELL 🔴"
-
-        sl = round(
-            price * 1.02,
-            2
-        )
-
-        tp = round(
-            price * 0.96,
-            2
+        df["EMA50"] = (
+            df["close"]
+            .ewm(span=50)
+            .mean()
         )
 
 
-# =====================
-# FIX 11.1 - AGENT BRAIN
-# =====================
+        price = (
+            df["close"]
+            .iloc[-1]
+        )
 
-    score = 50
+
+        if (
+            df["EMA20"].iloc[-1]
+            >
+            df["EMA50"].iloc[-1]
+        ):
+
+            direction = "LONG 📈"
+
+            signal = "BUY 🟢"
+
+            sl = round(
+                price * 0.98,
+                2
+            )
+
+            tp = round(
+                price * 1.04,
+                2
+            )
+
+
+        else:
+
+            direction = "SHORT 📉"
+
+            signal = "SELL 🔴"
+
+            sl = round(
+                price * 1.02,
+                2
+            )
+
+            tp = round(
+                price * 0.96,
+                2
+            )
+
+
+    # =====================
+    # FIX 11.1 - AGENT BRAIN
+    # =====================
+
+        score = 50
     
-    # EMA trend
-    if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
-        score += 20
-    else:
-        score -= 20
+        # EMA trend
+        if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
+            score += 20
+        else:
+            score -= 20
     
-    # Momentum
-    momentum = (
-        (price - df["close"].iloc[-5])
-        / df["close"].iloc[-5]
-    ) * 100
+        # Momentum
+        momentum = (
+            (price - df["close"].iloc[-5])
+            / df["close"].iloc[-5]
+        ) * 100
     
-    score += round(momentum * 5)
+        score += round(momentum * 5)
     
-    # Candle strength
-    candle_power = abs(
-        df["close"].iloc[-1]
-        -
-        df["close"].iloc[-2]
-    ) / price * 100
+        # Candle strength
+        candle_power = abs(
+            df["close"].iloc[-1]
+            -
+            df["close"].iloc[-2]
+        ) / price * 100
     
-    score += round(candle_power * 10)
+        score += round(candle_power * 10)
     
-    # Limit score
-    score = max(40, min(95, score))
+        # Limit score
+        score = max(40, min(95, score))
     
-    confidence = f"{score}%"
+        confidence = f"{score}%"
 
 
 
-    if demo:
+        if demo:
 
-        report = """
-📊 DEMO AI REPORT
+            report = """
+    📊 DEMO AI REPORT
 
-📊 PERCEIVE:
-Market scanned.
+    📊 PERCEIVE:
+    Market scanned.
 
-🧠 DECIDE:
-AI strategy generated.
+    🧠 DECIDE:
+    AI strategy generated.
 
-⚡ EXECUTE:
-Virtual trade created.
+    ⚡ EXECUTE:
+    Virtual trade created.
 
-🛡 RISK:
-Entry Price calculated.
-SL / TP calculated.
+    🛡 RISK:
+    Entry Price calculated.
+    SL / TP calculated.
 
-Qwen credits saved ✅
-"""
-
-
-    else:
+    Qwen credits saved ✅
+    """
 
 
-        response = client.chat.completions.create(
+        else:
 
-            model="qwen3.6-flash",
 
-            messages=[
-                {
-                    "role":"system",
-                    "content":
-                    "You are an autonomous crypto trading agent."
-                },
+            response = client.chat.completions.create(
 
-                {
-                    "role":"user",
-                    "content":
-                    f"""
-Analyze:
+                model="qwen3.6-flash",
 
-Asset:
-{symbol}
+                messages=[
+                    {
+                        "role":"system",
+                        "content":
+                        "You are an autonomous crypto trading agent."
+                    },
 
-Decision:
-{direction}
+                    {
+                        "role":"user",
+                        "content":
+                        f"""
+    Analyze:
 
-Stop Loss:
-{sl}
+    Asset:
+    {symbol}
 
-Take Profit:
-{tp}
+    Decision:
+    {direction}
 
-Entry Price:
-{price}
-"""
-                }
-            ]
+    Stop Loss:
+    {sl}
+
+    Take Profit:
+    {tp}
+
+    Entry Price:
+    {price}
+    """
+                    }
+                ]
+            )
+
+
+            report = (
+                response
+                .choices[0]
+                .message
+                .content
+            )
+
+
+
+        st.subheader(
+            "🤖 Agent Decision"
         )
 
 
-        report = (
-            response
-            .choices[0]
-            .message
-            .content
+        a,b,c = st.columns(3)
+
+
+        a.metric(
+            "Direction",
+            direction
+        )
+
+
+        b.metric(
+            "Confidence",
+            confidence
+        )
+
+
+        c.metric(
+            "Signal",
+            signal
         )
 
 
 
-    st.subheader(
-        "🤖 Agent Decision"
-    )
+        x,y = st.columns(2)
 
 
-    a,b,c = st.columns(3)
-
-
-    a.metric(
-        "Direction",
-        direction
-    )
-
-
-    b.metric(
-        "Confidence",
-        confidence
-    )
-
-
-    c.metric(
-        "Signal",
-        signal
-    )
-
-
-
-    x,y = st.columns(2)
-
-
-    x.metric(
-        "🛑 Stop Loss",
-        sl
-    )
-
-
-    y.metric(
-        "💰 Take Profit",
-        tp
-    )
-
-
-
-    st.subheader(
-        "📊 Market Chart"
-    )
-
-
-    fig = go.Figure()
-
-
-    fig.add_trace(
-        go.Scatter(
-            y=df["close"],
-            name="Price"
+        x.metric(
+            "🛑 Stop Loss",
+            sl
         )
-    )
 
 
-    fig.add_trace(
-        go.Scatter(
-            y=df["EMA20"],
-            name="EMA20"
+        y.metric(
+            "💰 Take Profit",
+            tp
         )
-    )
 
 
-    fig.add_trace(
-        go.Scatter(
-            y=df["EMA50"],
-            name="EMA50"
+
+        st.subheader(
+            "📊 Market Chart"
         )
+
+
+        fig = go.Figure()
+
+
+        fig.add_trace(
+            go.Scatter(
+                y=df["close"],
+                name="Price"
+            )
+        )
+
+
+        fig.add_trace(
+            go.Scatter(
+                y=df["EMA20"],
+                name="EMA20"
+            )
+        )
+
+
+        fig.add_trace(
+            go.Scatter(
+                y=df["EMA50"],
+                name="EMA50"
+            )
+        )
+
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
+
+
+
+        st.subheader(
+            "⚡ Agent Execution Center"
+        )
+
+
+        st.success(
+        f"Virtual Execution Created ✅ {direction}"
     )
 
+        st.session_state.trade_logs.append({
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "asset": symbol,
+        "decision": direction,
+        "entry": price,
+        "stop_loss": sl,
+        "take_profit": tp,
+        "confidence": confidence
+    })
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+        save_trade_log(
+            symbol,
+            direction,
+            price,
+            sl,
+            tp,
+            confidence
+        )
 
-
-
-    st.subheader(
-        "⚡ Agent Execution Center"
-    )
-
-
-    st.success(
-    f"Virtual Execution Created ✅ {direction}"
-)
-
-    st.session_state.trade_logs.append({
-    "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    "asset": symbol,
-    "decision": direction,
-    "entry": price,
-    "stop_loss": sl,
-    "take_profit": tp,
-    "confidence": confidence
-})
-
-    save_trade_log(
-        symbol,
-        direction,
-        price,
-        sl,
-        tp,
-        confidence
-    )
-
-    st.subheader(
-        "🧾 Agent Memory"
-    )
+        st.subheader(
+            "🧾 Agent Memory"
+        )
 
 
-    m1,m2,m3 = st.columns(3)
+        m1,m2,m3 = st.columns(3)
 
 
-    m1.metric(
-        "Asset",
-        symbol
-    )
+        m1.metric(
+            "Asset",
+            symbol
+        )
 
 
-    m2.metric(
-        "Decision",
-        direction
-    )
+        m2.metric(
+            "Decision",
+            direction
+        )
 
 
-    m3.metric(
-        "Confidence",
-        confidence
-    )
+        m3.metric(
+            "Confidence",
+            confidence
+        )
 
 
 
-    st.subheader(
-        "🧠 Qwen AI Report"
-    )
+        st.subheader(
+            "🧠 Qwen AI Report"
+        )
 
 
-    st.write(
-        report
-    )
+        st.write(
+            report
+        )
 # ======================
 # AGENT WORKFLOW CARDS
 # ======================
