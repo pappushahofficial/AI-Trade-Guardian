@@ -668,6 +668,10 @@ if st.button(
     "🤖 Launch AI Agent"
 ):
 
+    with st.spinner(
+        "🤖 AI Trade Guardian analyzing market..."
+    ):
+
 
     df = get_data(symbol)
 
