@@ -781,6 +781,7 @@ AI strategy generated.
 Virtual trade created.
 
 🛡 RISK:
+Entry Price calculated.
 SL / TP calculated.
 
 Qwen credits saved ✅
@@ -818,6 +819,9 @@ Stop Loss:
 
 Take Profit:
 {tp}
+
+Entry Price:
+{price}
 """
                 }
             ]
