@@ -23,19 +23,33 @@ CREATE TABLE IF NOT EXISTS trades (
     entry TEXT,
     stop_loss TEXT,
     take_profit TEXT,
-    confidence TEXT
+    confidence TEXT,
+    agent_reason TEXT,
+    agent_score TEXT
 )
 """)
 
 conn.commit()
 
+try:
+    cursor.execute("ALTER TABLE trades ADD COLUMN agent_reason TEXT")
+except:
+    pass
 
-def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence):
+try:
+    cursor.execute("ALTER TABLE trades ADD COLUMN agent_score TEXT")
+except:
+    pass
+
+conn.commit()
+
+
+def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence, agent_reason, agent_score):
     cursor.execute(
         """
         INSERT INTO trades
-        (time, asset, decision, entry, stop_loss, take_profit, confidence)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+(time, asset, decision, entry, stop_loss, take_profit, confidence, agent_reason, agent_score)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -44,7 +58,9 @@ def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence):
             entry,
             stop_loss,
             take_profit,
-            confidence
+            confidence,
+            agent_reason,
+            agent_score
         )
     )
     conn.commit()
@@ -761,11 +777,26 @@ if st.button(
     
     # Limit score
     score = max(40, min(95, score))
-    
+
+try:
+    confidence = f"{score}%"
+except NameError:
+    score = 70
     confidence = f"{score}%"
 
+# =====================
+# FIX 12 - AGENT MEMORY
+# =====================
 
+agent_score = score
+agent_score_text = f"{score}/100"
 
+if score >= 80:
+    agent_reason = "Strong setup: trend and momentum aligned"
+elif score >= 60:
+    agent_reason = "Medium setup: acceptable trading conditions"
+else:
+    agent_reason = "Weak setup: higher risk detected"
     if demo:
 
         report = """
@@ -935,14 +966,15 @@ Take Profit:
 })
 
     save_trade_log(
-        symbol,
-        direction,
-        price,
-        sl,
-        tp,
-        confidence
-    )
-
+            symbol,
+            direction,
+            price,
+            sl,
+            tp,
+            confidence,
+            agent_reason,
+            agent_score
+        )
     st.subheader(
         "🧾 Agent Memory"
     )
@@ -956,19 +988,24 @@ Take Profit:
         symbol
     )
 
-
     m2.metric(
         "Decision",
         direction
     )
-
 
     m3.metric(
         "Confidence",
         confidence
     )
 
+    st.metric(
+        "🧠 Agent Score",
+        agent_score
+    )
 
+    st.info(
+        agent_reason
+    )
 
     st.subheader(
         "🧠 Qwen AI Report"
