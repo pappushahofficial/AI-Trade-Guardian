@@ -345,7 +345,7 @@ st.sidebar.markdown(
 unsafe_allow_html=True
 )
 def get_data(coin_symbol=None):
-    
+
 
     url = (
         "https://api.bitget.com/api/v2/spot/market/candles"
@@ -353,12 +353,27 @@ def get_data(coin_symbol=None):
     )
 
 
-    data = requests.get(url).json()
+    try:
+        response = requests.get(url, timeout=10)
+        data = response.json()
+    except Exception:
+        # Network error or bad response - treat as invalid pair
+        return None
 
 
-    df = pd.DataFrame(
-        data["data"]
-    )
+    # Bitget returns an empty/missing "data" list for invalid symbols
+    candles = data.get("data") if isinstance(data, dict) else None
+
+    if not candles:
+        return None
+
+
+    df = pd.DataFrame(candles)
+
+
+    # Safety check: a valid candle response always has at least 6 columns
+    if df.shape[1] < 6:
+        return None
 
 
     df = df.iloc[:, :6]
@@ -674,9 +689,13 @@ if st.button(
 
         df = get_data(symbol)
 
-        if df is None or df.empty:
-            st.error("❌ Unable to fetch market data. Check trading pair or try again.")
+        if df is None:
+            st.error(
+                f"❌ Couldn't find data for **{symbol}**. "
+                "Please check the pair name and try again (e.g. BTCUSDT, ETHUSDT)."
+            )
             st.stop()
+
 
         df["EMA20"] = (
             df["close"]
