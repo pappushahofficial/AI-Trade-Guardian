@@ -323,42 +323,70 @@ elif menu == "ℹ️ About Agent":
     st.title("🤖 About AI Trade Guardian")
 
     st.markdown("""
-## Autonomous Crypto Trading Agent 🚀
+## Autonomous AI-Powered Crypto Trading Agent 🚀
 
 Powered by Alibaba Qwen AI + Bitget API
 
-AI Trade Guardian is an AI-powered trading assistant that analyzes live crypto markets, applies AI reasoning, manages risk, and creates structured trading decisions.
+AI Trade Guardian is an autonomous AI agent that combines live crypto data, technical analysis, market sentiment, AI reasoning, risk management, virtual execution, and memory.
+
+Built for intelligent market understanding — not emotional trading.
 
 ---
 
 ### 🤖 Agent Workflow
 
-📊 Perceive  
-⬇️  
-🧠 Analyze  
-⬇️  
-🎯 Decide  
-⬇️  
-⚡ Execute  
-⬇️  
-🧾 Remember  
+👁 **Perceive**  
+Collect live market intelligence
+
+⬇️
+
+🧠 **Analyze & Decide**  
+Alibaba Qwen AI evaluates market conditions
+
+⬇️
+
+⚡ **Virtual Execute**  
+Create structured execution plan
+
+⬇️
+
+🛡 **Manage Risk**  
+Calculate Entry, Stop Loss, Take Profit & Risk/Reward
+
+⬇️
+
+🧾 **Remember**  
+Store decisions using Agent Memory
+
+---
+
+### 🧠 AI Decision Sources
+
+✅ Bitget Live Market Data  
+✅ EMA + RSI Indicators  
+✅ Volume & Volatility Analysis  
+✅ Crypto News Sentiment  
+✅ Fear & Greed Index  
+✅ Alibaba Qwen AI Reasoning  
+✅ Previous Agent Memory  
 
 ---
 
 ### ✨ Features
 
-✅ Live Bitget Market Data  
-✅ Alibaba Qwen AI Integration  
-✅ Market Scanner  
-✅ RSI, EMA, Volatility & Volume Analysis  
-✅ Live Crypto News (CoinDesk + CoinTelegraph)  
-✅ Crypto Fear & Greed Index  
-✅ AI-Driven LONG / SHORT / WAIT Decisions  
+✅ Real-Time Market Scanner  
+✅ Custom Bitget Pair Support  
+✅ AI LONG / SHORT / WAIT Decisions  
 ✅ Dynamic Confidence Score  
-✅ Stop Loss & Take Profit Planning  
+✅ Entry Price Planning  
+✅ Stop Loss & Take Profit Reasoning  
+✅ Market Structure Analysis  
+✅ Advanced Qwen AI Reports  
+✅ Trade Metrics & Risk Analysis  
 ✅ Virtual Execution Center  
-✅ Persistent Agent Memory with Reasoning  
-✅ Trade Logs  
+✅ Persistent Agent Memory  
+✅ Trade Logs Dashboard  
+✅ Live Agent Status Monitor  
 
 ---
 
