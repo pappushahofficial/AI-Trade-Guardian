@@ -1054,8 +1054,36 @@ Respond with ONLY valid JSON, no markdown formatting, no backticks, no preamble:
 {{
   "direction": "LONG" | "SHORT" | "WAIT",
   "confidence": <integer 50-95>,
-  "reasoning": "<2-4 sentences explaining the decision, referencing the specific
-   indicators, news, or sentiment that drove it>"
+  "reasoning": "<2-4 sentences - a short summary of the decision, used for the
+   agent's own memory of this trade. Keep this concise.>",
+  "full_report": "<A detailed, multi-paragraph trading report written for a
+   human trader reading the dashboard. Structure it in sections using these
+   exact headers, each on its own line, with 2-4 sentences of substantive
+   detail under every header (not just one line):
+
+   📊 PERCEIVE:
+   Describe what the market data shows - price action, RSI, volatility,
+   volume, and what they collectively suggest about current market structure.
+
+   📰 NEWS & SENTIMENT:
+   Summarize what the news headlines and Fear & Greed reading suggest about
+   market mood, and whether sentiment supports or contradicts the technicals.
+
+   🧠 DECIDE:
+   Explain the reasoning chain that led to the final LONG/SHORT/WAIT call,
+   explicitly weighing technicals against news/sentiment and noting any
+   conflicts you resolved.
+
+   ⚡ EXECUTE:
+   State the entry price and the practical execution plan.
+
+   🛡 RISK:
+   Explain the stop loss / take profit logic and the key risk(s) to this
+   trade idea (e.g. what would invalidate it).
+
+   🧾 MEMORY:
+   Note how this decision compares to your past decisions on this asset, if
+   any, and what you are carrying forward.>"
 }}
 """
 
@@ -1068,24 +1096,27 @@ Respond with ONLY valid JSON, no markdown formatting, no backticks, no preamble:
             ai_direction = technical_direction
             ai_confidence = technical_confidence
             ai_reasoning = (
-                "Demo Mode: using technical-only signal. "
-                f"EMA trend, momentum, and candle strength suggest {technical_direction}. "
-                "Qwen credits saved ✅"
+                f"Demo Mode: technical-only signal. EMA trend, momentum, and "
+                f"candle strength suggest {technical_direction}."
             )
 
-            report = f"""📊 DEMO AI REPORT
+            report = f"""📊 PERCEIVE:
+Market scanned for {symbol} at price {price}. RSI(14) reads {round(rsi,1)}, which is {"overbought territory" if rsi > 70 else "oversold territory" if rsi < 30 else "a neutral range"}. Volatility (20-candle) sits at {round(volatility,3)}%, and volume is currently {volume_trend.lower()} versus its 20-period average. 5-candle momentum is {round(momentum,2)}%, and EMA20/EMA50 separation is {round(ema_gap_pct,3)}%.
 
-📊 PERCEIVE: Market scanned ({symbol}). RSI {round(rsi,1)}, volatility {round(volatility,3)}%, volume {volume_trend}.
+📰 NEWS & SENTIMENT:
+{len(news_headlines)} relevant headline(s) were found from CoinDesk/CoinTelegraph for {symbol}. Fear & Greed Index reads {fng_block}. (Demo Mode skips deeper sentiment reasoning to save Qwen credits.)
 
-📰 NEWS: {len(news_headlines)} relevant headline(s) found.
+🧠 DECIDE:
+Technical-only logic suggests {ai_direction} with {ai_confidence}% confidence, based purely on EMA trend direction, momentum, and recent candle strength. Demo Mode does not cross-reference this against news or sentiment - turn off Demo Mode for full AI reasoning.
 
-😨 FEAR & GREED: {fng_block}
+⚡ EXECUTE:
+Virtual entry would be created at {price} in the {ai_direction} direction.
 
-🧠 DECIDE: {ai_direction} ({ai_confidence}%)
+🛡 RISK:
+Stop Loss and Take Profit levels are calculated as a fixed % band around entry price for Demo Mode. Disable Demo Mode for AI-calculated risk reasoning tied to volatility and news risk.
 
-⚡ EXECUTE: Virtual trade created.
-
-🛡 RISK: Entry, SL, and TP calculated.
+🧾 MEMORY:
+{memory_context}
 
 Qwen credits saved ✅"""
 
@@ -1119,7 +1150,7 @@ Qwen credits saved ✅"""
                 ai_direction = parsed.get("direction", technical_direction).upper()
                 ai_confidence = int(parsed.get("confidence", technical_confidence))
                 ai_reasoning = parsed.get("reasoning", "No reasoning provided.")
-                report = ai_reasoning
+                report = parsed.get("full_report", ai_reasoning)
 
             except Exception as e:
                 # If Qwen fails or returns bad JSON, fall back to the technical signal
@@ -1329,8 +1360,9 @@ Qwen credits saved ✅"""
         )
 
 
-        st.write(
-            report
+        st.markdown(
+            f'<div class="card">{report}</div>'.replace("\n", "<br>"),
+            unsafe_allow_html=True
         )
 # ======================
 # AGENT WORKFLOW CARDS
