@@ -59,6 +59,17 @@ def load_trade_logs():
 if "trade_logs" not in st.session_state:
     st.session_state.trade_logs = []
 
+if "agent_start_time" not in st.session_state:
+    st.session_state.agent_start_time = datetime.now()
+
+
+def get_uptime_str():
+    delta = datetime.now() - st.session_state.agent_start_time
+    total_seconds = int(delta.total_seconds())
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
 st.set_page_config(
     page_title="AI Trade Guardian",
     page_icon="🤖",
@@ -356,19 +367,24 @@ elif menu == "📊 Trade Logs":
 
 st.sidebar.markdown("---")
 
+_all_logs = load_trade_logs()
+_signal_count = len(_all_logs)
+_last_confidence = _all_logs[-1][-1] if _signal_count > 0 else "—"
+_uptime_str = get_uptime_str()
+
 st.sidebar.markdown(
-"""
+f"""
 <div class="card">
 
 <h4>🤖 AGENT STATUS</h4>
 
 <p>🟢 <b>Status:</b> Online</p>
 
-<p>⏱ <b>Uptime:</b> 02:45:32</p>
+<p>⏱ <b>Uptime:</b> {_uptime_str}</p>
 
-<p>📈 <b>Signals Today:</b> 12</p>
+<p>📊 <b>Signals Generated:</b> {_signal_count}</p>
 
-<p>🎯 <b>Accuracy:</b> 85.6%</p>
+<p>🎯 <b>Last Confidence:</b> {_last_confidence}</p>
 
 </div>
 """,
@@ -769,77 +785,85 @@ if st.button(
         )
 
 
-        if (
-            df["EMA20"].iloc[-1]
-            >
-            df["EMA50"].iloc[-1]
-        ):
-
-            direction = "LONG 📈"
-
-            signal = "BUY 🟢"
-
-            sl = round(
-                price * 0.98,
-                2
-            )
-
-            tp = round(
-                price * 1.04,
-                2
-            )
-
-
-        else:
-
-            direction = "SHORT 📉"
-
-            signal = "SELL 🔴"
-
-            sl = round(
-                price * 1.02,
-                2
-            )
-
-            tp = round(
-                price * 0.96,
-                2
-            )
-
-
     # =====================
-    # FIX 11.1 - AGENT BRAIN
+    # FIX 11.2 - AGENT BRAIN
     # =====================
 
-        score = 50
-    
-        # EMA trend
-        if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
-            score += 20
-        else:
-            score -= 20
-    
-        # Momentum
+        ema20 = df["EMA20"].iloc[-1]
+        ema50 = df["EMA50"].iloc[-1]
+
+        # EMA separation, normalized against price so it's comparable across assets
+        ema_gap_pct = abs(ema20 - ema50) / price * 100
+
+        # Momentum over the last 5 candles
         momentum = (
             (price - df["close"].iloc[-5])
             / df["close"].iloc[-5]
         ) * 100
-    
-        score += round(momentum * 5)
-    
-        # Candle strength
+
+        # Candle strength (most recent candle move)
         candle_power = abs(
             df["close"].iloc[-1]
             -
             df["close"].iloc[-2]
         ) / price * 100
-    
-        score += round(candle_power * 10)
-    
-        # Limit score
-        score = max(40, min(95, score))
-    
-        confidence = f"{score}%"
+
+        # Combined "edge" strength - how convinced the signal is, regardless of direction
+        edge_strength = (ema_gap_pct * 4) + (abs(momentum) * 3) + (candle_power * 5)
+
+        # WAIT zone: trend + momentum + candle are all too weak to trust a side
+        if ema_gap_pct < 0.05 and abs(momentum) < 0.05:
+
+            direction = "WAIT ⏳"
+
+            signal = "HOLD 🟡"
+
+            sl = round(price * 0.99, 2)
+
+            tp = round(price * 1.01, 2)
+
+            confidence = "50%"
+
+        else:
+
+            if ema20 > ema50:
+
+                direction = "LONG 📈"
+
+                signal = "BUY 🟢"
+
+                sl = round(
+                    price * 0.98,
+                    2
+                )
+
+                tp = round(
+                    price * 1.04,
+                    2
+                )
+
+
+            else:
+
+                direction = "SHORT 📉"
+
+                signal = "SELL 🔴"
+
+                sl = round(
+                    price * 1.02,
+                    2
+                )
+
+                tp = round(
+                    price * 0.96,
+                    2
+                )
+
+            # Scale edge_strength into the 70-85% band for both LONG and SHORT
+            # so direction never affects the confidence range, only the score's position in it
+            score = 70 + min(15, round(edge_strength))
+
+            confidence = f"{score}%"
 
 
 
