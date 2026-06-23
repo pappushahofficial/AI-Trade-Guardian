@@ -817,10 +817,6 @@ st.success(
     "🟢 Trading Agent Online"
 )
 
-demo = st.toggle(
-    "🧪 Demo Mode (Save Qwen Credits)",
-    value=True
-)
 
 # =====================
     # CONNECTIONS
@@ -1134,64 +1130,35 @@ matching this exact schema:
 
         structured = None
 
-        if demo:
+        try:
+            response = client.chat.completions.create(
+                model="qwen3.6-flash",
+                messages=[
+                    {"role": "system", "content": "You are an autonomous crypto trading agent. You always respond with strictly valid JSON only."},
+                    {"role": "user", "content": agent_prompt}
+                ]
+            )
 
+            raw_report = response.choices[0].message.content.strip()
+
+            if raw_report.startswith("```"):
+                raw_report = raw_report.strip("`")
+                if raw_report.lower().startswith("json"):
+                    raw_report = raw_report[4:].strip()
+
+            parsed = json.loads(raw_report)
+
+            ai_direction = parsed.get("direction", technical_direction).upper()
+            ai_confidence = int(parsed.get("confidence", technical_confidence))
+            ai_reasoning = parsed.get("reasoning", "No reasoning provided.")
+            report = parsed.get("full_report", ai_reasoning)
+            structured = parsed
+
+        except Exception as e:
             ai_direction = technical_direction
             ai_confidence = technical_confidence
-            ai_reasoning = (
-                f"Demo Mode: technical-only signal. EMA trend, momentum, and "
-                f"candle strength suggest {technical_direction}."
-            )
-            report = (
-                f"Demo Mode: technical-only breakdown for {symbol}. RSI(14) reads {round(rsi,1)}, "
-                f"volatility is {round(volatility,3)}%, volume is {volume_trend.lower()}, and 5-candle "
-                f"momentum is {round(momentum,2)}%. This combination points to {ai_direction}. "
-                f"Turn off Demo Mode for full Qwen AI reasoning over news and sentiment."
-            )
-
-        else:
-
-            try:
-                response = client.chat.completions.create(
-                    model="qwen3.6-flash",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": "You are an autonomous crypto trading agent. You always respond with strictly valid JSON only."
-                        },
-                        {
-                            "role": "user",
-                            "content": agent_prompt
-                        }
-                    ]
-                )
-
-                raw_report = response.choices[0].message.content.strip()
-
-                # Strip accidental markdown fences if the model adds them anyway
-                if raw_report.startswith("```"):
-                    raw_report = raw_report.strip("`")
-                    if raw_report.lower().startswith("json"):
-                        raw_report = raw_report[4:].strip()
-
-                parsed = json.loads(raw_report)
-
-                ai_direction = parsed.get("direction", technical_direction).upper()
-                ai_confidence = int(parsed.get("confidence", technical_confidence))
-                ai_reasoning = parsed.get("reasoning", "No reasoning provided.")
-                report = parsed.get("full_report", ai_reasoning)
-                structured = parsed
-
-            except Exception as e:
-                # If Qwen fails or returns bad JSON, fall back to the technical signal
-                # rather than crashing the agent.
-                ai_direction = technical_direction
-                ai_confidence = technical_confidence
-                ai_reasoning = (
-                    f"⚠️ Qwen AI call failed ({e}). Fell back to technical-only signal: "
-                    f"{technical_direction} ({technical_confidence}%)."
-                )
-                report = ai_reasoning
+            ai_reasoning = f"⚠️ Qwen AI unavailable ({e}). Technical fallback used."
+            report = ai_reasoning
 
         # Normalize direction/signal/SL-TP based on the FINAL decision
         if ai_direction == "LONG":
