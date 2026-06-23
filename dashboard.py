@@ -26,26 +26,30 @@ CREATE TABLE IF NOT EXISTS trades (
     stop_loss TEXT,
     take_profit TEXT,
     confidence TEXT,
-    reasoning TEXT
+    reasoning TEXT,
+    risk_reward TEXT
 )
 """)
 
 conn.commit()
 
-# Migration safety: add reasoning column if an older DB file already exists without it
+# Migration safety: add columns if an older DB file already exists without them
 cursor.execute("PRAGMA table_info(trades)")
 _existing_cols = [row[1] for row in cursor.fetchall()]
 if "reasoning" not in _existing_cols:
     cursor.execute("ALTER TABLE trades ADD COLUMN reasoning TEXT")
     conn.commit()
+if "risk_reward" not in _existing_cols:
+    cursor.execute("ALTER TABLE trades ADD COLUMN risk_reward TEXT")
+    conn.commit()
 
 
-def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence, reasoning=""):
+def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence, reasoning="", risk_reward=""):
     cursor.execute(
         """
         INSERT INTO trades
-        (time, asset, decision, entry, stop_loss, take_profit, confidence, reasoning)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        (time, asset, decision, entry, stop_loss, take_profit, confidence, reasoning, risk_reward)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -55,7 +59,8 @@ def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence, r
             stop_loss,
             take_profit,
             confidence,
-            reasoning
+            reasoning,
+            risk_reward
         )
     )
     conn.commit()
@@ -63,7 +68,7 @@ def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence, r
 
 def load_trade_logs():
     cursor.execute(
-        "SELECT time, asset, decision, entry, stop_loss, take_profit, confidence, reasoning FROM trades"
+        "SELECT time, asset, decision, entry, stop_loss, take_profit, confidence, reasoning, risk_reward FROM trades"
     )
     return cursor.fetchall()
 
@@ -386,7 +391,8 @@ elif menu == "📊 Trade Logs":
                 "Stop Loss",
                 "Take Profit",
                 "Confidence",
-                "Reasoning"
+                "Reasoning",
+                "Risk/Reward"
             ]
         )
 
@@ -1056,6 +1062,12 @@ implied by your direction (LONG: SL -2%/TP +4% from entry; SHORT: SL +2%/TP -4%
 from entry; WAIT: SL -1%/TP +1%) to compute real numbers for every price level
 you mention below - never use placeholders.
 
+You must also explicitly justify the entry price itself, and the stop loss and
+take profit levels separately - not just state them. Explain WHY this is the
+entry, WHY the stop loss sits where it does (what invalidates the trade), and
+WHY the take profit sits where it does (what target/resistance/support it
+respects). Tie news/sentiment impact and market structure into that reasoning.
+
 Respond with ONLY valid JSON, no markdown formatting, no backticks, no preamble,
 matching this exact schema:
 {{
@@ -1066,6 +1078,21 @@ matching this exact schema:
 
   "summary": "<1-2 sentence systematic summary of the setup, e.g. 'Here's a
    breakdown of your {symbol} {{direction}} setup based on current conditions.'>",
+
+  "entry_plan": {{
+    "entry_reasoning": "<2-3 sentences explaining specifically why THIS price
+     and moment is the entry - reference price action/EMA/momentum at entry>",
+    "stop_loss_reasoning": "<2-3 sentences explaining why the stop loss sits at
+     this exact level - what structure/volatility/risk % justifies it>",
+    "take_profit_reasoning": "<2-3 sentences explaining why the take profit
+     sits at this exact level - what target/structure/R:R justifies it>",
+    "market_structure_analysis": "<2-3 sentences on what EMA/RSI/momentum/volume
+     collectively say about current market structure>",
+    "news_sentiment_impact": "<2-3 sentences on how the news headlines and Fear
+     & Greed reading specifically support or contradict this trade idea>",
+    "risk_management_explanation": "<2-3 sentences on how position sizing and
+     the chosen SL/TP combination manage risk for this specific trade>"
+  }},
 
   "trade_metrics": {{
     "risk_reward_ratio": "<e.g. '1 : 2.00'>",
@@ -1203,6 +1230,14 @@ matching this exact schema:
         if structured is None:
             structured = {
                 "summary": f"Here's a systematic breakdown of your {symbol} {ai_direction} setup based on current conditions.",
+                "entry_plan": {
+                    "entry_reasoning": f"Entry is taken at the current market price {price}, where EMA20 ({round(ema20,4)}) is {'above' if ema20 > ema50 else 'below'} EMA50 ({round(ema50,4)}) with {round(ema_gap_pct,3)}% separation, and 5-candle momentum reads {round(momentum,2)}%, together suggesting a {ai_direction} bias right now.",
+                    "stop_loss_reasoning": f"Stop loss is placed at {sl}, a {(risk_amount/price*100):.2f}% buffer from entry, sized to absorb normal noise (20-candle volatility is {round(volatility,3)}%) while still invalidating the {ai_direction.lower()} thesis if breached.",
+                    "take_profit_reasoning": f"Take profit is set at {tp}, a {(reward_amount/price*100):.2f}% move from entry, chosen to keep the risk-reward ratio at roughly 1:{rr_ratio:.2f} given the {(risk_amount/price*100):.2f}% risk taken on.",
+                    "market_structure_analysis": f"RSI(14) reads {round(rsi,1)} ({'overbought' if rsi > 70 else 'oversold' if rsi < 30 else 'neutral'}), volume is {volume_trend.lower()} vs its 20-period average, and EMA20/EMA50 alignment confirms a {ai_direction.lower()}-leaning structure on the current timeframe.",
+                    "news_sentiment_impact": f"{len(news_headlines)} relevant headline(s) were found from CoinDesk/CoinTelegraph, and the Fear & Greed Index reads {fng_block} - {'reinforcing' if (fng_value is not None and ((fng_value < 45 and ai_direction == 'SHORT') or (fng_value > 55 and ai_direction == 'LONG'))) else 'adding caution to'} the technical read.",
+                    "risk_management_explanation": f"Risking {(risk_amount/price*100):.2f}% of entry price per unit keeps position sizing disciplined; combined with the {rr_ratio:.2f}:1 reward-to-risk ratio, a sub-{breakeven_win_rate:.1f}% win rate would still be profitable over time."
+                },
                 "trade_metrics": {
                     "risk_reward_ratio": f"1 : {rr_ratio:.2f}",
                     "risk_reward_note": "Mathematically optimal for consistent edge" if rr_ratio >= 1.5 else "Tight reward relative to risk - size accordingly",
@@ -1259,6 +1294,29 @@ matching this exact schema:
             signal
         )
 
+
+
+        p1, p2, p3, p4 = st.columns(4)
+
+        p1.metric(
+            "📍 Entry Price",
+            price
+        )
+
+        p2.metric(
+            "🛑 Stop Loss",
+            sl
+        )
+
+        p3.metric(
+            "🎯 Take Profit",
+            tp
+        )
+
+        p4.metric(
+            "📊 Risk/Reward",
+            structured.get("trade_metrics", {}).get("risk_reward_ratio", f"1 : {rr_ratio:.2f}")
+        )
 
 
         x,y = st.columns(2)
@@ -1346,6 +1404,15 @@ matching this exact schema:
             "⚡ Agent Execution Center"
         )
 
+        rr_display = structured.get("trade_metrics", {}).get("risk_reward_ratio", f"1 : {rr_ratio:.2f}")
+
+        ex1, ex2, ex3, ex4 = st.columns(4)
+        ex1.markdown(f"**📍 Entry**\n\n{price}")
+        ex2.markdown(f"**🛡 Validate Risk**\n\n✅ R:R {rr_display}")
+        ex3.markdown(f"**⚡ Simulate Execution**\n\n✅ {direction}")
+        ex4.markdown(f"**📝 Store Memory**\n\n✅ Logged")
+
+        st.caption("🔒 Virtual execution only — no real orders are placed on Bitget or any exchange.")
 
         st.success(
         f"Virtual Execution Created ✅ {direction}"
@@ -1359,7 +1426,8 @@ matching this exact schema:
         "stop_loss": sl,
         "take_profit": tp,
         "confidence": confidence,
-        "reasoning": ai_reasoning
+        "reasoning": ai_reasoning,
+        "risk_reward": rr_display
     })
 
         save_trade_log(
@@ -1369,7 +1437,8 @@ matching this exact schema:
             sl,
             tp,
             confidence,
-            ai_reasoning
+            ai_reasoning,
+            rr_display
         )
 
         st.subheader(
@@ -1397,6 +1466,14 @@ matching this exact schema:
             confidence
         )
 
+        mm1, mm2, mm3, mm4, mm5 = st.columns(5)
+
+        mm1.metric("Entry Price", price)
+        mm2.metric("Stop Loss", sl)
+        mm3.metric("Take Profit", tp)
+        mm4.metric("Risk/Reward", rr_display)
+        mm5.metric("Timestamp", datetime.now().strftime("%H:%M:%S"))
+
         with st.expander("📜 Past decisions on this asset"):
             if past_decisions:
                 for p_time, p_asset, p_decision, p_confidence, p_reasoning in past_decisions:
@@ -1412,6 +1489,23 @@ matching this exact schema:
         )
 
         st.write(structured.get("summary", f"Here's a breakdown of your {symbol} {ai_direction} setup."))
+
+        ep = structured.get("entry_plan", {})
+
+        if ep:
+            st.markdown("#### 📍 Entry, Stop Loss & Take Profit Reasoning")
+            st.markdown(f"**📍 Why this entry:** {ep.get('entry_reasoning', '')}")
+            st.markdown(f"**🛑 Why this stop loss:** {ep.get('stop_loss_reasoning', '')}")
+            st.markdown(f"**🎯 Why this take profit:** {ep.get('take_profit_reasoning', '')}")
+
+            st.markdown("#### 🏗️ Market Structure Analysis")
+            st.write(ep.get("market_structure_analysis", ""))
+
+            st.markdown("#### 📰 News & Sentiment Impact")
+            st.write(ep.get("news_sentiment_impact", ""))
+
+            st.markdown("#### 🛡 Risk Management Explanation")
+            st.write(ep.get("risk_management_explanation", ""))
 
         st.markdown("#### 📊 Trade Metrics")
 
