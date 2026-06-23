@@ -11,9 +11,21 @@
 
 AI Trade Guardian is an autonomous AI trading assistant that combines live crypto market data, technical analysis, AI reasoning, execution simulation, and memory.
 
-The agent is designed to support smarter trading decisions by reducing emotional decisions and improving risk awareness.
+The agent helps traders make more structured decisions by combining artificial intelligence with real-time crypto market intelligence.
 
-## Agent Workflow
+---
+
+# 🔗 Project Links
+
+🌐 Live Demo (Streamlit):  
+https://ai-trade-guardian-by-dmcdeveloper.streamlit.app/
+
+💻 Source Code (GitHub):  
+https://github.com/pappushahofficial/AI-Trade-Guardian
+
+---
+
+# 🤖 Agent Workflow
 
 📊 Perceive  
 ⬇️  
@@ -31,55 +43,54 @@ The agent is designed to support smarter trading decisions by reducing emotional
 
 # 📊 PERCEIVE
 
-The agent collects and processes market information:
+The agent collects and understands market data:
 
 - Live Bitget market data
-- Real-time crypto scanner
-- Custom trading pair analysis
+- Real-time market scanner
+- Custom crypto pair support
 - Price movement tracking
-- EMA trend detection
+- EMA trend analysis
 
 ---
 
 # 🧠 ANALYZE & DECIDE
 
-Alibaba Qwen AI + Agent Brain evaluates market conditions:
+Alibaba Qwen AI and Agent Brain analyze market conditions:
 
 - LONG 📈 decisions
 - SHORT 📉 decisions
 - AI-generated market reasoning
-- Trading confidence score
-- Market condition explanation
-- Smart decision support
+- Dynamic confidence scoring
+- Trading explanations
 
 ---
 
 # ⚡ EXECUTION CENTER
 
-AI Trade Guardian includes a virtual execution system:
+AI Trade Guardian simulates intelligent trade execution:
 
-- Creates simulated trade execution
-- Tracks AI decisions
-- Records trading actions
-- Stores execution history
+- Virtual trade execution
+- AI decision tracking
+- Trading action records
+- Execution history
 
 ---
 
 # 🛡 RISK MANAGEMENT
 
-The risk engine provides:
+Built-in risk engine provides:
 
 - Stop Loss calculation
 - Take Profit targets
 - Risk / Reward analysis
-- Trade planning support
-- Execution checklist
+- Trading checklist
+- Risk awareness
 
 ---
 
 # 🧾 AGENT MEMORY
 
-The agent remembers previous actions using a trade memory system:
+The agent remembers previous decisions using persistent memory:
 
 - Asset history
 - Entry price records
@@ -96,14 +107,14 @@ The agent remembers previous actions using a trade memory system:
 ✅ Bitget Market API Integration  
 ✅ Real-Time Market Scanner  
 ✅ Custom Bitget Pair Support  
-✅ Interactive Price Charts  
+✅ Interactive Market Charts  
 ✅ EMA Strategy Engine  
 ✅ Dynamic Confidence Scoring  
 ✅ LONG / SHORT Decision System  
 ✅ AI Generated Trading Reports  
 ✅ Virtual Execution Center  
-✅ Agent Memory  
-✅ Trade Logs  
+✅ Persistent Agent Memory  
+✅ Trade Logs Dashboard  
 ✅ Smart Error Handling  
 ✅ Risk Management Engine  
 
@@ -132,7 +143,7 @@ Default assets:
 - BNBUSDT
 - XRPUSDT
 
-Plus any supported Bitget trading pair.
+Also supports custom Bitget trading pairs.
 
 ---
 
@@ -144,9 +155,11 @@ Market Data Engine
 ⬇️  
 Technical Analysis Engine  
 ⬇️  
-Agent Decision System  
+AI Agent Brain  
 ⬇️  
 Alibaba Qwen AI Reasoning  
+⬇️  
+Trading Decision  
 ⬇️  
 Virtual Execution Center  
 ⬇️  
@@ -158,15 +171,16 @@ Agent Memory
 
 # 🎯 Goal
 
-AI Trade Guardian aims to demonstrate how autonomous AI agents can assist traders by combining:
+AI Trade Guardian demonstrates how autonomous AI agents can assist crypto traders by combining:
 
-- Live market understanding
-- Artificial intelligence reasoning
-- Risk awareness
-- Decision tracking
-- Continuous memory
+- Real-time market awareness
+- AI-powered reasoning
+- Risk management
+- Decision support
+- Execution tracking
+- Agent memory
 
-The goal is not to replace traders, but to provide an intelligent AI assistant for better market analysis.
+The goal is not to replace traders but to create an intelligent assistant that improves trading discipline and analysis.
 
 ---
 
@@ -174,7 +188,7 @@ The goal is not to replace traders, but to provide an intelligent AI assistant f
 
 AI Trade Guardian provides AI-powered market analysis only.
 
-This project is for educational and research purposes.
+This project is created for educational and research purposes.
 
 It is not financial advice. Cryptocurrency trading involves risk.
 
