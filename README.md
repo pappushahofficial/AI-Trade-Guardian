@@ -9,9 +9,13 @@
 
 # 🚀 Overview
 
-AI Trade Guardian is an autonomous AI trading assistant that combines live crypto market data, technical analysis, AI reasoning, execution simulation, and memory.
+AI Trade Guardian is an autonomous crypto trading agent that combines real-time Bitget market data, technical indicators, market sentiment, AI reasoning, virtual execution, risk management, and persistent memory.
 
-The agent helps traders make more structured decisions by combining artificial intelligence with real-time crypto market intelligence.
+The agent follows a complete AI workflow:
+
+👁 Perceive → 🧠 Analyze & Decide → ⚡ Execute → 🛡 Manage Risk → 🧾 Remember
+
+It helps traders understand market conditions using AI-powered reasoning instead of emotional decision making.
 
 ---
 
@@ -27,77 +31,97 @@ https://github.com/pappushahofficial/AI-Trade-Guardian
 
 # 🤖 Agent Workflow
 
-📊 Perceive  
-⬇️  
-🧠 Analyze  
-⬇️  
-🎯 Decide  
-⬇️  
-⚡ Execute  
-⬇️  
-🛡 Manage Risk  
-⬇️  
-🧾 Remember  
+## 👁 PERCEIVE
 
----
-
-# 📊 PERCEIVE
-
-The agent collects and understands market data:
+The agent collects real-time market intelligence:
 
 - Live Bitget market data
-- Real-time market scanner
-- Custom crypto pair support
-- Price movement tracking
-- EMA trend analysis
+- Price action analysis
+- EMA trend detection
+- RSI analysis
+- Volume analysis
+- Market volatility tracking
+- Crypto news context
+- Fear & Greed sentiment data
 
 ---
 
-# 🧠 ANALYZE & DECIDE
+## 🧠 ANALYZE & DECIDE
 
-Alibaba Qwen AI and Agent Brain analyze market conditions:
+Alibaba Qwen AI acts as the reasoning engine.
 
-- LONG 📈 decisions
-- SHORT 📉 decisions
-- AI-generated market reasoning
-- Dynamic confidence scoring
-- Trading explanations
+The AI evaluates:
+
+- Technical indicators
+- Market structure
+- News sentiment
+- Market emotion
+- Previous agent memory
+
+Then generates:
+
+- LONG 📈 decision
+- SHORT 📉 decision
+- WAIT ⏳ decision
+- Confidence score
+- Detailed reasoning
 
 ---
 
-# ⚡ EXECUTION CENTER
+## ⚡ VIRTUAL EXECUTION CENTER
 
-AI Trade Guardian simulates intelligent trade execution:
+AI Trade Guardian creates a simulated execution plan:
 
+- Entry price planning
+- Risk validation
 - Virtual trade execution
-- AI decision tracking
-- Trading action records
-- Execution history
+- Decision tracking
+- Memory storage
+
+(No real exchange orders are placed)
 
 ---
 
-# 🛡 RISK MANAGEMENT
+## 🛡 RISK MANAGEMENT ENGINE
 
-Built-in risk engine provides:
+The agent provides:
 
 - Stop Loss calculation
 - Take Profit targets
-- Risk / Reward analysis
-- Trading checklist
-- Risk awareness
+- Risk / Reward ratio
+- Breakeven analysis
+- Execution checklist
+- Risk management rules
 
 ---
 
-# 🧾 AGENT MEMORY
+## 🧾 AGENT MEMORY
 
-The agent remembers previous decisions using persistent memory:
+Persistent memory stores:
 
+- Previous decisions
 - Asset history
-- Entry price records
-- LONG / SHORT decisions
-- Confidence tracking
-- SL / TP history
-- Trade logs database
+- Entry price
+- Stop Loss
+- Take Profit
+- Confidence score
+- AI reasoning
+- Trade history
+
+---
+
+# 🧠 AI Decision Sources
+
+AI Trade Guardian combines:
+
+✅ Bitget Live Market Data  
+✅ EMA + RSI Indicators  
+✅ Volume Analysis  
+✅ Market Volatility  
+✅ Crypto News Sentiment  
+✅ Fear & Greed Index  
+✅ Alibaba Qwen AI Reasoning  
+✅ Agent Memory  
 
 ---
 
@@ -107,16 +131,18 @@ The agent remembers previous decisions using persistent memory:
 ✅ Bitget Market API Integration  
 ✅ Real-Time Market Scanner  
 ✅ Custom Bitget Pair Support  
-✅ Interactive Market Charts  
-✅ EMA Strategy Engine  
-✅ Dynamic Confidence Scoring  
-✅ LONG / SHORT Decision System  
+✅ Live Agent Status Monitor  
+✅ Signals Generated Counter  
+✅ Confidence Tracking  
+✅ Interactive Charts  
+✅ Market Structure Analysis  
 ✅ AI Generated Trading Reports  
+✅ Entry / SL / TP Reasoning  
+✅ Trade Metrics Dashboard  
 ✅ Virtual Execution Center  
 ✅ Persistent Agent Memory  
-✅ Trade Logs Dashboard  
+✅ Trade Logs  
 ✅ Smart Error Handling  
-✅ Risk Management Engine  
 
 ---
 
@@ -132,6 +158,16 @@ The agent remembers previous decisions using persistent memory:
 
 ---
 
+# 🔐 Security
+
+AI Trade Guardian protects sensitive credentials.
+
+- API keys stored using environment variables / Streamlit Secrets
+- No private API keys stored in source code
+- Secure configuration for deployment
+
+---
+
 # 📊 Supported Markets
 
 Default assets:
@@ -142,6 +178,10 @@ Default assets:
 - SOLUSDT
 - BNBUSDT
 - XRPUSDT
+- DOGEUSDT
+- ADAUSDT
+- AVAXUSDT
+- LINKUSDT
 
 Also supports custom Bitget trading pairs.
 
@@ -151,36 +191,34 @@ Also supports custom Bitget trading pairs.
 
 Bitget Market API  
 ⬇️  
-Market Data Engine  
+Market Intelligence Engine  
 ⬇️  
-Technical Analysis Engine  
-⬇️  
-AI Agent Brain  
+Technical + Sentiment Analysis  
 ⬇️  
 Alibaba Qwen AI Reasoning  
 ⬇️  
-Trading Decision  
+Agent Decision Engine  
 ⬇️  
 Virtual Execution Center  
 ⬇️  
-Risk Management  
+Risk Management Engine  
 ⬇️  
-Agent Memory
+Agent Memory System  
 
 ---
 
 # 🎯 Goal
 
-AI Trade Guardian demonstrates how autonomous AI agents can assist crypto traders by combining:
+AI Trade Guardian demonstrates how autonomous AI agents can assist crypto traders through:
 
-- Real-time market awareness
-- AI-powered reasoning
-- Risk management
-- Decision support
-- Execution tracking
-- Agent memory
+- Real-time market perception
+- AI reasoning
+- Structured decision making
+- Risk awareness
+- Execution simulation
+- Continuous memory
 
-The goal is not to replace traders but to create an intelligent assistant that improves trading discipline and analysis.
+The goal is not to replace traders, but to provide an intelligent AI assistant for better market analysis.
 
 ---
 
@@ -188,9 +226,19 @@ The goal is not to replace traders but to create an intelligent assistant that i
 
 AI Trade Guardian provides AI-powered market analysis only.
 
-This project is created for educational and research purposes.
+This project is built for educational and research purposes.
 
 It is not financial advice. Cryptocurrency trading involves risk.
+
+---
+
+# 👨‍💻 Developer
+
+Created by **Pappu Shah DMC Developer**
+
+Telegram: https://t.me/PappuShahOfficial  
+
+GitHub: https://github.com/pappushahofficial
 
 ---
 
