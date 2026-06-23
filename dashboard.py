@@ -272,6 +272,58 @@ if menu == "⚙️ Settings":
 # TRADE LOGS PAGE
 # =========================
 
+elif menu == "ℹ️ About Agent":
+
+    st.title("🤖 About AI Trade Guardian")
+
+    st.markdown("""
+## Autonomous Crypto Trading Agent 🚀
+
+Powered by Alibaba Qwen AI + Bitget API
+
+AI Trade Guardian is an AI-powered trading assistant that analyzes live crypto markets, applies AI reasoning, manages risk, and creates structured trading decisions.
+
+---
+
+### 🤖 Agent Workflow
+
+📊 Perceive  
+⬇️  
+🧠 Analyze  
+⬇️  
+🎯 Decide  
+⬇️  
+⚡ Execute  
+⬇️  
+🧾 Remember  
+
+---
+
+### ✨ Features
+
+✅ Live Bitget Market Data  
+✅ Alibaba Qwen AI Integration  
+✅ Market Scanner  
+✅ EMA Analysis Engine  
+✅ LONG / SHORT Decisions  
+✅ Dynamic Confidence Score  
+✅ Stop Loss & Take Profit Planning  
+✅ Virtual Execution Center  
+✅ Agent Memory  
+✅ Trade Logs  
+
+---
+
+### 👨‍💻 Developer
+
+Created by **Pappu Shah DMC Developer**
+
+🔗 Telegram: @PappuShahOfficial  
+💻 GitHub: @pappushahofficial
+
+🏆 Built for Bitget AI Hackathon
+""")
+
 elif menu == "📊 Trade Logs":
 
     st.subheader("📊 Agent Trade Logs")
