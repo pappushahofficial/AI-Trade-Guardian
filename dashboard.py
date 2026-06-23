@@ -59,6 +59,17 @@ def load_trade_logs():
 if "trade_logs" not in st.session_state:
     st.session_state.trade_logs = []
 
+if "agent_start_time" not in st.session_state:
+    st.session_state.agent_start_time = datetime.now()
+
+
+def get_uptime_str():
+    delta = datetime.now() - st.session_state.agent_start_time
+    total_seconds = int(delta.total_seconds())
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
 st.set_page_config(
     page_title="AI Trade Guardian",
     page_icon="🤖",
@@ -356,19 +367,24 @@ elif menu == "📊 Trade Logs":
 
 st.sidebar.markdown("---")
 
+_all_logs = load_trade_logs()
+_signal_count = len(_all_logs)
+_last_confidence = _all_logs[-1][-1] if _signal_count > 0 else "—"
+_uptime_str = get_uptime_str()
+
 st.sidebar.markdown(
-"""
+f"""
 <div class="card">
 
 <h4>🤖 AGENT STATUS</h4>
 
 <p>🟢 <b>Status:</b> Online</p>
 
-<p>⏱ <b>Uptime:</b> Active Session</p>
+<p>⏱ <b>Uptime:</b> {_uptime_str}</p>
 
-<p>📈 <b>Signals Generated:</b> {len(st.session_state.get("trade_logs", []))}</p>
+<p>📊 <b>Signals Generated:</b> {_signal_count}</p>
 
-<p>🎯 <b>AI Confidence:</b> Live Agent Score</p>
+<p>🎯 <b>Last Confidence:</b> {_last_confidence}</p>
 
 </div>
 """,
