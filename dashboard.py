@@ -318,8 +318,8 @@ AI Trade Guardian is an AI-powered trading assistant that analyzes live crypto m
 
 Created by **Pappu Shah DMC Developer**
 
-🔗 Telegram: @PappuShahOfficial  
-💻 GitHub: @pappushahofficial
+🔗 Telegram: https://t.me/PappuShahOfficial  
+💻 GitHub: https://github.com/pappushahofficial
 
 🏆 Built for Bitget AI Hackathon
 """)
