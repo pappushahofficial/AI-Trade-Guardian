@@ -364,11 +364,11 @@ st.sidebar.markdown(
 
 <p>🟢 <b>Status:</b> Online</p>
 
-<p>⏱ <b>Uptime:</b> 02:45:32</p>
+<p>⏱ <b>Uptime:</b> Active Session</p>
 
-<p>📈 <b>Signals Today:</b> 12</p>
+<p>📈 <b>Signals Generated:</b> {len(st.session_state.get("trade_logs", []))}</p>
 
-<p>🎯 <b>Accuracy:</b> 85.6%</p>
+<p>🎯 <b>AI Confidence:</b> Live Agent Score</p>
 
 </div>
 """,
