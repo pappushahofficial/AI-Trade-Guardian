@@ -447,10 +447,6 @@ st.sidebar.markdown(
 
 <p>📡 Bitget API</p>
 
-<p>📰 CoinDesk / CoinTelegraph</p>
-
-<p>😨 Alternative.me F&G Index</p>
-
 </div>
 """,
 unsafe_allow_html=True
@@ -939,7 +935,7 @@ if st.button(
 
         df = add_indicators(df)
 
-        price = df["close"].iloc[-1]
+        price = round(df["close"].iloc[-1], 2)
 
         # =====================
         # FIX 12 - MARKET ANALYSIS SUITE
@@ -1316,21 +1312,6 @@ matching this exact schema:
         p4.metric(
             "📊 Risk/Reward",
             structured.get("trade_metrics", {}).get("risk_reward_ratio", f"1 : {rr_ratio:.2f}")
-        )
-
-
-        x,y = st.columns(2)
-
-
-        x.metric(
-            "🛑 Stop Loss",
-            sl
-        )
-
-
-        y.metric(
-            "💰 Take Profit",
-            tp
         )
 
         st.subheader(
