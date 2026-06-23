@@ -785,77 +785,85 @@ if st.button(
         )
 
 
-        if (
-            df["EMA20"].iloc[-1]
-            >
-            df["EMA50"].iloc[-1]
-        ):
-
-            direction = "LONG 📈"
-
-            signal = "BUY 🟢"
-
-            sl = round(
-                price * 0.98,
-                2
-            )
-
-            tp = round(
-                price * 1.04,
-                2
-            )
-
-
-        else:
-
-            direction = "SHORT 📉"
-
-            signal = "SELL 🔴"
-
-            sl = round(
-                price * 1.02,
-                2
-            )
-
-            tp = round(
-                price * 0.96,
-                2
-            )
-
-
     # =====================
-    # FIX 11.1 - AGENT BRAIN
+    # FIX 11.2 - AGENT BRAIN
     # =====================
 
-        score = 50
-    
-        # EMA trend
-        if df["EMA20"].iloc[-1] > df["EMA50"].iloc[-1]:
-            score += 20
-        else:
-            score -= 20
-    
-        # Momentum
+        ema20 = df["EMA20"].iloc[-1]
+        ema50 = df["EMA50"].iloc[-1]
+
+        # EMA separation, normalized against price so it's comparable across assets
+        ema_gap_pct = abs(ema20 - ema50) / price * 100
+
+        # Momentum over the last 5 candles
         momentum = (
             (price - df["close"].iloc[-5])
             / df["close"].iloc[-5]
         ) * 100
-    
-        score += round(momentum * 5)
-    
-        # Candle strength
+
+        # Candle strength (most recent candle move)
         candle_power = abs(
             df["close"].iloc[-1]
             -
             df["close"].iloc[-2]
         ) / price * 100
-    
-        score += round(candle_power * 10)
-    
-        # Limit score
-        score = max(40, min(95, score))
-    
-        confidence = f"{score}%"
+
+        # Combined "edge" strength - how convinced the signal is, regardless of direction
+        edge_strength = (ema_gap_pct * 4) + (abs(momentum) * 3) + (candle_power * 5)
+
+        # WAIT zone: trend + momentum + candle are all too weak to trust a side
+        if ema_gap_pct < 0.05 and abs(momentum) < 0.05:
+
+            direction = "WAIT ⏳"
+
+            signal = "HOLD 🟡"
+
+            sl = round(price * 0.99, 2)
+
+            tp = round(price * 1.01, 2)
+
+            confidence = "50%"
+
+        else:
+
+            if ema20 > ema50:
+
+                direction = "LONG 📈"
+
+                signal = "BUY 🟢"
+
+                sl = round(
+                    price * 0.98,
+                    2
+                )
+
+                tp = round(
+                    price * 1.04,
+                    2
+                )
+
+
+            else:
+
+                direction = "SHORT 📉"
+
+                signal = "SELL 🔴"
+
+                sl = round(
+                    price * 1.02,
+                    2
+                )
+
+                tp = round(
+                    price * 0.96,
+                    2
+                )
+
+            # Scale edge_strength into the 70-85% band for both LONG and SHORT
+            # so direction never affects the confidence range, only the score's position in it
+            score = 70 + min(15, round(edge_strength))
+
+            confidence = f"{score}%"
 
 
 
