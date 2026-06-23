@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 from openai import OpenAI
 from datetime import datetime
 import sqlite3
+import xml.etree.ElementTree as ET
+import json
 
 # =========================
 # AGENT TRADE DATABASE
@@ -23,19 +25,27 @@ CREATE TABLE IF NOT EXISTS trades (
     entry TEXT,
     stop_loss TEXT,
     take_profit TEXT,
-    confidence TEXT
+    confidence TEXT,
+    reasoning TEXT
 )
 """)
 
 conn.commit()
 
+# Migration safety: add reasoning column if an older DB file already exists without it
+cursor.execute("PRAGMA table_info(trades)")
+_existing_cols = [row[1] for row in cursor.fetchall()]
+if "reasoning" not in _existing_cols:
+    cursor.execute("ALTER TABLE trades ADD COLUMN reasoning TEXT")
+    conn.commit()
 
-def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence):
+
+def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence, reasoning=""):
     cursor.execute(
         """
         INSERT INTO trades
-        (time, asset, decision, entry, stop_loss, take_profit, confidence)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        (time, asset, decision, entry, stop_loss, take_profit, confidence, reasoning)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -44,7 +54,8 @@ def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence):
             entry,
             stop_loss,
             take_profit,
-            confidence
+            confidence,
+            reasoning
         )
     )
     conn.commit()
@@ -52,8 +63,27 @@ def save_trade_log(asset, decision, entry, stop_loss, take_profit, confidence):
 
 def load_trade_logs():
     cursor.execute(
-        "SELECT time, asset, decision, entry, stop_loss, take_profit, confidence FROM trades"
+        "SELECT time, asset, decision, entry, stop_loss, take_profit, confidence, reasoning FROM trades"
     )
+    return cursor.fetchall()
+
+
+def load_recent_decisions(asset=None, limit=5):
+    """Pull the agent's most recent past decisions for memory context, optionally filtered by asset."""
+    if asset:
+        cursor.execute(
+            """
+            SELECT time, asset, decision, confidence, reasoning FROM trades
+            WHERE asset = ?
+            ORDER BY id DESC LIMIT ?
+            """,
+            (asset, limit)
+        )
+    else:
+        cursor.execute(
+            "SELECT time, asset, decision, confidence, reasoning FROM trades ORDER BY id DESC LIMIT ?",
+            (limit,)
+        )
     return cursor.fetchall()
 
 if "trade_logs" not in st.session_state:
@@ -315,12 +345,14 @@ AI Trade Guardian is an AI-powered trading assistant that analyzes live crypto m
 ✅ Live Bitget Market Data  
 ✅ Alibaba Qwen AI Integration  
 ✅ Market Scanner  
-✅ EMA Analysis Engine  
-✅ LONG / SHORT Decisions  
+✅ RSI, EMA, Volatility & Volume Analysis  
+✅ Live Crypto News (CoinDesk + CoinTelegraph)  
+✅ Crypto Fear & Greed Index  
+✅ AI-Driven LONG / SHORT / WAIT Decisions  
 ✅ Dynamic Confidence Score  
 ✅ Stop Loss & Take Profit Planning  
 ✅ Virtual Execution Center  
-✅ Agent Memory  
+✅ Persistent Agent Memory with Reasoning  
 ✅ Trade Logs  
 
 ---
@@ -353,7 +385,8 @@ elif menu == "📊 Trade Logs":
                 "Entry",
                 "Stop Loss",
                 "Take Profit",
-                "Confidence"
+                "Confidence",
+                "Reasoning"
             ]
         )
 
@@ -369,7 +402,7 @@ st.sidebar.markdown("---")
 
 _all_logs = load_trade_logs()
 _signal_count = len(_all_logs)
-_last_confidence = _all_logs[-1][-1] if _signal_count > 0 else "—"
+_last_confidence = _all_logs[-1][6] if _signal_count > 0 else "—"
 _uptime_str = get_uptime_str()
 
 st.sidebar.markdown(
@@ -407,6 +440,10 @@ st.sidebar.markdown(
 <p>🧠 Alibaba Qwen AI</p>
 
 <p>📡 Bitget API</p>
+
+<p>📰 CoinDesk / CoinTelegraph</p>
+
+<p>😨 Alternative.me F&G Index</p>
 
 </div>
 """,
@@ -462,8 +499,138 @@ def get_data(coin_symbol=None):
         .astype(float)
     )
 
+    # volume is the 6th candle field returned by Bitget
+    df["volume"] = (
+        df["volume"]
+        .astype(float)
+    )
 
     return df
+
+
+def add_indicators(df):
+    """Adds RSI, volatility, volume trend, and momentum columns to a candle dataframe."""
+
+    df["EMA20"] = df["close"].ewm(span=20).mean()
+    df["EMA50"] = df["close"].ewm(span=50).mean()
+
+    # RSI (14-period, Wilder smoothing)
+    delta = df["close"].diff()
+    gain = delta.clip(lower=0)
+    loss = -delta.clip(upper=0)
+
+    avg_gain = gain.ewm(alpha=1 / 14, min_periods=14).mean()
+    avg_loss = loss.ewm(alpha=1 / 14, min_periods=14).mean()
+
+    rs = avg_gain / avg_loss.replace(0, 1e-9)
+    df["RSI"] = 100 - (100 / (1 + rs))
+    df["RSI"] = df["RSI"].fillna(50)
+
+    # Volatility: rolling std dev of % returns over last 20 candles, annualized-style scale for readability
+    df["returns"] = df["close"].pct_change()
+    df["volatility"] = df["returns"].rolling(window=20).std() * 100
+    df["volatility"] = df["volatility"].fillna(0)
+
+    # Volume trend: current volume vs its own 20-period average
+    df["volume_avg20"] = df["volume"].rolling(window=20).mean()
+    df["volume_avg20"] = df["volume_avg20"].fillna(df["volume"])
+
+    return df
+
+
+def get_fear_greed_index():
+    """Fetches the current crypto Fear & Greed Index from Alternative.me. Returns (value, label) or (None, None)."""
+
+    try:
+        response = requests.get(
+            "https://api.alternative.me/fng/?limit=1",
+            timeout=8
+        )
+        data = response.json()
+        entry = data.get("data", [None])[0]
+
+        if not entry:
+            return None, None
+
+        return int(entry.get("value")), entry.get("value_classification")
+
+    except Exception:
+        return None, None
+
+
+def _strip_html(raw_html):
+    """Very small HTML tag stripper for RSS descriptions, no external deps."""
+    import re
+    return re.sub(r"<[^>]+>", "", raw_html or "").strip()
+
+
+def get_crypto_news(asset_keywords, max_items=5):
+    """
+    Fetches recent headlines from CoinDesk and CoinTelegraph RSS feeds,
+    filtered to ones mentioning the asset (by symbol or common name keywords).
+    Returns a list of headline strings. Headlines only - no full article scraping.
+    """
+
+    feeds = [
+        "https://www.coindesk.com/arc/outboundfeeds/rss/",
+        "https://cointelegraph.com/rss"
+    ]
+
+    headlines = []
+
+    for feed_url in feeds:
+        try:
+            resp = requests.get(feed_url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
+            if resp.status_code != 200:
+                continue
+
+            root = ET.fromstring(resp.content)
+
+            for item in root.findall(".//item"):
+                title_el = item.find("title")
+                title = title_el.text.strip() if title_el is not None and title_el.text else ""
+
+                if not title:
+                    continue
+
+                title_lower = title.lower()
+
+                if any(kw.lower() in title_lower for kw in asset_keywords):
+                    headlines.append(title)
+
+        except Exception:
+            continue
+
+    # De-dupe while preserving order, cap to max_items
+    seen = set()
+    unique_headlines = []
+    for h in headlines:
+        if h not in seen:
+            seen.add(h)
+            unique_headlines.append(h)
+
+    return unique_headlines[:max_items]
+
+
+# Maps a Bitget trading pair to keywords useful for matching news headlines
+def get_asset_keywords(symbol):
+    base = symbol.upper().replace("USDT", "").replace("USD", "")
+
+    name_map = {
+        "BTC": ["BTC", "Bitcoin"],
+        "ETH": ["ETH", "Ethereum"],
+        "SOL": ["SOL", "Solana"],
+        "BGB": ["BGB", "Bitget"],
+        "BNB": ["BNB", "Binance Coin"],
+        "XRP": ["XRP", "Ripple"],
+        "DOGE": ["DOGE", "Dogecoin"],
+        "ADA": ["ADA", "Cardano"],
+        "AVAX": ["AVAX", "Avalanche"],
+        "LINK": ["LINK", "Chainlink"]
+    }
+
+    return name_map.get(base, [base])
+
 # ======================
 # WATCHLIST PAGE
 # ======================
@@ -764,33 +931,23 @@ if st.button(
             )
             st.stop()
 
+        df = add_indicators(df)
 
-        df["EMA20"] = (
-            df["close"]
-            .ewm(span=20)
-            .mean()
-        )
+        price = df["close"].iloc[-1]
 
-
-        df["EMA50"] = (
-            df["close"]
-            .ewm(span=50)
-            .mean()
-        )
-
-
-        price = (
-            df["close"]
-            .iloc[-1]
-        )
-
-
-    # =====================
-    # FIX 11.2 - AGENT BRAIN
-    # =====================
+        # =====================
+        # FIX 12 - MARKET ANALYSIS SUITE
+        # =====================
 
         ema20 = df["EMA20"].iloc[-1]
         ema50 = df["EMA50"].iloc[-1]
+        rsi = df["RSI"].iloc[-1]
+        volatility = df["volatility"].iloc[-1]
+        current_volume = df["volume"].iloc[-1]
+        avg_volume = df["volume_avg20"].iloc[-1]
+        volume_trend = (
+            "Above Average" if current_volume > avg_volume else "Below Average"
+        )
 
         # EMA separation, normalized against price so it's comparable across assets
         ema_gap_pct = abs(ema20 - ema50) / price * 100
@@ -808,135 +965,191 @@ if st.button(
             df["close"].iloc[-2]
         ) / price * 100
 
-        # Combined "edge" strength - how convinced the signal is, regardless of direction
+        # Combined "edge" strength - how convinced the TECHNICAL read is, regardless of direction
         edge_strength = (ema_gap_pct * 4) + (abs(momentum) * 3) + (candle_power * 5)
 
         # WAIT zone: trend + momentum + candle are all too weak to trust a side
         if ema_gap_pct < 0.05 and abs(momentum) < 0.05:
-
-            direction = "WAIT ⏳"
-
-            signal = "HOLD 🟡"
-
-            sl = round(price * 0.99, 2)
-
-            tp = round(price * 1.01, 2)
-
-            confidence = "50%"
-
+            technical_direction = "WAIT"
+            technical_confidence = 50
         else:
+            technical_direction = "LONG" if ema20 > ema50 else "SHORT"
+            technical_confidence = 70 + min(15, round(edge_strength))
 
-            if ema20 > ema50:
+        # =====================
+        # FIX 12 - NEWS + FEAR/GREED
+        # =====================
 
-                direction = "LONG 📈"
+        asset_keywords = get_asset_keywords(symbol)
+        news_headlines = get_crypto_news(asset_keywords, max_items=5)
+        fng_value, fng_label = get_fear_greed_index()
 
-                signal = "BUY 🟢"
+        # =====================
+        # FIX 12 - AGENT MEMORY (past decisions for this asset)
+        # =====================
 
-                sl = round(
-                    price * 0.98,
-                    2
+        past_decisions = load_recent_decisions(asset=symbol, limit=3)
+
+        if past_decisions:
+            memory_lines = []
+            for p_time, p_asset, p_decision, p_confidence, p_reasoning in past_decisions:
+                short_reason = (p_reasoning or "")[:120]
+                memory_lines.append(
+                    f"- {p_time}: {p_decision} ({p_confidence}) — {short_reason}"
                 )
+            memory_context = "\n".join(memory_lines)
+        else:
+            memory_context = "No prior decisions recorded for this asset yet."
 
-                tp = round(
-                    price * 1.04,
-                    2
-                )
+        # =====================
+        # FIX 12 - BUILD QWEN PROMPT (Qwen makes the FINAL call)
+        # =====================
 
+        news_block = (
+            "\n".join(f"- {h}" for h in news_headlines)
+            if news_headlines
+            else "No recent relevant headlines found."
+        )
 
-            else:
+        fng_block = (
+            f"{fng_value}/100 ({fng_label})"
+            if fng_value is not None
+            else "Unavailable"
+        )
 
-                direction = "SHORT 📉"
+        agent_prompt = f"""
+You are an autonomous crypto trading agent. You receive technical indicators,
+recent news headlines, the Fear & Greed Index, and your own past decisions for
+this asset. You make the FINAL trading decision - you are not required to
+agree with the technical-only suggestion below; use it as one input among several.
 
-                signal = "SELL 🔴"
+ASSET: {symbol}
+CURRENT PRICE: {price}
 
-                sl = round(
-                    price * 1.02,
-                    2
-                )
+TECHNICAL INDICATORS:
+- EMA20: {round(ema20, 4)}
+- EMA50: {round(ema50, 4)}
+- RSI(14): {round(rsi, 1)}
+- Volatility (20-candle, % stdev of returns): {round(volatility, 3)}
+- Volume: {round(current_volume, 2)} ({volume_trend} vs 20-period avg of {round(avg_volume, 2)})
+- Momentum (5-candle % change): {round(momentum, 3)}%
+- Technical-only suggested direction: {technical_direction} (suggested confidence {technical_confidence}%)
 
-                tp = round(
-                    price * 0.96,
-                    2
-                )
+RECENT NEWS HEADLINES (CoinDesk / CoinTelegraph):
+{news_block}
 
-            # Scale edge_strength into the 70-85% band for both LONG and SHORT
-            # so direction never affects the confidence range, only the score's position in it
-            score = 70 + min(15, round(edge_strength))
+CRYPTO FEAR & GREED INDEX: {fng_block}
 
-            confidence = f"{score}%"
+YOUR PAST DECISIONS ON {symbol}:
+{memory_context}
 
+TASK:
+Decide the final trading direction: LONG, SHORT, or WAIT.
+Weigh the technical indicators, news sentiment (bullish/bearish/neutral), market
+emotion (Fear & Greed), and consistency with your past reasoning on this asset.
+RSI above 70 suggests overbought, below 30 suggests oversold. High volatility
+means wider risk. Extreme Fear or Extreme Greed often signal potential reversals.
 
+Respond with ONLY valid JSON, no markdown formatting, no backticks, no preamble:
+{{
+  "direction": "LONG" | "SHORT" | "WAIT",
+  "confidence": <integer 50-95>,
+  "reasoning": "<2-4 sentences explaining the decision, referencing the specific
+   indicators, news, or sentiment that drove it>"
+}}
+"""
+
+        # =====================
+        # FIX 12 - CALL QWEN (or demo stub)
+        # =====================
 
         if demo:
 
-            report = """
-    📊 DEMO AI REPORT
+            ai_direction = technical_direction
+            ai_confidence = technical_confidence
+            ai_reasoning = (
+                "Demo Mode: using technical-only signal. "
+                f"EMA trend, momentum, and candle strength suggest {technical_direction}. "
+                "Qwen credits saved ✅"
+            )
 
-    📊 PERCEIVE:
-    Market scanned.
+            report = f"""📊 DEMO AI REPORT
 
-    🧠 DECIDE:
-    AI strategy generated.
+📊 PERCEIVE: Market scanned ({symbol}). RSI {round(rsi,1)}, volatility {round(volatility,3)}%, volume {volume_trend}.
 
-    ⚡ EXECUTE:
-    Virtual trade created.
+📰 NEWS: {len(news_headlines)} relevant headline(s) found.
 
-    🛡 RISK:
-    Entry Price calculated.
-    SL / TP calculated.
+😨 FEAR & GREED: {fng_block}
 
-    Qwen credits saved ✅
-    """
+🧠 DECIDE: {ai_direction} ({ai_confidence}%)
 
+⚡ EXECUTE: Virtual trade created.
+
+🛡 RISK: Entry, SL, and TP calculated.
+
+Qwen credits saved ✅"""
 
         else:
 
+            try:
+                response = client.chat.completions.create(
+                    model="qwen3.6-flash",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are an autonomous crypto trading agent. You always respond with strictly valid JSON only."
+                        },
+                        {
+                            "role": "user",
+                            "content": agent_prompt
+                        }
+                    ]
+                )
 
-            response = client.chat.completions.create(
+                raw_report = response.choices[0].message.content.strip()
 
-                model="qwen3.6-flash",
+                # Strip accidental markdown fences if the model adds them anyway
+                if raw_report.startswith("```"):
+                    raw_report = raw_report.strip("`")
+                    if raw_report.lower().startswith("json"):
+                        raw_report = raw_report[4:].strip()
 
-                messages=[
-                    {
-                        "role":"system",
-                        "content":
-                        "You are an autonomous crypto trading agent."
-                    },
+                parsed = json.loads(raw_report)
 
-                    {
-                        "role":"user",
-                        "content":
-                        f"""
-    Analyze:
+                ai_direction = parsed.get("direction", technical_direction).upper()
+                ai_confidence = int(parsed.get("confidence", technical_confidence))
+                ai_reasoning = parsed.get("reasoning", "No reasoning provided.")
+                report = ai_reasoning
 
-    Asset:
-    {symbol}
+            except Exception as e:
+                # If Qwen fails or returns bad JSON, fall back to the technical signal
+                # rather than crashing the agent.
+                ai_direction = technical_direction
+                ai_confidence = technical_confidence
+                ai_reasoning = (
+                    f"⚠️ Qwen AI call failed ({e}). Fell back to technical-only signal: "
+                    f"{technical_direction} ({technical_confidence}%)."
+                )
+                report = ai_reasoning
 
-    Decision:
-    {direction}
+        # Normalize direction/signal/SL-TP based on Qwen's FINAL decision
+        if ai_direction == "LONG":
+            direction = "LONG 📈"
+            signal = "BUY 🟢"
+            sl = round(price * 0.98, 2)
+            tp = round(price * 1.04, 2)
+        elif ai_direction == "SHORT":
+            direction = "SHORT 📉"
+            signal = "SELL 🔴"
+            sl = round(price * 1.02, 2)
+            tp = round(price * 0.96, 2)
+        else:
+            direction = "WAIT ⏳"
+            signal = "HOLD 🟡"
+            sl = round(price * 0.99, 2)
+            tp = round(price * 1.01, 2)
 
-    Stop Loss:
-    {sl}
-
-    Take Profit:
-    {tp}
-
-    Entry Price:
-    {price}
-    """
-                    }
-                ]
-            )
-
-
-            report = (
-                response
-                .choices[0]
-                .message
-                .content
-            )
-
-
+        confidence = f"{ai_confidence}%"
 
         st.subheader(
             "🤖 Agent Decision"
@@ -979,6 +1192,32 @@ if st.button(
             tp
         )
 
+        st.subheader(
+            "📊 Market Analysis"
+        )
+
+        i1, i2, i3, i4 = st.columns(4)
+
+        i1.metric("RSI (14)", round(rsi, 1))
+        i2.metric("Volatility", f"{round(volatility, 3)}%")
+        i3.metric("Volume", volume_trend)
+        i4.metric("Momentum (5c)", f"{round(momentum, 2)}%")
+
+        st.subheader(
+            "😨 Fear & Greed Index"
+        )
+
+        st.info(fng_block)
+
+        st.subheader(
+            "📰 Crypto News"
+        )
+
+        if news_headlines:
+            for h in news_headlines:
+                st.write(f"• {h}")
+        else:
+            st.write("No recent relevant headlines found.")
 
 
         st.subheader(
@@ -1036,7 +1275,8 @@ if st.button(
         "entry": price,
         "stop_loss": sl,
         "take_profit": tp,
-        "confidence": confidence
+        "confidence": confidence,
+        "reasoning": ai_reasoning
     })
 
         save_trade_log(
@@ -1045,7 +1285,8 @@ if st.button(
             price,
             sl,
             tp,
-            confidence
+            confidence,
+            ai_reasoning
         )
 
         st.subheader(
@@ -1072,6 +1313,14 @@ if st.button(
             "Confidence",
             confidence
         )
+
+        with st.expander("📜 Past decisions on this asset"):
+            if past_decisions:
+                for p_time, p_asset, p_decision, p_confidence, p_reasoning in past_decisions:
+                    st.markdown(f"**{p_time}** — {p_decision} ({p_confidence})")
+                    st.caption(p_reasoning or "No reasoning recorded.")
+            else:
+                st.write("No prior decisions recorded for this asset yet.")
 
 
 
