@@ -32,6 +32,9 @@ https://github.com/pappushahofficial/AI-Trade-Guardian
 # 🤖 Agent Workflow
 
 ## 👁 PERCEIVE
+
+The agent collects real-time market intelligence:
+
 - Live Bitget market data
 - Price action analysis
 - EMA trend detection
@@ -41,25 +44,33 @@ https://github.com/pappushahofficial/AI-Trade-Guardian
 - Crypto news context
 - Fear & Greed sentiment data
 
+---
+
 ## 🧠 ANALYZE & DECIDE
 
-Alibaba Qwen AI evaluates:
+Alibaba Qwen AI acts as the reasoning engine.
+
+The AI evaluates:
 
 - Technical indicators
 - Market structure
 - News sentiment
 - Market emotion
-- Agent memory
+- Previous agent memory
 
-Generates:
+Then generates:
 
-- LONG 📈
-- SHORT 📉
-- WAIT ⏳
+- LONG 📈 decision
+- SHORT 📉 decision
+- WAIT ⏳ decision
 - Confidence score
 - Detailed reasoning
 
+---
+
 ## ⚡ VIRTUAL EXECUTION CENTER
+
+AI Trade Guardian creates a simulated execution plan:
 
 - Entry price planning
 - Risk validation
@@ -69,19 +80,27 @@ Generates:
 
 (No real exchange orders are placed)
 
-## 🛡 RISK MANAGEMENT
+---
+
+## 🛡 RISK MANAGEMENT ENGINE
+
+The agent provides:
 
 - Stop Loss calculation
 - Take Profit targets
 - Risk / Reward ratio
+- Breakeven analysis
 - Execution checklist
-- Risk controls
+- Risk management rules
+
+---
 
 ## 🧾 AGENT MEMORY
 
-Stores:
+Persistent memory stores:
 
 - Previous decisions
+- Asset history
 - Entry price
 - Stop Loss
 - Take Profit
@@ -92,6 +111,8 @@ Stores:
 ---
 
 # 🧠 AI Decision Sources
+
+AI Trade Guardian combines:
 
 ✅ Bitget Live Market Data  
 ✅ EMA + RSI Indicators  
@@ -111,6 +132,7 @@ Stores:
 ✅ Real-Time Market Scanner  
 ✅ Custom Bitget Pair Support  
 ✅ Live Agent Status Monitor  
+✅ Signals Generated Counter  
 ✅ Confidence Tracking  
 ✅ Interactive Charts  
 ✅ Market Structure Analysis  
@@ -160,13 +182,17 @@ Stores:
 
 # 🔐 Security
 
+AI Trade Guardian protects sensitive credentials.
+
 - API keys stored using environment variables / Streamlit Secrets
 - No private API keys stored in source code
-- Secure deployment configuration
+- Secure configuration for deployment
 
 ---
 
 # 📊 Supported Markets
+
+Default assets:
 
 - BTCUSDT
 - ETHUSDT
@@ -179,7 +205,7 @@ Stores:
 - AVAXUSDT
 - LINKUSDT
 
-Supports custom Bitget trading pairs.
+Also supports custom Bitget trading pairs.
 
 ---
 
@@ -205,15 +231,16 @@ Agent Memory System
 
 # 🎯 Goal
 
-AI Trade Guardian demonstrates autonomous AI trading assistance through:
+AI Trade Guardian demonstrates how autonomous AI agents can assist crypto traders through:
 
 - Real-time market perception
-- AI-powered reasoning
-- Risk management
-- Virtual execution
+- AI reasoning
+- Structured decision making
+- Risk awareness
+- Execution simulation
 - Continuous memory
 
-The goal is to assist traders with intelligent market analysis, not replace human decision making.
+The goal is not to replace traders, but to provide an intelligent AI assistant for better market analysis.
 
 ---
 
@@ -221,9 +248,9 @@ The goal is to assist traders with intelligent market analysis, not replace huma
 
 AI Trade Guardian provides AI-powered market analysis only.
 
-Educational and research purpose project.
+This project is built for educational and research purposes.
 
-Not financial advice. Crypto trading involves risk.
+It is not financial advice. Cryptocurrency trading involves risk.
 
 ---
 
