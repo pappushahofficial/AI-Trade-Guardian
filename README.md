@@ -32,9 +32,6 @@ https://github.com/pappushahofficial/AI-Trade-Guardian
 # 🤖 Agent Workflow
 
 ## 👁 PERCEIVE
-
-The agent collects real-time market intelligence:
-
 - Live Bitget market data
 - Price action analysis
 - EMA trend detection
@@ -44,33 +41,25 @@ The agent collects real-time market intelligence:
 - Crypto news context
 - Fear & Greed sentiment data
 
----
-
 ## 🧠 ANALYZE & DECIDE
 
-Alibaba Qwen AI acts as the reasoning engine.
-
-The AI evaluates:
+Alibaba Qwen AI evaluates:
 
 - Technical indicators
 - Market structure
 - News sentiment
 - Market emotion
-- Previous agent memory
+- Agent memory
 
-Then generates:
+Generates:
 
-- LONG 📈 decision
-- SHORT 📉 decision
-- WAIT ⏳ decision
+- LONG 📈
+- SHORT 📉
+- WAIT ⏳
 - Confidence score
 - Detailed reasoning
 
----
-
 ## ⚡ VIRTUAL EXECUTION CENTER
-
-AI Trade Guardian creates a simulated execution plan:
 
 - Entry price planning
 - Risk validation
@@ -80,27 +69,19 @@ AI Trade Guardian creates a simulated execution plan:
 
 (No real exchange orders are placed)
 
----
-
-## 🛡 RISK MANAGEMENT ENGINE
-
-The agent provides:
+## 🛡 RISK MANAGEMENT
 
 - Stop Loss calculation
 - Take Profit targets
 - Risk / Reward ratio
-- Breakeven analysis
 - Execution checklist
-- Risk management rules
-
----
+- Risk controls
 
 ## 🧾 AGENT MEMORY
 
-Persistent memory stores:
+Stores:
 
 - Previous decisions
-- Asset history
 - Entry price
 - Stop Loss
 - Take Profit
@@ -111,8 +92,6 @@ Persistent memory stores:
 ---
 
 # 🧠 AI Decision Sources
-
-AI Trade Guardian combines:
 
 ✅ Bitget Live Market Data  
 ✅ EMA + RSI Indicators  
@@ -132,7 +111,6 @@ AI Trade Guardian combines:
 ✅ Real-Time Market Scanner  
 ✅ Custom Bitget Pair Support  
 ✅ Live Agent Status Monitor  
-✅ Signals Generated Counter  
 ✅ Confidence Tracking  
 ✅ Interactive Charts  
 ✅ Market Structure Analysis  
@@ -143,6 +121,28 @@ AI Trade Guardian combines:
 ✅ Persistent Agent Memory  
 ✅ Trade Logs  
 ✅ Smart Error Handling  
+
+---
+
+# 📸 Screenshots
+
+## 🚀 AI Trade Guardian Dashboard
+![Dashboard](screenshots/01_AI_Trade_Guardian_Home.png)
+
+## 📊 Market Scanner & Agent Workflow
+![Scanner](screenshots/02_Market_Scanner_And_Agent_Workflow.png)
+
+## 🤖 AI Decision & Market Analysis
+![Decision](screenshots/03_AI_Decision_And_Market_Analysis.png)
+
+## ⚡ Virtual Execution & Agent Memory
+![Memory](screenshots/05_Agent_Memory_And_AI_Report.png)
+
+## 🧠 Alibaba Qwen AI Reasoning Report
+![Qwen](screenshots/06_Qwen_AI_Reasoning_Report.png)
+
+## 🛡 Risk Management & Trade Metrics
+![Risk](screenshots/08_Risk_Management_And_Trade_Metrics.png)
 
 ---
 
@@ -160,17 +160,13 @@ AI Trade Guardian combines:
 
 # 🔐 Security
 
-AI Trade Guardian protects sensitive credentials.
-
 - API keys stored using environment variables / Streamlit Secrets
 - No private API keys stored in source code
-- Secure configuration for deployment
+- Secure deployment configuration
 
 ---
 
 # 📊 Supported Markets
-
-Default assets:
 
 - BTCUSDT
 - ETHUSDT
@@ -183,7 +179,7 @@ Default assets:
 - AVAXUSDT
 - LINKUSDT
 
-Also supports custom Bitget trading pairs.
+Supports custom Bitget trading pairs.
 
 ---
 
@@ -209,16 +205,15 @@ Agent Memory System
 
 # 🎯 Goal
 
-AI Trade Guardian demonstrates how autonomous AI agents can assist crypto traders through:
+AI Trade Guardian demonstrates autonomous AI trading assistance through:
 
 - Real-time market perception
-- AI reasoning
-- Structured decision making
-- Risk awareness
-- Execution simulation
+- AI-powered reasoning
+- Risk management
+- Virtual execution
 - Continuous memory
 
-The goal is not to replace traders, but to provide an intelligent AI assistant for better market analysis.
+The goal is to assist traders with intelligent market analysis, not replace human decision making.
 
 ---
 
@@ -226,9 +221,9 @@ The goal is not to replace traders, but to provide an intelligent AI assistant f
 
 AI Trade Guardian provides AI-powered market analysis only.
 
-This project is built for educational and research purposes.
+Educational and research purpose project.
 
-It is not financial advice. Cryptocurrency trading involves risk.
+Not financial advice. Crypto trading involves risk.
 
 ---
 
